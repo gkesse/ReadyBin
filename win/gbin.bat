@@ -1,7 +1,7 @@
 @echo off
 ::===============================================
-set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win
-set PATH=C:\Windows\System32;%PATH%
+set PATH=C:\Windows\System32
+set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin;%PATH%
 ::===============================================
 set GBIN_ROOT=C:\Users\Admin\Downloads\Programs\ReadyBin
 set GPROGRAMS_ROOT=C:\Users\Admin\Downloads\Programs
