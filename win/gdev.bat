@@ -1,7 +1,7 @@
 @echo off
 ::===============================================
 set PATH=C:\Windows\System32
-set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin;%PATH%
+set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win;%PATH%
 ::===============================================
 set GGIT="C:\Program Files\Git\bin\git.exe"
 set GROOT=C:\Users\Admin\Downloads\Programs\ReadyDev
