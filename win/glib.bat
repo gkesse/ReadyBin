@@ -1,8 +1,8 @@
 @echo off
 ::===============================================
-set PATH=C:\MinGW\bin
-set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin;%PATH%
+set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win
 set PATH=C:\Windows\System32;%PATH%
+set PATH=C:\MinGW\bin;%PATH%
 ::===============================================
 set GLIB_ROOT=C:\Users\Admin\Downloads\Programs\ReadyLib\mingw
 set GPROGRAMS_ROOT=C:\Users\Admin\Downloads\Programs
@@ -42,6 +42,8 @@ if "%GPROCESS%" == "git_checkout" (
 ) else ( 
     goto :error
 )))))))
+::===============================================
+:: LIB
 ::===============================================
 :install_lib
     cd %GLIB_ROOT%
