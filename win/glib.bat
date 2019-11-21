@@ -48,7 +48,7 @@ if "%GPROCESS%" == "git_checkout" (
 :install_lib
     cd %GLIB_ROOT%
     ::-----------------------------------------------
-    cmd_install_lib %GOPTION_1%
+    cmd_install_lib %GOPTION_1% %GOPTION_2%
     ::-----------------------------------------------
     cd %GPWD%
 goto :eof

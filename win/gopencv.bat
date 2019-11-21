@@ -3,24 +3,26 @@
 set PATH=C:\Windows\System32
 set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win;%PATH%
 set PATH=C:\MinGW\bin;%PATH%
+set PATH=C:\Users\Admin\Downloads\Programs\ReadyLib\dev\opencv\c\3.4.7\mingw64\bin;%PATH%
+set PATH=C:\Qt\Qt5.8.0\5.8\mingw53_32\bin;%PATH%
 ::===============================================
 set GGIT="C:\Program Files\Git\bin\git.exe"
-set GPROJECT=C:\Users\Admin\Downloads\Programs\ReadyOpenGL
-set GBUILD=C:\Users\Admin\Downloads\Programs\ReadyOpenGL\c\win
-set GBIN=C:\Users\Admin\Downloads\Programs\ReadyOpenGL\c\win\bin
+set GPROJECT=C:\Users\Admin\Downloads\Programs\ReadyOpenCV
+set GBUILD=C:\Users\Admin\Downloads\Programs\ReadyOpenCV\c\win
+set GBIN=C:\Users\Admin\Downloads\Programs\ReadyOpenCV\c\win\bin
 set GPWD=%cd%
 ::===============================================
 set GPROCESS="%1"
 ::===============================================
-if %GPROCESS% == "compile" ( goto :GOpenGL_Compile
-) else ( if %GPROCESS% == "clean" ( goto :GOpenGL_Clean
-) else ( if %GPROCESS% == "git_push_all" ( goto :GGit_PushAll
-) else ( if %GPROCESS% == "git_pull" ( goto :GGit_Pull
-) else ( goto :GOpenGL_Run ))))
+if %GPROCESS% == "compile" ( goto :compile
+) else ( if %GPROCESS% == "clean" ( goto :clean
+) else ( if %GPROCESS% == "git_push_all" ( goto :git_push_all
+) else ( if %GPROCESS% == "git_pull" ( goto :git_pull
+) else ( goto :run ))))
 ::===============================================
 :: OPENGL
 ::===============================================
-:GOpenGL_Compile
+:compile
     cd %GBUILD%
     ::-----------------------------------------------
     mingw32-make
@@ -28,7 +30,7 @@ if %GPROCESS% == "compile" ( goto :GOpenGL_Compile
     cd %GPWD%
 goto :eof
 ::===============================================
-:GOpenGL_Clean
+:clean
     cd %GBUILD%
     ::-----------------------------------------------
     mingw32-make clean
@@ -36,17 +38,17 @@ goto :eof
     cd %GPWD%
 goto :eof
 ::===============================================
-:GOpenGL_Run
+:run
     cd %GBIN%
     ::-----------------------------------------------
-    GProject.exe %*
+    GOpenCV.exe %*
     ::-----------------------------------------------
     cd %GPWD%
 goto :eof
 ::===============================================
 :: GIT
 ::===============================================
-:GGit_PushAll
+:git_push_all
     cd %GPROJECT%
     ::-----------------------------------------------
     %GGIT% add --all
@@ -56,7 +58,7 @@ goto :eof
     cd %GPWD%
 goto :eof
 ::===============================================
-:GGit_Pull
+:git_pull
     cd %GPROJECT%
     ::-----------------------------------------------
     %GGIT% pull
@@ -66,7 +68,7 @@ goto :eof
 ::===============================================
 :: ERROR
 ::===============================================
-:GProcess_Error
+:error
     ::-----------------------------------------------
     echo ERREUR: Nom du processus ?
     ::-----------------------------------------------
