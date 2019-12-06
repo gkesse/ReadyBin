@@ -2,20 +2,50 @@
 ::===============================================
 set PATH=C:\Windows\System32
 set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win;%PATH%
+set PATH=C:\MinGW\bin;%PATH%
 ::===============================================
 set GGIT="C:\Program Files\Git\bin\git.exe"
-set GPROJECT=C:\Users\Admin\Downloads\Programs\ReadyDev
+set GPROJECT=C:\Users\Admin\Downloads\Programs\ReadyZeroMQ
+set GBUILD=C:\Users\Admin\Downloads\Programs\ReadyZeroMQ\c\win
 set GPWD=%cd%
 ::===============================================
 set GPROCESS="%1"
 ::===============================================
-if %GPROCESS% == "git_push_all" ( goto :GGit_PushAll
-) else ( if %GPROCESS% == "git_pull" ( goto :GGit_Pull
-) else ( goto :GProcess_Error ))
+if %GPROCESS% == "compile" ( goto :compile
+) else ( if %GPROCESS% == "clean" ( goto :clean
+) else ( if %GPROCESS% == "git_push_all" ( goto :git_push_all
+) else ( if %GPROCESS% == "git_pull" ( goto :git_pull
+) else ( goto :run ))))
+::===============================================
+:: OPENGL
+::===============================================
+:compile
+    cd %GBUILD%
+    ::-----------------------------------------------
+    mingw32-make
+    ::-----------------------------------------------
+    cd %GPWD%
+goto :eof
+::===============================================
+:clean
+    cd %GBUILD%
+    ::-----------------------------------------------
+    mingw32-make clean
+    ::-----------------------------------------------
+    cd %GPWD%
+goto :eof
+::===============================================
+:run
+    cd %GBUILD%
+    ::-----------------------------------------------
+    .\bin\GZeroMQ.exe %*
+    ::-----------------------------------------------
+    cd %GPWD%
+goto :eof
 ::===============================================
 :: GIT
 ::===============================================
-:GGit_PushAll
+:git_push_all
     cd %GPROJECT%
     ::-----------------------------------------------
     %GGIT% add --all
@@ -25,7 +55,7 @@ if %GPROCESS% == "git_push_all" ( goto :GGit_PushAll
     cd %GPWD%
 goto :eof
 ::===============================================
-:GGit_Pull
+:git_pull
     cd %GPROJECT%
     ::-----------------------------------------------
     %GGIT% pull
@@ -35,7 +65,7 @@ goto :eof
 ::===============================================
 :: ERROR
 ::===============================================
-:GProcess_Error
+:error
     ::-----------------------------------------------
     echo ERREUR: Nom du processus ?
     ::-----------------------------------------------

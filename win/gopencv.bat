@@ -3,13 +3,12 @@
 set PATH=C:\Windows\System32
 set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win;%PATH%
 set PATH=C:\MinGW\bin;%PATH%
-set PATH=C:\Users\Admin\Downloads\Programs\ReadyLib\dev\opencv\c\3.4.7\mingw64\bin;%PATH%
+set PATH=C:\Users\Admin\Downloads\Programs\ReadyLib\dev\opencv\c\2.4.13.6\mingw64\bin;%PATH%
 set PATH=C:\Qt\Qt5.8.0\5.8\mingw53_32\bin;%PATH%
 ::===============================================
 set GGIT="C:\Program Files\Git\bin\git.exe"
 set GPROJECT=C:\Users\Admin\Downloads\Programs\ReadyOpenCV
 set GBUILD=C:\Users\Admin\Downloads\Programs\ReadyOpenCV\c\win
-set GBIN=C:\Users\Admin\Downloads\Programs\ReadyOpenCV\c\win\bin
 set GPWD=%cd%
 ::===============================================
 set GPROCESS="%1"
@@ -39,9 +38,9 @@ goto :eof
 goto :eof
 ::===============================================
 :run
-    cd %GBIN%
+    cd %GBUILD%
     ::-----------------------------------------------
-    GOpenCV.exe %*
+    .\bin\GOpenCV.exe %*
     ::-----------------------------------------------
     cd %GPWD%
 goto :eof
