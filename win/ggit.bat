@@ -3,7 +3,7 @@
 set PATH=C:\Windows\System32
 set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win;%PATH%
 ::===============================================
-set GPROJECT_ROOT=C:\Users\Admin\Downloads\Programs\ReadyBin
+set GPROJECT_ROOT=C:\Users\Admin\Downloads\Programs\ReadyGit
 set GPWD=%cd%
 ::===============================================
 set GPROCESS=%1
@@ -15,7 +15,8 @@ set GOPTION_4=%5
 set GGIT="C:\Program Files\Git\bin\git.exe"
 ::===============================================
 set GFUNCTION_MAP=
-set GFUNCTION_MAP=%GFUNCTION_MAP%;GGit_PushAll
+set GFUNCTION_MAP=GGit_Run;%GFUNCTION_MAP%
+set GFUNCTION_MAP=GGit_Book;%GFUNCTION_MAP%
 ::===============================================
 cd %GPROJECT_ROOT%
 call :GProcess_Run %*
@@ -50,10 +51,17 @@ setlocal enabledelayedexpansion
 endlocal
 goto :eof
 ::===============================================
-:GGit_PushAll
-    cd %GPROJECT_ROOT%
-    %GGIT% add --all
-    %GGIT% commit -m "Initial Commit"
-    %GGIT% push -u origin master
+:GGit_Run
+    echo #================================================
+    echo # GGit_Run
+    echo #================================================
+    echo %~0
+goto :eof
+::===============================================
+:GGit_Book
+    echo #================================================
+    echo # GGit_Book
+    echo #================================================
+    echo %~0
 goto :eof
 ::===============================================
