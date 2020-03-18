@@ -15,7 +15,8 @@ if "%GPROCESS%" == "" ( goto :GProcess_help
 ) else ( if "%GPROCESS%" == "test" ( goto :GProcess_test
 ) else ( if "%GPROCESS%" == "push_dev" ( goto :GGit_push_dev
 ) else ( if "%GPROCESS%" == "push_bin" ( goto :GGit_push_bin
-) else ( goto :GProcess_help ))))
+) else ( if "%GPROCESS%" == "pull_bin" ( goto :GGit_pull_bin
+) else ( goto :GProcess_help )))))
 goto :eof
 ::===============================================
 :GProcess_help
@@ -38,5 +39,10 @@ cd %GREADY_BIN%
 git add --all
 git commit -m "Initial Commit"
 git push -u origin master
+goto :eof
+::===============================================
+:GGit_pull_bin
+cd %GREADY_BIN%
+git pull
 goto :eof
 ::===============================================
