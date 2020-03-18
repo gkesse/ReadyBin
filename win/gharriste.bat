@@ -3,7 +3,7 @@
 set PATH=C:\Windows\System32
 set PATH=C:\Users\Admin\Downloads\Programs\ReadyBin\win;%PATH%
 ::===============================================
-set GPROJECT_ROOT=C:\Users\Admin\Downloads\Programs\ReadyDev
+set GPROJECT_ROOT=C:\Users\Admin\Downloads\Programs\ReadyHarriste
 set GPWD=%cd%
 ::===============================================
 set GPROCESS=%1
