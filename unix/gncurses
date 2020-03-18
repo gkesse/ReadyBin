@@ -1,0 +1,113 @@
+#================================================
+GPROCESS=$1
+GOPTION_1=$2
+GOPTION_2=$3
+GOPTION_3=$4
+GOPTION_4=$5
+GPWD=$PWD
+#================================================
+GPROCESS_MAP="
+GGit_Push_All
+GGit_Pull
+GNcurses_Compile
+GNcurses_Clean
+GNcurses_Run
+"
+#================================================
+GNCURSES_RUN_MAP="
+G_WINDOW_DEFAULT
+"
+#================================================
+GProcess_Run() {
+    if [ "$GPROCESS" = "" ] ; then GProcess_RunNumber
+    else GProcess_RunFunc ; fi
+}
+#================================================
+GProcess_RunNumber() {
+    lCount=0
+    for lProcess in $GPROCESS_MAP ; do
+        lCount=$(echo "$lCount + 1" | bc -l)
+        printf "%s : %s\n" $lCount $lProcess
+    done
+}
+#================================================
+GProcess_RunFunc() {
+    lCount=0
+    lFlag="FLASE"
+    for lProcess in $GPROCESS_MAP ; do
+        lCount=$(echo "$lCount + 1" | bc -l)
+        if [ "$lCount" = "$GPROCESS" ] ; then
+            lFlag="TRUE"
+            $lProcess
+            break
+        fi
+    done
+    if [ "$lFlag" = "FLASE" ] ; then
+        GProcess_RunNumber
+    fi
+}
+#================================================
+GProcess_Main() {
+    echo
+    GProcess_Run 
+    cd $GPWD
+    echo
+}
+#================================================
+GGit_Push_All() {
+    GPROJECT_ROOT=/home/centos/Programs/ReadyNcurses/
+    cd $GPROJECT_ROOT
+    git add --all
+    git commit -m "Initial Commit"
+    git push -u origin master
+}
+#================================================
+GNcurses_Compile() {
+    GPROJECT_ROOT=/home/centos/Programs/ReadyNcurses/unix/
+    cd $GPROJECT_ROOT
+    make
+}
+#================================================
+GNcurses_Clean() {
+    GPROJECT_ROOT=/home/centos/Programs/ReadyNcurses/unix/
+    cd $GPROJECT_ROOT
+    make clean
+}
+#================================================
+GNcurses_Run() {
+    if [ "$GOPTION_1" = "" ] ; then GNcurses_RunNumber
+    else GNcurses_RunFunc ; fi
+}
+#================================================
+GNcurses_RunNumber() {
+    lCount=0
+    for lProcess in $GNCURSES_RUN_MAP ; do
+        lCount=$(echo "$lCount + 1" | bc -l)
+        printf "%s : %s\n" $lCount $lProcess
+    done
+}
+#================================================
+GNcurses_RunFunc() {
+    lCount=0
+    lFlag2="FLASE"
+    for lProcess in $GNCURSES_RUN_MAP ; do
+        lCount=$(echo "$lCount + 1" | bc -l)
+        if [ "$lCount" = "$GOPTION_1" ] ; then
+            lFlag2="TRUE"
+            GNcurses_Execute $lProcess
+            break
+        fi
+    done
+    if [ "$lFlag2" = "FLASE" ] ; then
+        GNcurses_RunNumber
+    fi
+}
+#================================================
+GNcurses_Execute() {
+    GPROJECT_ROOT=/home/centos/Programs/ReadyNcurses/unix/
+    cd $GPROJECT_ROOT
+    ./bin/gncurses $GOPTION_1
+}
+#================================================
+GProcess_Main
+#================================================
