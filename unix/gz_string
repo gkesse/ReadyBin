@@ -1,0 +1,155 @@
+#!/bin/bash
+#================================================
+GString_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GString_help "$@"
+else GString_process "$@" ; fi
+}
+#================================================
+GString_help() {
+lScript=$(GString_filename "$0")
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les chaines de caracteres."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "\t%s : %s\n" "$lScript" "afficher l'aide"
+printf "\n"
+}
+#================================================
+GString_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+# dirname
+if [ "$lKey" = "dirname" ] ; then 
+lFullPath=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_dirname "$lFullPath"; lRunFlag=1
+# filename
+elif [ "$lKey" = "filename" ] ; then 
+lFullPath=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_filename "$lFullPath" ; lRunFlag=1
+# basename
+elif [ "$lKey" = "basename" ] ; then 
+lFullPath=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_basename "$lFullPath" ; lRunFlag=1
+# extension
+elif [ "$lKey" = "extension" ] ; then 
+lFullPath=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_extension "$lFullPath" ; lRunFlag=1
+# trim
+elif [ "$lKey" = "trim" ] ; then 
+lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_extension "$lString" ; lRunFlag=1
+# split
+elif [ "$lKey" = "split" ] ; then 
+lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+lSep=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+lCol=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_split "$lString" "$lSep" "$lCol" ; lRunFlag=1
+# math
+elif [ "$lKey" = "math" ] ; then 
+lOperation=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_math "$lOperation" ; lRunFlag=1
+# to_upper
+elif [ "$lKey" = "to_upper" ] ; then 
+lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_to_upper "$lString" ; lRunFlag=1
+# to_lower
+elif [ "$lKey" = "to_lower" ] ; then 
+lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_to_lower "$lString" ; lRunFlag=1
+# contain
+elif [ "$lKey" = "contain" ] ; then 
+lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_contain "$lString" ; lRunFlag=1
+# get_char
+elif [ "$lKey" = "get_char" ] ; then 
+lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
+GString_get_char "$lString" ; lRunFlag=1
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GString_help ; fi
+}
+#================================================
+GString_math() {
+local lOperation=$1
+lMath=$(echo "$lOperation" | bc -l)
+echo $lMath
+}
+#================================================
+GString_dirname() {
+local lFullPath=$1
+lDirname=$(dirname -- "$lFullPath")
+echo $lDirname
+}
+#================================================
+GString_filename() {
+local lFullPath=$1
+lFilename=$(basename -- "$lFullPath")
+echo $lFilename
+}
+#================================================
+GString_basename() {
+local lFullPath=$1
+lFilename=$(basename -- "$lFullPath")
+lBasename="${lFilename%.*}"
+echo $lBasename
+}
+#================================================
+GString_extension() {
+local lFullPath=$1
+lFilename=$(basename -- "$lFullPath")
+lExtension="${lFilename##*.}"
+echo $lExtension
+}
+#================================================
+GString_trim() {
+local lString=$1
+lTrim=$(echo "$lString" | xargs echo -n)
+echo $lTrim
+}
+#================================================
+GString_get_char() {
+local lString=$1
+local lPos=$2
+lChar=${lString:$lPos:1}
+echo $lChar
+}
+#================================================
+GString_split() {
+local lString=$1
+local lSep=$2
+local lPos=$3
+lSplit=$(echo "$lString" | awk -F "$lSep" -v lPos="$lPos" '{print $lPos}')
+echo $lSplit
+}
+#================================================
+GString_to_upper() {
+local lString=$1
+lToUpper=$(echo "$lString" | tr '[:lower:]' '[:upper:]')
+echo $lToUpper
+}
+#================================================
+GString_to_lower() {
+local lString=$1
+lToLower=$(echo "$lString" | tr '[:upper:]' '[:lower:]')
+echo $lToLower
+}
+#================================================
+GString_contain() {
+local lString=$1
+local lPattern=$2
+lContain=0
+lString=$(GString_to_upper "$lString")
+lPattern=$(GString_to_upper "$lPattern")
+if [[ "$lString" == *"$lPattern"* ]] ; then lContain=1 ; fi
+echo $lContain
+}
+#================================================
+GString_main "$@"
+#================================================

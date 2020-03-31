@@ -1,0 +1,241 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+GPATH=$(gz_pwd)
+GTMP_PATH=$GPATH/tmp ; if ! [ -d "$GTMP_PATH" ] ; then mkdir $GTMP_PATH ; fi
+GTMP_FILE_N1=$GTMP_PATH/tmp_file_n1.txt
+#================================================
+if ! [[ -z "$GDATABASE_ROOT" ]] ; then
+export GDATABASE_ROOT=/cygdrive/c/Users/Admin/Downloads/Programs/ReadyShop/data/sqlite
+fi
+GDATABASE_NAME=test.dat
+GDATABASE_PATH=$GDATABASE_ROOT/$GDATABASE_NAME
+#================================================
+GSQlite_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GSQlite_help "$@"
+else GSQlite_process "$@" ; fi
+}
+#================================================
+GSQlite_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les chaines de caracteres."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "query <sql_in>" "executer requete sql"
+printf "$GPROCESS" "clone_t <table_in> <table_out> <column_in>" "cloner table"
+printf "$GPROCESS" "rename_t <table_in> <table_out>" "renommer table"
+printf "$GPROCESS" "drop_t <table_in>" "supprimer table"
+printf "$GPROCESS" "add_c <table_in> <column_in>" "ajouter colonne"
+printf "$GPROCESS" "drop_c <table_in> <column_in>" "supprimer colonne"
+printf "$GPROCESS" "remove_c <table_in> <column_in>" "supprimer colonne"
+printf "$GPROCESS" "alter_c <table_in> <column_in>" "modifier colonne"
+printf "$GPROCESS" "modify_c <table_in> <column_in>" "modifier colonne"
+printf "$GPROCESS" "list_c <table_in> <column_in>" "lister colonne"
+printf "$GPROCESS" "schema <table_in>" "schematiser table"
+printf "$GPROCESS" "set_r <path_in>" "initialiser racine"
+printf "$GPROCESS" "set_n <name_in>" "initialiser nom base de donnees"
+printf "$GPROCESS" "set_p <path_in>" "initialiser chemin"
+printf "$GPROCESS" "get_p" "recuperer chemin"
+printf "\n"
+}
+#================================================
+GSQlite_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# query
+if [ "$lKey" = "query" ] ; then 
+lQuery=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_query "$lQuery" ; lRunFlag=1
+# clone_t
+elif [ "$lKey" = "clone_t" ] ; then 
+lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_clone_table "$lTableIn" "$lTableOut" "$lColumn" ; lRunFlag=1
+# rename_t
+elif [ "$lKey" = "rename_t" ] ; then 
+lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_rename_table "$lTableIn" "$lTableOut" ; lRunFlag=1
+# drop_t
+elif [ "$lKey" = "drop_t" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_drop_table "$lTable" ; lRunFlag=1
+# add_c 
+elif [ "$lKey" = "add_c" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_add_column "$lTable" "$lColumn" ; lRunFlag=1
+# drop_c
+elif [ "$lKey" = "drop_c" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_drop_column "$lTable" "$lColumn" ; lRunFlag=1
+# remove_c
+elif [ "$lKey" = "remove_c" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_remove_column "$lTable" "$lColumn" ; lRunFlag=1
+# alter_c
+elif [ "$lKey" = "alter_c" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_alter_column "$lTable" "$lColumn" ; lRunFlag=1
+# modify_c
+elif [ "$lKey" = "modify_c" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_modify_column "$lTable" "$lColumn" ; lRunFlag=1
+# list_c
+elif [ "$lKey" = "list_c" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lRemove=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_list_column "$lTable" "$lRemove" ; lRunFlag=1
+# schema
+elif [ "$lKey" = "schema" ] ; then 
+lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_schema "$lTable" ; lRunFlag=1
+# set_r
+elif [ "$lKey" = "set_r" ] ; then 
+lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_set_root "$lPath" ; lRunFlag=1
+# set_n
+elif [ "$lKey" = "set_n" ] ; then 
+lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_set_name "$lName" ; lRunFlag=1
+# set_p
+elif [ "$lKey" = "set_p" ] ; then 
+lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQlite_set_path "$lPath" ; lRunFlag=1
+# get_p
+elif [ "$lKey" = "get_p" ] ; then 
+GSQlite_get_path ; lRunFlag=1
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GSQlite_help ; fi
+}
+#================================================
+GSQlite_query() {
+local lQuery=$1
+cd $GDATABASE_ROOT
+sqlite3 $GDATABASE_NAME << _EOF_
+$lQuery
+.exit
+_EOF_
+cd $GPWD
+}
+#================================================
+GSQlite_clone_table() {
+local lTableIn=$1
+local lTableOut=$2
+local lColumn=$3
+lQuery="create table $lTableOut AS select $lColumn from $lTableIn;"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_rename_table() {
+local lTableIn=$1
+local lTableOut=$2
+lQuery="alter table $lTableIn rename to $lTableOut;"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_drop_table() {
+local lTable=$1
+lQuery="drop table $lTable;"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_add_column() {
+local lTable=$1
+local lColumn=$2
+lQuery="alter table $lTable add $lColumn;"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_drop_column() {
+local lTable=$1
+local lColumn=$2
+lQuery="alter table $lTable drop column $lColumn;"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_remove_column() {
+local lTable=$1
+local lColumn=$2
+lTableNew="${lTable}_new_clone"
+lColumnNew=$(GSQlite_list_column "$lTable" "$lColumn")
+GSQlite_clone_table "$lTable" "$lTableNew" "$lColumnNew"
+GSQlite_drop_table "$lTable"
+GSQlite_rename_table "$lTableNew" "$lTable"
+}
+#================================================
+GSQlite_alter_column() {
+local lTable=$1
+local lColumn=$2
+lQuery="alter table $lTable alter column $lColumn;"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_modify_column() {
+local lTable=$1
+local lColumn=$2
+lQuery="alter table $lTable modify column $lColumn;"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_list_column() {
+local lTable=$1
+local lRemove=$2
+lQuery="pragma table_info($lTable);"
+GSQlite_query "$lQuery" | awk -F "|" -v lRemove="$lRemove" '
+BEGIN {lFlag = 0}
+{if($2 == lRemove) {next}
+if(lFlag == 1) {printf(", ")}
+lFlag = 1
+printf("%s", $2)}'
+}
+#================================================
+GSQlite_schema() {
+local lTable=$1
+lQuery=".schema $lTable"
+GSQlite_query "$lQuery"
+}
+#================================================
+GSQlite_set_root() {
+export GDATABASE_ROOT=$1
+}
+#================================================
+GSQlite_set_name() {
+export GDATABASE_NAME=$1
+}
+#================================================
+GSQlite_set_path() {
+local lPath=$1
+lRoot=$(gz_string dirname "$lPath")
+lName=$(gz_string filename "$lPath")
+GSQlite_set_root "$lRoot"
+GSQlite_set_name "$lName"
+}
+#================================================
+GSQlite_get_path() {
+echo $GDATABASE_PATH
+}
+#================================================
+GSQlite_main "$@"
+#================================================
