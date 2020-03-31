@@ -32,16 +32,16 @@ printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "query <sql_in>" "executer requete sql"
-printf "$GPROCESS" "clone_t <table_in> <table_out> <column_in>" "cloner table"
-printf "$GPROCESS" "rename_t <table_in> <table_out>" "renommer table"
-printf "$GPROCESS" "drop_t <table_in>" "supprimer table"
-printf "$GPROCESS" "add_c <table_in> <column_in>" "ajouter colonne"
-printf "$GPROCESS" "drop_c <table_in> <column_in>" "supprimer colonne"
-printf "$GPROCESS" "remove_c <table_in> <column_in>" "supprimer colonne"
-printf "$GPROCESS" "alter_c <table_in> <column_in>" "modifier colonne"
-printf "$GPROCESS" "modify_c <table_in> <column_in>" "modifier colonne"
-printf "$GPROCESS" "list_c <table_in> <column_in>" "lister colonne"
-printf "$GPROCESS" "schema <table_in>" "schematiser table"
+printf "$GPROCESS" "table_c" "creer table"
+printf "$GPROCESS" "table_d" "supprimer table"
+printf "$GPROCESS" "table_dl <id_in>" "supprimer donnees table"
+printf "$GPROCESS" "table_i <data_in>" "inserer donnees table"
+printf "$GPROCESS" "table_u <id_in> <data_in>" "mise a jour donnees table"
+printf "$GPROCESS" "table_s" "selectionner donnees table"
+printf "$GPROCESS" "table_si" "selectionner donnees table id"
+printf "$GPROCESS" "table_sl" "selectionner donnees table limite"
+printf "$GPROCESS" "show_t" "lister tables"
+printf "$GPROCESS" "schema" "schema global"
 printf "$GPROCESS" "set_r <path_in>" "initialiser racine"
 printf "$GPROCESS" "set_n <name_in>" "initialiser nom base de donnees"
 printf "$GPROCESS" "set_p <path_in>" "initialiser chemin"
@@ -77,6 +77,14 @@ GSQLite_users_insert "$lRow" ; lRunFlag=1
 # users_s
 elif [ "$lKey" = "users_s" ] ; then 
 GSQLite_users_select ; lRunFlag=1
+# users_si
+elif [ "$lKey" = "users_si" ] ; then 
+lId=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQLite_users_select_id "$lId" ; lRunFlag=1
+# users_sl
+elif [ "$lKey" = "users_sl" ] ; then 
+lLimit=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQLite_users_select_limit "$lLimit" ; lRunFlag=1
 # users_u
 elif [ "$lKey" = "users_u" ] ; then 
 lId=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
@@ -211,8 +219,13 @@ GSQLite_query "select * from users;"
 GSQLite_users_select_id() {
 local lId=$1
 if [ "$lId" = "" ] ; then gz_color s "id ?" yellow fg ; return ; fi
-lWhere="where id = $lId"
-GSQLite_query "select * from users $lWhere;"
+GSQLite_query "select * from users where id = $lId;"
+}
+#================================================
+GSQLite_users_select_limit() {
+local lLimit=$1
+if [ "$lLimit" = "" ] ; then gz_color s "limit ?" yellow fg ; return ; fi
+GSQLite_query "select * from users limit $lLimit;"
 }
 #================================================
 GSQLite_users_email_exist() {
