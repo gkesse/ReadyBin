@@ -12,13 +12,13 @@ fi
 GDATABASE_NAME=test.dat
 GDATABASE_PATH=$GDATABASE_ROOT/$GDATABASE_NAME
 #================================================
-GSQlite_main() {
+GSQLite_main() {
 lArgSize="$#"
-if [ "$lArgSize" = "0" ] ; then GSQlite_help "$@"
-else GSQlite_process "$@" ; fi
+if [ "$lArgSize" = "0" ] ; then GSQLite_help "$@"
+else GSQLite_process "$@" ; fi
 }
 #================================================
-GSQlite_help() {
+GSQLite_help() {
 lScript=$(gz_string filename "$0")
 GSCRIPT="\t\033[0;35m${lScript}\033[0m"
 GCOMMENT="\033[0;33m%s\033[0m"
@@ -49,7 +49,7 @@ printf "$GPROCESS" "get_p" "recuperer chemin"
 printf "\n"
 }
 #================================================
-GSQlite_process() {
+GSQLite_process() {
 lArgSize="$#"
 lArgCount=1
 lRunFlag=0
@@ -59,151 +59,242 @@ lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 # query
 if [ "$lKey" = "query" ] ; then 
 lQuery=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_query "$lQuery" ; lRunFlag=1
+GSQLite_query "$lQuery" ; lRunFlag=1
+# users_c
+elif [ "$lKey" = "users_c" ] ; then 
+GSQLite_users_create ; lRunFlag=1
+# users_d
+elif [ "$lKey" = "users_d" ] ; then 
+GSQLite_users_drop ; lRunFlag=1
+# users_dl
+elif [ "$lKey" = "users_dl" ] ; then 
+lId=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQLite_users_delete "$lId" ; lRunFlag=1
+# users_i
+elif [ "$lKey" = "users_i" ] ; then 
+lRow=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQLite_users_insert "$lRow" ; lRunFlag=1
+# users_s
+elif [ "$lKey" = "users_s" ] ; then 
+GSQLite_users_select ; lRunFlag=1
+# users_u
+elif [ "$lKey" = "users_u" ] ; then 
+lId=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lPassword=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQLite_users_update "$lId" "$lPassword" ; lRunFlag=1
+# show_t
+elif [ "$lKey" = "show_t" ] ; then 
+GSQLite_show_tables ; lRunFlag=1
+# schema
+elif [ "$lKey" = "schema" ] ; then 
+GSQLite_schema ; lRunFlag=1
 # clone_t
 elif [ "$lKey" = "clone_t" ] ; then 
 lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_clone_table "$lTableIn" "$lTableOut" "$lColumn" ; lRunFlag=1
+GSQLite_clone_table "$lTableIn" "$lTableOut" "$lColumn" ; lRunFlag=1
 # rename_t
 elif [ "$lKey" = "rename_t" ] ; then 
 lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_rename_table "$lTableIn" "$lTableOut" ; lRunFlag=1
+GSQLite_rename_table "$lTableIn" "$lTableOut" ; lRunFlag=1
 # drop_t
 elif [ "$lKey" = "drop_t" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_drop_table "$lTable" ; lRunFlag=1
+GSQLite_drop_table "$lTable" ; lRunFlag=1
 # add_c 
 elif [ "$lKey" = "add_c" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_add_column "$lTable" "$lColumn" ; lRunFlag=1
+GSQLite_add_column "$lTable" "$lColumn" ; lRunFlag=1
 # drop_c
 elif [ "$lKey" = "drop_c" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_drop_column "$lTable" "$lColumn" ; lRunFlag=1
+GSQLite_drop_column "$lTable" "$lColumn" ; lRunFlag=1
 # remove_c
 elif [ "$lKey" = "remove_c" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_remove_column "$lTable" "$lColumn" ; lRunFlag=1
+GSQLite_remove_column "$lTable" "$lColumn" ; lRunFlag=1
 # alter_c
 elif [ "$lKey" = "alter_c" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_alter_column "$lTable" "$lColumn" ; lRunFlag=1
+GSQLite_alter_column "$lTable" "$lColumn" ; lRunFlag=1
 # modify_c
 elif [ "$lKey" = "modify_c" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_modify_column "$lTable" "$lColumn" ; lRunFlag=1
+GSQLite_modify_column "$lTable" "$lColumn" ; lRunFlag=1
 # list_c
 elif [ "$lKey" = "list_c" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lRemove=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_list_column "$lTable" "$lRemove" ; lRunFlag=1
-# schema
-elif [ "$lKey" = "schema" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_schema "$lTable" ; lRunFlag=1
+GSQLite_list_column "$lTable" "$lRemove" ; lRunFlag=1
 # set_r
 elif [ "$lKey" = "set_r" ] ; then 
 lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_set_root "$lPath" ; lRunFlag=1
+GSQLite_set_root "$lPath" ; lRunFlag=1
 # set_n
 elif [ "$lKey" = "set_n" ] ; then 
 lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_set_name "$lName" ; lRunFlag=1
+GSQLite_set_name "$lName" ; lRunFlag=1
 # set_p
 elif [ "$lKey" = "set_p" ] ; then 
 lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQlite_set_path "$lPath" ; lRunFlag=1
+GSQLite_set_path "$lPath" ; lRunFlag=1
 # get_p
 elif [ "$lKey" = "get_p" ] ; then 
-GSQlite_get_path ; lRunFlag=1
+GSQLite_get_path ; lRunFlag=1
 #
 fi
 done
-if [ "$lRunFlag" = "0" ] ; then GSQlite_help ; fi
+if [ "$lRunFlag" = "0" ] ; then GSQLite_help ; fi
 }
 #================================================
-GSQlite_query() {
+GSQLite_query() {
 local lQuery=$1
-cd $GDATABASE_ROOT
-sqlite3 $GDATABASE_NAME << _EOF_
+sqlite3 $GDATABASE_PATH << _EOF_
 $lQuery
 .exit
 _EOF_
-cd $GPWD
 }
 #================================================
-GSQlite_clone_table() {
+GSQLite_users_create() {
+GSQLite_query "
+create table users(
+id integer primary key autoincrement not null,
+email text,
+password text);"
+}
+#================================================
+GSQLite_users_drop() {
+GSQLite_query "drop table users;"
+}
+#================================================
+GSQLite_users_insert() {
+local lRow=$1
+lEmail=$(gz_string split "$lRow" "|" 1)
+lPassword=$(gz_string split "$lRow" "|" 2)
+lPassword=$(gz_md5 h "$lEmail|$lPassword")
+lExist=$(GSQLite_users_email_exist "$lEmail")
+if [ "$lExist" = "1" ] ; then gz_color s "cet email existe deja" yellow fg ; return ; fi
+GSQLite_query "insert into users
+(email,password) 
+values ('$lEmail','$lPassword');"
+}
+#================================================
+GSQLite_users_delete() {
+local lId=$1
+if [ "$lId" = "" ] ; then gz_color s "id ?" yellow fg ; return ; fi
+GSQLite_query "delete from users where id = $lId;"
+}
+#================================================
+GSQLite_users_update() {
+local lId=$1
+local lPassword=$2
+if [ "$lId" = "" ] ; then gz_color s "id ?" yellow fg ; return ; fi
+if [ "$lPassword" = "" ] ; then gz_color s "password ?" yellow fg ; return ; fi
+lEmail=$(GSQLite_query "select * from users where id = $lId;" | awk -F "|" '{print $2 ; exit}')
+lPassword=$(gz_md5 h "$lEmail|$lPassword")
+GSQLite_query "update users 
+set password = '$lPassword'
+where id = $lId;"
+}
+#================================================
+GSQLite_users_select() {
+GSQLite_query "select * from users;"
+}
+#================================================
+GSQLite_users_select_id() {
+local lId=$1
+if [ "$lId" = "" ] ; then gz_color s "id ?" yellow fg ; return ; fi
+lWhere="where id = $lId"
+GSQLite_query "select * from users $lWhere;"
+}
+#================================================
+GSQLite_users_email_exist() {
+local lEmail=$1
+lResult=$(GSQLite_query "select exists(select 1 from users where email='$lEmail' limit 1);")
+lExist=0
+if [[ "$lResult" = *"1"* ]] ; then lExist=1 ; fi
+echo "$lExist"
+}
+#================================================
+GSQLite_show_tables() {
+GSQLite_query ".tables"
+}
+#================================================
+GSQLite_schema() {
+GSQLite_query ".schema"
+}
+#================================================
+GSQLite_clone_table() {
 local lTableIn=$1
 local lTableOut=$2
 local lColumn=$3
 lQuery="create table $lTableOut AS select $lColumn from $lTableIn;"
-GSQlite_query "$lQuery"
+GSQLite_query "$lQuery"
 }
 #================================================
-GSQlite_rename_table() {
+GSQLite_rename_table() {
 local lTableIn=$1
 local lTableOut=$2
 lQuery="alter table $lTableIn rename to $lTableOut;"
-GSQlite_query "$lQuery"
+GSQLite_query "$lQuery"
 }
 #================================================
-GSQlite_drop_table() {
+GSQLite_drop_table() {
 local lTable=$1
 lQuery="drop table $lTable;"
-GSQlite_query "$lQuery"
+GSQLite_query "$lQuery"
 }
 #================================================
-GSQlite_add_column() {
+GSQLite_add_column() {
 local lTable=$1
 local lColumn=$2
 lQuery="alter table $lTable add $lColumn;"
-GSQlite_query "$lQuery"
+GSQLite_query "$lQuery"
 }
 #================================================
-GSQlite_drop_column() {
+GSQLite_drop_column() {
 local lTable=$1
 local lColumn=$2
 lQuery="alter table $lTable drop column $lColumn;"
-GSQlite_query "$lQuery"
+GSQLite_query "$lQuery"
 }
 #================================================
-GSQlite_remove_column() {
+GSQLite_remove_column() {
 local lTable=$1
 local lColumn=$2
 lTableNew="${lTable}_new_clone"
-lColumnNew=$(GSQlite_list_column "$lTable" "$lColumn")
-GSQlite_clone_table "$lTable" "$lTableNew" "$lColumnNew"
-GSQlite_drop_table "$lTable"
-GSQlite_rename_table "$lTableNew" "$lTable"
+lColumnNew=$(GSQLite_list_column "$lTable" "$lColumn")
+GSQLite_clone_table "$lTable" "$lTableNew" "$lColumnNew"
+GSQLite_drop_table "$lTable"
+GSQLite_rename_table "$lTableNew" "$lTable"
 }
 #================================================
-GSQlite_alter_column() {
+GSQLite_alter_column() {
 local lTable=$1
 local lColumn=$2
 lQuery="alter table $lTable alter column $lColumn;"
-GSQlite_query "$lQuery"
+GSQLite_query "$lQuery"
 }
 #================================================
-GSQlite_modify_column() {
+GSQLite_modify_column() {
 local lTable=$1
 local lColumn=$2
 lQuery="alter table $lTable modify column $lColumn;"
-GSQlite_query "$lQuery"
+GSQLite_query "$lQuery"
 }
 #================================================
-GSQlite_list_column() {
+GSQLite_list_column() {
 local lTable=$1
 local lRemove=$2
 lQuery="pragma table_info($lTable);"
-GSQlite_query "$lQuery" | awk -F "|" -v lRemove="$lRemove" '
+GSQLite_query "$lQuery" | awk -F "|" -v lRemove="$lRemove" '
 BEGIN {lFlag = 0}
 {if($2 == lRemove) {next}
 if(lFlag == 1) {printf(", ")}
@@ -211,31 +302,25 @@ lFlag = 1
 printf("%s", $2)}'
 }
 #================================================
-GSQlite_schema() {
-local lTable=$1
-lQuery=".schema $lTable"
-GSQlite_query "$lQuery"
-}
-#================================================
-GSQlite_set_root() {
+GSQLite_set_root() {
 export GDATABASE_ROOT=$1
 }
 #================================================
-GSQlite_set_name() {
+GSQLite_set_name() {
 export GDATABASE_NAME=$1
 }
 #================================================
-GSQlite_set_path() {
+GSQLite_set_path() {
 local lPath=$1
 lRoot=$(gz_string dirname "$lPath")
 lName=$(gz_string filename "$lPath")
-GSQlite_set_root "$lRoot"
-GSQlite_set_name "$lName"
+GSQLite_set_root "$lRoot"
+GSQLite_set_name "$lName"
 }
 #================================================
-GSQlite_get_path() {
+GSQLite_get_path() {
 echo $GDATABASE_PATH
 }
 #================================================
-GSQlite_main "$@"
+GSQLite_main "$@"
 #================================================

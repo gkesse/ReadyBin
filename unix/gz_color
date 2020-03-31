@@ -94,8 +94,8 @@ printf "\t%s\n" "Operations sur les chaines de caracteres."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
-printf "$GPROCESS" "set <string_in>" "colorier chaine"
-printf "$GPROCESS" "get <color_in> <key_in>" "lire couleur"
+printf "$GPROCESS" "s <string_in>" "colorier chaine"
+printf "$GPROCESS" "g <color_in> <key_in>" "lire couleur"
 printf "\n"
 }
 #================================================
@@ -106,14 +106,14 @@ lRunFlag=0
 while [ 1 ] ; do
 if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-# set
-if [ "$lKey" = "set" ] ; then 
+# s
+if [ "$lKey" = "s" ] ; then 
 lString=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GColor_set "$lString" "$lName" "$lKey" ; lRunFlag=1
-# get
-elif [ "$lKey" = "get" ] ; then 
+# g
+elif [ "$lKey" = "g" ] ; then 
 lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GColor_get "$lName" "$lKey" ; lRunFlag=1
