@@ -40,6 +40,29 @@ GBin_git_status ; lRunFlag=1
 # git_a
 elif [ "$lKey" = "git_a" ] ; then 
 GBin_git_add_all ; lRunFlag=1
+# git_c
+elif [ "$lKey" = "git_c" ] ; then 
+GBin_git_commit ; lRunFlag=1
+# git_p
+elif [ "$lKey" = "git_p" ] ; then 
+GBin_git_push ; lRunFlag=1
+# git_pa
+elif [ "$lKey" = "git_pa" ] ; then 
+GBin_git_push_all ; lRunFlag=1
+# git_pu
+elif [ "$lKey" = "git_pu" ] ; then 
+GBin_git_pull ; lRunFlag=1
+# git_sn
+elif [ "$lKey" = "git_sn" ] ; then 
+lUsername=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GBin_git_set_user_name "$lUsername" ; lRunFlag=1
+# git_se
+elif [ "$lKey" = "git_se" ] ; then 
+lEmail=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GBin_git_set_user_email "$lEmail" ; lRunFlag=1
+# git_ls
+elif [ "$lKey" = "git_ls" ] ; then 
+GBin_git_config_list ; lRunFlag=1
 #
 fi
 done
@@ -55,6 +78,52 @@ cd $GPWD
 GBin_git_add_all() {
 cd $GBIN_PATH
 git add --all
+cd $GPWD
+}
+#================================================
+GBin_git_commit() {
+cd $GBIN_PATH
+git commit -m "Initial Commit"
+cd $GPWD
+}
+#================================================
+GBin_git_push() {
+cd $GBIN_PATH
+git push -u origin master
+cd $GPWD
+}
+#================================================
+GBin_git_push_all() {
+cd $GBIN_PATH
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+cd $GPWD
+}
+#================================================
+GBin_git_pull() {
+cd $GBIN_PATH
+git pull
+cd $GPWD
+}
+#================================================
+GBin_git_set_user_name() {
+local lUsername=$1
+cd $GBIN_PATH
+git config --global user.name "$lUsername"
+cd $GPWD
+}
+#================================================
+GBin_git_set_user_email() {
+local lEmail=$1
+cd $GBIN_PATH
+git config --global user.email "$lEmail"
+cd $GPWD
+}
+#================================================
+GBin_git_config_list() {
+local lEmail=$1
+git config --list
 cd $GPWD
 }
 #================================================
