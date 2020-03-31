@@ -7,13 +7,28 @@ else GString_process "$@" ; fi
 }
 #================================================
 GString_help() {
-lScript=$(GString_filename "$0")
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
 printf "\n"
 printf "%s\n" "Description:"
 printf "\t%s\n" "Operations sur les chaines de caracteres."
 printf "\n"
 printf "%s\n" "Utilisation:"
-printf "\t%s : %s\n" "$lScript" "afficher l'aide"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "dirname <path_in>" "lire repertoire fichier"
+printf "$GPROCESS" "filename <path_in>" "lire nom fichier"
+printf "$GPROCESS" "basename <path_in>" "lire nom de base fichier"
+printf "$GPROCESS" "extension <path_in>" "lire extension fichier"
+printf "$GPROCESS" "trim <string_in>" "trim chaine"
+printf "$GPROCESS" "get_char <string_in> <pos_in>" "lire caractere chaine"
+printf "$GPROCESS" "split <string_in> <sep_in> <pos_in>" "split chaine"
+printf "$GPROCESS" "to_upper <string_in>" "majuscule chaine"
+printf "$GPROCESS" "to_lower <string_in>" "minuscule chaine"
+printf "$GPROCESS" "contain <string_in> <pattern_in>" "contenir chaine"
 printf "\n"
 }
 #================================================
