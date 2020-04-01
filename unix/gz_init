@@ -1,0 +1,3 @@
+#!/bin/bash
+GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix
+chmod -R 777 $GPATH

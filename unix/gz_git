@@ -1,0 +1,39 @@
+#!/bin/bash
+#================================================
+GPROCESS=$1
+GPWD=$PWD
+#================================================
+GREADY_DEV=/home/pi/Programs/ReadyStudio/ReadyDev
+#================================================
+GProcess_main() {
+if [ "$GPROCESS" = "" ] ; then GProcess_help "$@"
+elif [ "$GPROCESS" = "test" ] ; then GProcess_test "$@"
+elif [ "$GPROCESS" = "push_dev" ] ; then GGit_push_dev "$@"
+elif [ "$GPROCESS" = "pull_dev" ] ; then GGit_pull_dev "$@"
+else GProcess_help "$@";fi
+}
+#================================================
+GProcess_help() {
+echo "$FUNCNAME"
+}
+#================================================
+GProcess_test() {
+echo "$FUNCNAME"
+}
+#================================================
+GGit_push_dev() {
+cd $GREADY_DEV
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+}
+#================================================
+GGit_pull_dev() {
+cd $GREADY_DEV
+git pull
+chmod -R 777 $GREADY_DEV
+}
+#================================================
+GProcess_main "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" 
+cd $GPWD
+#================================================

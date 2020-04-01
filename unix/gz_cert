@@ -1,0 +1,25 @@
+#!/bin/bash
+#================================================
+GPROCESS=$1
+#================================================
+GProcess_main() {
+if [ "$GPROCESS" = "" ] ; then GProcess_help "$@"
+elif [ "$GPROCESS" = "test" ] ; then GProcess_test "$@"
+elif [ "$GPROCESS" = "list" ] ; then GProcess_list "$@"
+else GProcess_help "$@";fi
+}
+#================================================
+GProcess_help() {
+echo "$FUNCNAME"
+}
+#================================================
+GProcess_test() {
+echo "$FUNCNAME"
+}
+#================================================
+GProcess_list() {
+certbot certificates
+}
+#================================================
+GProcess_main "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" 
+#================================================
