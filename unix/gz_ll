@@ -1,6 +1,6 @@
 #!/bin/bash
 #================================================
-GPATH=/cygdrive/c/Users/Admin/Downloads/Programs/ReadyBin/unix
+GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix/
 #================================================
 ls -l $GPATH
 #================================================

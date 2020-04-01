@@ -32,6 +32,9 @@ printf "$GPROCESS" "git_pa" "ajouter commiter valider modifications git"
 printf "$GPROCESS" "git_sn" "initialiser nom utilisateur git"
 printf "$GPROCESS" "git_se" "initialiser email utilisateur git"
 printf "$GPROCESS" "git_ls" "lister config git"
+printf "$GPROCESS" "set_p" "initialiser chemin"
+printf "$GPROCESS" "get_p" "lire chemin"
+printf "$GPROCESS" "chmod" "autoriser permission fichiers"
 printf "\n"
 }
 #================================================
@@ -71,6 +74,16 @@ GBin_git_set_user_email "$lEmail" ; lRunFlag=1
 # git_ls
 elif [ "$lKey" = "git_ls" ] ; then 
 GBin_git_config_list ; lRunFlag=1
+# set_p
+elif [ "$lKey" = "set_p" ] ; then 
+lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GBin_set_path "$lPath" ; lRunFlag=1
+# get_p
+elif [ "$lKey" = "get_p" ] ; then 
+GBin_get_path ; lRunFlag=1
+# chmod
+elif [ "$lKey" = "chmod" ] ; then 
+GBin_chmod ; lRunFlag=1
 #
 fi
 done
@@ -133,6 +146,18 @@ GBin_git_config_list() {
 local lEmail=$1
 git config --list
 cd $GPWD
+}
+#================================================
+GBin_set_path() {
+export GBIN_PATH=$1
+}
+#================================================
+GBin_get_path() {
+echo $GBIN_PATH
+}
+#================================================
+GBin_chmod() {
+chmod -R 777 $GBIN_PATH
 }
 #================================================
 GBin_main "$@"

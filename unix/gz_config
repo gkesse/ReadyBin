@@ -1,0 +1,94 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+GCONFIG_ROOT=/home/pi/Programs/ReadyStudio/ReadyBin/unix
+GCONFIG_NAME=.config
+GCONFIG_PATH=$GCONFIG_ROOT/$GCONFIG_NAME
+#================================================
+export AWKPATH="$GCONFIG_ROOT/awk"
+#================================================
+GConfig_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GConfig_help "$@"
+else GConfig_process "$@" ; fi
+}
+#================================================
+GConfig_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les configurations."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "init_c" "initialiser config"
+printf "$GPROCESS" "init_p" "initialiser chemin"
+printf "$GPROCESS" "get_p" "lire chemin"
+printf "\n"
+}
+#================================================
+GConfig_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# init_c
+if [ "$lKey" = "init_c" ] ; then 
+GConfig_init_config ; lRunFlag=1
+# init_p
+elif [ "$lKey" = "init_p" ] ; then 
+GConfig_init_path ; lRunFlag=1
+# get_p
+elif [ "$lKey" = "get_p" ] ; then 
+GConfig_get_path ; lRunFlag=1
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GConfig_help ; fi 
+}
+#================================================
+GConfig_init_config() {
+if ! [ -f "$GCONFIG_PATH" ] ; then
+mkdir -p $GCONFIG_ROOT
+> $GCONFIG_PATH
+fi
+}
+#================================================
+GConfig_init_path() {
+GConfig_check_path
+return
+echo "GPATH=$GCONFIG_ROOT" >> $GCONFIG_PATH
+}
+#================================================
+GConfig_check_path() {
+GConfig_init_config
+awk -F "=" -i gk_string '
+{lLine = $0
+if(lLine == "") next
+lLine = gk_string("trim", $lLine)
+if(lLine == "") next
+printf("%s\n", lLine)
+}' $GCONFIG_PATH
+return
+while IFS= read -r lLine ; do
+if [ "$lLine" = "" ] ; then continue ; fi
+lLine=$(gz_string trim "$lLine")
+if [ "$lLine" = "" ] ; then continue ; fi
+echo $lLine
+done < $GCONFIG_PATH
+}
+#================================================
+GConfig_get_path() {
+echo $GCONFIG_PATH
+}
+#================================================
+GConfig_main "$@"
+#================================================

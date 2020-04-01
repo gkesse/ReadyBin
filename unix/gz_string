@@ -58,7 +58,7 @@ GString_extension "$lFullPath" ; lRunFlag=1
 # trim
 elif [ "$lKey" = "trim" ] ; then 
 lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
-GString_extension "$lString" ; lRunFlag=1
+GString_trim "$lString" ; lRunFlag=1
 # split
 elif [ "$lKey" = "split" ] ; then 
 lString=${!lArgCount} ; lArgCount=$(GString_math "$lArgCount + 1")
