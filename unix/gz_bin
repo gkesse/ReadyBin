@@ -2,7 +2,7 @@
 #================================================
 GPWD=$PWD
 #================================================
-GBIN_PATH="C:\Users\Admin\Downloads\Programs\ReadyBin";GBIN_PATH=$(gz_cygwin c "$GBIN_PATH")
+GBIN_PATH=/home/pi/Programs/ReadyStudio/ReadyBin
 #================================================
 GBin_main() {
 lArgSize="$#"
