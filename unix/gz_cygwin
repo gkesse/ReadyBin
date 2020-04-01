@@ -1,0 +1,54 @@
+#!/bin/bash
+#================================================
+GCygwin_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GCygwin_help "$@"
+else GCygwin_process "$@" ; fi
+}
+#================================================
+GCygwin_help() {
+lScript=$(gz_string filename "$0")
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les chaines de caracteres."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "\t%s : %s\n" "$lScript" "afficher l'aide"
+printf "\n"
+}
+#================================================
+GCygwin_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# w
+if [ "$lKey" = "w" ] ; then 
+lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GCygwin_to_windows "$lPath" ; lRunFlag=1
+# c
+elif [ "$lKey" = "c" ] ; then 
+lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GCygwin_to_cygwin "$lPath" ; lRunFlag=1
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GCygwin_help ; fi
+}
+#================================================
+GCygwin_to_windows() {
+local lPath=$1
+lWindows=$(cygpath -w "$lPath");
+echo $lWindows
+}
+#================================================
+GCygwin_to_cygwin() {
+local lPath=$1
+lCygwin=$(cygpath -u "$lPath");
+echo $lCygwin
+}
+#================================================
+GCygwin_main "$@"
+#================================================

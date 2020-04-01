@@ -1,3 +1,0 @@
-#!/bin/bash
-GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix/
-cd $GPATH
