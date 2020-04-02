@@ -1,5 +1,7 @@
 #!/bin/bash
 #================================================
+GPWD=$PWD
+#================================================
 # Reset
 GCOLOR_OFF='\033[0m'             # Text Reset
 #================================================
@@ -73,8 +75,6 @@ GCOLOR_HB_PURPLE='\033[0;105m'   # Purple
 GCOLOR_HB_CYAN='\033[0;106m'     # Cyan
 GCOLOR_HB_WHITE='\033[0;107m'    # White
 #================================================
-GPWD=$PWD
-#================================================
 GColor_main() {
 lArgSize="$#"
 if [ "$lArgSize" = "0" ] ; then GColor_help "$@"
@@ -94,7 +94,7 @@ printf "\t%s\n" "Operations sur les couleurs."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
-printf "$GPROCESS" "s <string_in>" "colorier chaine"
+printf "$GPROCESS" "s <string_in> <color_in> <key_in>" "colorier chaine"
 printf "$GPROCESS" "g <color_in> <key_in>" "lire couleur"
 printf "\n"
 }

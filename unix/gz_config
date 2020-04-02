@@ -63,28 +63,30 @@ fi
 }
 #================================================
 GConfig_init_path() {
-GConfig_check_path
+GConfig_check_path gpath
 return
 echo "GPATH=$GCONFIG_ROOT" >> $GCONFIG_PATH
 }
 #================================================
 GConfig_check_path() {
+local lPath=$1
+if [ "$lPath" = "" ] ; then echo $(gz_color s "path ?" yellow fg) ; return ; fi 
 GConfig_init_config
-awk -F "=" -i gk_string '
+awk -F "=" -v lPath="$lPath" -i gk_string '
+BEGIN {print lPath}
 {lLine = $0
 if(lLine == "") next
 lLine = gk_string("trim", $lLine)
 if(lLine == "") next
-printf("%s\n", lLine)
+lFirstChar = gk_string("get_c", lLine, 0)
+if(lFirstChar == "#") next
+lCount = gk_string("split_c", lLine, "=")
+if(lCount < 2) next
+lKey = gk_string("split", lLine, "=", 1)
+lValue = gk_string("split", lLine, "=", 2)
+printf("%s:%s\n", lKey, lValue)
 }' $GCONFIG_PATH
-return
-while IFS= read -r lLine ; do
-if [ "$lLine" = "" ] ; then continue ; fi
-lLine=$(gz_string trim "$lLine")
-if [ "$lLine" = "" ] ; then continue ; fi
-echo $lLine
-done < $GCONFIG_PATH
-}
+ }
 #================================================
 GConfig_get_path() {
 echo $GCONFIG_PATH

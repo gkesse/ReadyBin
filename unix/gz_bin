@@ -3,6 +3,7 @@
 GPWD=$PWD
 #================================================
 GBIN_PATH=/home/pi/Programs/ReadyStudio/ReadyBin
+GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix
 #================================================
 GBin_main() {
 lArgSize="$#"
@@ -34,7 +35,8 @@ printf "$GPROCESS" "git_se" "initialiser email utilisateur git"
 printf "$GPROCESS" "git_ls" "lister config git"
 printf "$GPROCESS" "set_p" "initialiser chemin"
 printf "$GPROCESS" "get_p" "lire chemin"
-printf "$GPROCESS" "chmod" "autoriser permission fichiers"
+printf "$GPROCESS" "c" "autoriser permission fichiers"
+printf "$GPROCESS" "n <file_in>" "creer fichier nano"
 printf "\n"
 }
 #================================================
@@ -84,6 +86,15 @@ GBin_get_path ; lRunFlag=1
 # chmod
 elif [ "$lKey" = "chmod" ] ; then 
 GBin_chmod ; lRunFlag=1
+# copy
+elif [ "$lKey" = "copy" ] ; then 
+lFileIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lFileOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GBin_copy "$lFileIn" "$lFileOut" ; lRunFlag=1
+# nano
+elif [ "$lKey" = "nano" ] ; then 
+lFile=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GBin_nano_create_file "$lFile" ; lRunFlag=1
 #
 fi
 done
@@ -158,6 +169,20 @@ echo $GBIN_PATH
 #================================================
 GBin_chmod() {
 chmod -R 777 $GBIN_PATH
+}
+#================================================
+GBin_copy() {
+local lFileIn=$1
+local lFileOut=$2
+cd $GPATH
+cp -f $lFileIn $lFileOut
+cd $GPWD
+}
+#================================================
+GBin_nano_create_file() {
+local lFile=$1
+lPath=$GPATH/$lFile
+nano $lPath
 }
 #================================================
 GBin_main "$@"
