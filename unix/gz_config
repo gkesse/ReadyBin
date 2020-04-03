@@ -2,11 +2,12 @@
 #================================================
 GPWD=$PWD
 #================================================
-GCONFIG_ROOT=/home/pi/Programs/ReadyStudio/ReadyBin/unix
-GCONFIG_NAME=.config
-GCONFIG_PATH=$GCONFIG_ROOT/$GCONFIG_NAME
+GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix
 #================================================
-export AWKPATH="$GCONFIG_ROOT/awk"
+GCONFIG_NAME=.config
+GCONFIG_PATH=$GPATH/$GCONFIG_NAME
+#================================================
+export AWKPATH="$GPATH/awk"
 #================================================
 GConfig_main() {
 lArgSize="$#"
@@ -27,9 +28,11 @@ printf "\t%s\n" "Operations sur les configurations."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
-printf "$GPROCESS" "init_c" "initialiser config"
-printf "$GPROCESS" "init_p" "initialiser chemin"
-printf "$GPROCESS" "get_p" "lire chemin"
+printf "$GPROCESS" "init" "initialiser config"
+printf "$GPROCESS" "show" "afficher donnees"
+printf "$GPROCESS" "set" "ajouter donnee"
+printf "$GPROCESS" "get" "lire donnee"
+printf "$GPROCESS" "check" "verifier donnee"
 printf "\n"
 }
 #================================================
@@ -40,43 +43,59 @@ lRunFlag=0
 while [ 1 ] ; do
 if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-# init_c
-if [ "$lKey" = "init_c" ] ; then 
+# test
+if [ "$lKey" = "test" ] ; then 
+GConfig_test ; lRunFlag=1
+# init
+elif [ "$lKey" = "init" ] ; then 
 GConfig_init_config ; lRunFlag=1
-# init_p
-elif [ "$lKey" = "init_p" ] ; then 
-GConfig_init_path ; lRunFlag=1
-# get_p
-elif [ "$lKey" = "get_p" ] ; then 
-GConfig_get_path ; lRunFlag=1
+# show
+elif [ "$lKey" = "show" ] ; then 
+GConfig_show_data ; lRunFlag=1
+# check
+elif [ "$lKey" = "check" ] ; then 
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GConfig_check_data "$lKey" ; lRunFlag=1
+# set
+elif [ "$lKey" = "set_d" ] ; then 
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lValue=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GConfig_set_data "$lKey" "$lValue" ; lRunFlag=1
+# get
+elif [ "$lKey" = "get" ] ; then 
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GConfig_get_data "$lKey" ; lRunFlag=1
 #
 fi
 done
 if [ "$lRunFlag" = "0" ] ; then GConfig_help ; fi 
 }
 #================================================
-GConfig_init_config() {
+GConfig_test() {
+printf "get_data: [%s]\n" $(GConfig_get_data GPATH)
+printf "get_data: [%s]\n" $(GConfig_get_data GBIN_PATH)
+printf "set_data: []\n" ; GConfig_set_data "GBIN_PATH" "/home/pi/Programs/ReadyStudio/ReadyBin"
+}
+#================================================
+GConfig_init_path() {
 if ! [ -f "$GCONFIG_PATH" ] ; then
-mkdir -p $GCONFIG_ROOT
+mkdir -p $GPATH
 > $GCONFIG_PATH
 fi
 }
 #================================================
-GConfig_init_path() {
-GConfig_check_path gpath
-return
-echo "GPATH=$GCONFIG_ROOT" >> $GCONFIG_PATH
+GConfig_init_config() {
+GConfig_init_path
+echo "GPATH = $GPATH" > $GCONFIG_PATH
 }
 #================================================
-GConfig_check_path() {
-local lPath=$1
-if [ "$lPath" = "" ] ; then echo $(gz_color s "path ?" yellow fg) ; return ; fi 
-GConfig_init_config
-awk -F "=" -v lPath="$lPath" -i gk_string '
-BEGIN {print lPath}
-{lLine = $0
+GConfig_show_data() {
+GConfig_init_path
+awk -F "=" -i gk_string '
+BEGIN {}{
+lLine = $0
 if(lLine == "") next
-lLine = gk_string("trim", $lLine)
+lLine = gk_string("trim", lLine)
 if(lLine == "") next
 lFirstChar = gk_string("get_c", lLine, 0)
 if(lFirstChar == "#") next
@@ -84,12 +103,75 @@ lCount = gk_string("split_c", lLine, "=")
 if(lCount < 2) next
 lKey = gk_string("split", lLine, "=", 1)
 lValue = gk_string("split", lLine, "=", 2)
-printf("%s:%s\n", lKey, lValue)
-}' $GCONFIG_PATH
- }
+printf("%s=%s\n", lKey, lValue)
+} END {}' $GCONFIG_PATH
+}
 #================================================
-GConfig_get_path() {
-echo $GCONFIG_PATH
+GConfig_check_data() {
+GConfig_init_path
+local lKeyIn=$1
+if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "path ?" yellow fg) ; return ; fi 
+awk -F "=" -v lKeyIn="$lKeyIn" -i gk_string '
+BEGIN {lValid = 0}{
+lLine = $0
+if(lLine == "") next
+lLine = gk_string("trim", lLine)
+if(lLine == "") next
+lFirstChar = gk_string("get_c", lLine, 0)
+if(lFirstChar == "#") next
+lCount = gk_string("split_c", lLine, "=")
+if(lCount < 2) next
+lKey = gk_string("split", lLine, "=", 1)
+if(lKey == lKeyIn) {lValid = 1 ; exit}
+} END {print lValid}' $GCONFIG_PATH
+}
+#================================================
+GConfig_get_data() {
+local lKeyIn=$1
+if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "path ?" yellow fg) ; return ; fi 
+GConfig_init_path
+awk -F "=" -v lKeyIn="$lKeyIn" -i gk_string '
+BEGIN {lValue = ""}{
+lLine = $0
+if(lLine == "") next
+lLine = gk_string("trim", lLine)
+if(lLine == "") next
+lFirstChar = gk_string("get_c", lLine, 0)
+if(lFirstChar == "#") next
+lCount = gk_string("split_c", lLine, "=")
+if(lCount < 2) next
+lKey = gk_string("split", lLine, "=", 1)
+if(lKey == lKeyIn) {lValue = gk_string("split", lLine, "=", 2) ; exit}
+} END {print lValue}' $GCONFIG_PATH
+}
+#================================================
+GConfig_set_data() {
+local lKeyIn=$1
+local lValueIn=$2
+if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "key ?" yellow fg) ; return ; fi 
+if [ "$lValueIn" = "" ] ; then echo $(gz_color s "value ?" yellow fg) ; return ; fi 
+GConfig_init_path
+awk -F "=" -v lKeyIn="$lKeyIn" -v lValueIn="$lValueIn" -v lFile="$GCONFIG_PATH" -i gk_string '
+BEGIN {}{
+lLine = $0
+if(lLine == "") next
+lLine = gk_string("trim", lLine)
+if(lLine == "") next
+lFirstChar = gk_string("get_c", lLine, 0)
+if(lFirstChar == "#") next
+lCount = gk_string("split_c", lLine, "=")
+if(lCount < 2) next
+lKey = gk_string("split", lLine, "=", 1)
+lValue = gk_string("split", lLine, "=", 2)
+lDataMap[lKey] = lValue
+} END {
+lDataMap[lKeyIn] = lValueIn
+printf("") > lFile
+for(lKeyOut in lDataMap) {
+lValueOut = lDataMap[lKeyOut]
+printf("%s=%s\n", lKeyOut, lValueOut) >> lFile
+}
+}' $GCONFIG_PATH
 }
 #================================================
 GConfig_main "$@"

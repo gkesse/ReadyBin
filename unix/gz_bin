@@ -2,8 +2,11 @@
 #================================================
 GPWD=$PWD
 #================================================
-GBIN_PATH=/home/pi/Programs/ReadyStudio/ReadyBin
-GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix
+GBIN_PATH=$(gz_config get GBIN_PATH)
+GPATH=$(gz_config get GPATH)
+#================================================
+if [ "$GBIN_PATH" = "" ] || ! [ -d "$GBIN_PATH" ] ; then echo $(gz_color s "GBIN_PATH ?" yellow fg) ; exit ; fi 
+if [ "$GPATH" = "" ] || ! [ -d "$GPATH" ] ; then echo $(gz_color s "GPATH ?" yellow fg) ; exit ; fi 
 #================================================
 GBin_main() {
 lArgSize="$#"
