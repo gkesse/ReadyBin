@@ -2,8 +2,10 @@
 #================================================
 GPWD=$PWD
 #================================================
-GBIN_PATH=/home/pi/Programs/ReadyStudio/ReadyBin
-GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix
+GPATH=$(gz_config get GPATH)
+#================================================
+if [ "$GPATH" = "" ] || ! [ -d "$GPATH" ] ; then echo $(gz_color s "GPATH ?" yellow fg) ; exit ; fi 
+#================================================
 #================================================
 export AWKPATH="$GPATH/awk"
 #================================================
@@ -27,6 +29,7 @@ printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "t <module_in>" "tester module"
+printf "$GPROCESS" "r <module_in> <func_in>" "executer fonction module"
 printf "\n"
 }
 #================================================
@@ -41,6 +44,11 @@ lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 if [ "$lKey" = "t" ] ; then 
 lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GAwk_module_test "$lModule" ; lRunFlag=1
+# r
+elif [ "$lKey" = "r" ] ; then 
+lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lFunc=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GAwk_module_run "$lModule" "$lFunc" ; lRunFlag=1
 #
 fi
 done
@@ -49,7 +57,13 @@ if [ "$lRunFlag" = "0" ] ; then GAwk_help ; fi
 #================================================
 GAwk_module_test() {
 local lModule=$1
-awk -i $lModule -v gk_func="$lModule" 'BEGIN {@gk_func("test")}'
+awk -i $lModule -v lModule="$lModule" 'BEGIN {@lModule("test")}'
+}
+#================================================
+GAwk_module_run() {
+local lModule=$1
+local lFunc=$2
+awk -i $lModule -v lModule="$lModule" -v lFunc="$lFunc" 'BEGIN {@lModule(lFunc)}'
 }
 #================================================
 GAwk_main "$@"
