@@ -2,7 +2,9 @@
 #================================================
 GPWD=$PWD
 #================================================
-GDEV_PATH="C:\Users\Admin\Downloads\Programs\ReadyDev";GDEV_PATH=$(gz_cygwin c "$GDEV_PATH")
+GDEV_PATH=$(gz_config get GDEV_PATH)
+#================================================
+lCheckIn="GDEV_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 GDev_main() {
 lArgSize="$#"

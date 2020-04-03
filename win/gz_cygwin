@@ -1,5 +1,11 @@
 #!/bin/bash
 #================================================
+GPWD=$PWD
+#================================================
+GCYGWIN_SETUP=$(gz_config get GCYGWIN_SETUP)
+#================================================
+lCheckIn="GCYGWIN_SETUP" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
 GCygwin_main() {
 lArgSize="$#"
 if [ "$lArgSize" = "0" ] ; then GCygwin_help "$@"
@@ -21,6 +27,8 @@ printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "c <path_in>" "convertir chemin vers cygwin"
 printf "$GPROCESS" "w <path_in>" "convertir chemin vers WINDOWS"
+printf "$GPROCESS" "u" "mettre a jour cygwin"
+printf "$GPROCESS" "s" "ouvrir manager"
 printf "\n"
 }
 #================================================
@@ -39,6 +47,12 @@ GCygwin_to_windows "$lPath" ; lRunFlag=1
 elif [ "$lKey" = "c" ] ; then 
 lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GCygwin_to_cygwin "$lPath" ; lRunFlag=1
+# u
+elif [ "$lKey" = "u" ] ; then 
+GCygwin_update ; lRunFlag=1
+# s
+elif [ "$lKey" = "s" ] ; then 
+GCygwin_setup ; lRunFlag=1
 #
 fi
 done
@@ -55,6 +69,14 @@ GCygwin_to_cygwin() {
 local lPath=$1
 lCygwin=$(cygpath -u "$lPath");
 echo $lCygwin
+}
+#================================================
+GCygwin_update() {
+cyg-get update
+}
+#================================================
+GCygwin_setup() {
+$GCYGWIN_SETUP --no-admin
 }
 #================================================
 GCygwin_main "$@"

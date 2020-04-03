@@ -2,7 +2,7 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH="C:\Users\Admin\Downloads\Programs\ReadyBin\win" ; GPATH=$(gz_cygwin c "$GPATH")
+GPATH="C:\Users\Admin\Downloads\Programs\ReadyBin\win" ; GPATH=$(cygpath -u "$GPATH")
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
@@ -156,7 +156,7 @@ if(lKey == lKeyIn) {lValue = gk_string("split", lLine, "=", 2) ; exit}
 GConfig_set_path() {
 local lKeyIn=$1
 local lValueIn=$2
-lValueIn=$(gz_cygwin c "$lValueIn")
+lValueIn=$(cygpath -u "$lValueIn")
 if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "key ?" yellow fg) ; return ; fi 
 if [ "$lValueIn" = "" ] ; then echo $(gz_color s "value ?" yellow fg) ; return ; fi 
 GConfig_init_path
