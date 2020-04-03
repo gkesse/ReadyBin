@@ -8,12 +8,19 @@ else GCygwin_process "$@" ; fi
 #================================================
 GCygwin_help() {
 lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
 printf "\n"
 printf "%s\n" "Description:"
-printf "\t%s\n" "Operations sur les chaines de caracteres."
+printf "\t%s\n" "Operations sur les commandes cygwin."
 printf "\n"
 printf "%s\n" "Utilisation:"
-printf "\t%s : %s\n" "$lScript" "afficher l'aide"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "c <path_in>" "convertir chemin vers cygwin"
+printf "$GPROCESS" "w <path_in>" "convertir chemin vers WINDOWS"
 printf "\n"
 }
 #================================================
