@@ -2,15 +2,12 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH=$(gz_pwd)
-GTMP_PATH=$GPATH/tmp ; if ! [ -d "$GTMP_PATH" ] ; then mkdir $GTMP_PATH ; fi
-GTMP_FILE_N1=$GTMP_PATH/tmp_file_n1.txt
+GSQLITE_DB_PATH=$(gz_config get GSQLITE_DB_PATH)
 #================================================
-if ! [[ -z "$GDATABASE_ROOT" ]] ; then
-export GDATABASE_ROOT=/cygdrive/c/Users/Admin/Downloads/Programs/ReadyShop/data/sqlite
-fi
-GDATABASE_NAME=readyshop.dat
-GDATABASE_PATH=$GDATABASE_ROOT/$GDATABASE_NAME
+lCheckIn="GSQLITE_DB_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+GSQLITE_DB_ROOT=$(gz_string dirname "$GSQLITE_DB_PATH")
+GSQLITE_DB_NAME=$(gz_string filename "$GSQLITE_DB_PATH")
 #================================================
 GSQLite_main() {
 lArgSize="$#"
@@ -180,8 +177,8 @@ if [ "$lRunFlag" = "0" ] ; then GSQLite_help ; fi
 #================================================
 GSQLite_query() {
 local lQuery=$1
-cd $GDATABASE_ROOT
-sqlite3 $GDATABASE_NAME << _EOF_
+cd $GSQLITE_DB_ROOT
+sqlite3 $GSQLITE_DB_NAME << _EOF_
 $lQuery
 .exit
 _EOF_
@@ -405,11 +402,11 @@ printf("%s", $2)}'
 #================================================
 GSQLite_set_root() {
 local lPath=$1 ; lPath=$(gz_cygwin c "$lPath")
-export GDATABASE_ROOT=$lPath
+export GSQLITE_DB_ROOT=$lPath
 }
 #================================================
 GSQLite_set_name() {
-export GDATABASE_NAME=$1
+export GSQLITE_DB_NAME=$1
 }
 #================================================
 GSQLite_set_path() {
@@ -421,7 +418,7 @@ GSQLite_set_name "$lName"
 }
 #================================================
 GSQLite_get_path() {
-echo $GDATABASE_PATH
+echo $GSQLITE_DB_PATH
 }
 #================================================
 GSQLite_main "$@"

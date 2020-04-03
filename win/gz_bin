@@ -44,6 +44,7 @@ printf "$GPROCESS" "cd" "se deplacer dans dossier"
 printf "$GPROCESS" "rm <file_in>" "se deplacer dans dossier"
 printf "$GPROCESS" "ll" "lister fichiers"
 printf "$GPROCESS" "pwd" "afficher chemin"
+printf "$GPROCESS" "du <file_in>" "convertir format UNIX"
 printf "$GPROCESS" "nano <file_in>" "creer fichier nano"
 printf "\n"
 }
@@ -112,6 +113,10 @@ GBin_ll ; lRunFlag=1
 # pwd
 elif [ "$lKey" = "pwd" ] ; then 
 GBin_pwd ; lRunFlag=1
+# du
+elif [ "$lKey" = "du" ] ; then 
+lFile=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GBin_dos2unix "$lFile" ; lRunFlag=1
 # nano
 elif [ "$lKey" = "nano" ] ; then 
 lFile=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
@@ -217,6 +222,12 @@ ls -l $GPATH
 #================================================
 GBin_pwd() {
 echo $GPATH
+}
+#================================================
+GBin_dos2unix() {
+local lFile=$1
+if [ "$lFile" = "" ] ; then echo $(gz_color s "file ?" yellow fg) ; return ; fi 
+dos2unix $GPATH/$lFile
 }
 #================================================
 GBin_nano_create_file() {
