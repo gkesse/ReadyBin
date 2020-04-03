@@ -4,7 +4,7 @@ GPWD=$PWD
 #================================================
 GCYGWIN_SETUP=$(gz_config get GCYGWIN_SETUP)
 #================================================
-lCheckIn="GCYGWIN_SETUP" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCYGWIN_SETUP" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 GCygwin_main() {
 lArgSize="$#"
@@ -26,9 +26,12 @@ printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "c <path_in>" "convertir chemin vers cygwin"
+printf "$GPROCESS" "cg" "installer cyg-get"
 printf "$GPROCESS" "w <path_in>" "convertir chemin vers WINDOWS"
-printf "$GPROCESS" "u" "mettre a jour cygwin"
 printf "$GPROCESS" "s" "ouvrir manager"
+printf "$GPROCESS" "i" "installer package"
+printf "$GPROCESS" "r" "supprimer package"
+printf "$GPROCESS" "u" "mettre a jour cygwin"
 printf "\n"
 }
 #================================================
@@ -47,12 +50,23 @@ GCygwin_to_windows "$lPath" ; lRunFlag=1
 elif [ "$lKey" = "c" ] ; then 
 lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GCygwin_to_cygwin "$lPath" ; lRunFlag=1
-# u
-elif [ "$lKey" = "u" ] ; then 
-GCygwin_update ; lRunFlag=1
+# cg
+elif [ "$lKey" = "cg" ] ; then 
+GCygwin_cyg_get ; lRunFlag=1
 # s
 elif [ "$lKey" = "s" ] ; then 
 GCygwin_setup ; lRunFlag=1
+# i
+elif [ "$lKey" = "i" ] ; then 
+lPackage=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GCygwin_install "$lPackage" ; lRunFlag=1
+# r
+elif [ "$lKey" = "r" ] ; then 
+lPackage=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GCygwin_remove "$lPackage" ; lRunFlag=1
+# u
+elif [ "$lKey" = "u" ] ; then 
+GCygwin_update ; lRunFlag=1
 #
 fi
 done
@@ -71,12 +85,29 @@ lCygwin=$(cygpath -u "$lPath");
 echo $lCygwin
 }
 #================================================
-GCygwin_update() {
-cyg-get update
-}
-#================================================
 GCygwin_setup() {
 $GCYGWIN_SETUP --no-admin
+}
+#================================================
+GCygwin_install() {
+local lPackage=$1
+if [ "$lPackage" = "" ] ; then echo $(gz_color s "package ?" yellow fg) ; return ; fi 
+$GCYGWIN_SETUP --no-admin -q -P "$lPackage"
+}
+#================================================
+GCygwin_remove() {
+local lPackage=$1
+if [ "$lPackage" = "" ] ; then echo $(gz_color s "package ?" yellow fg) ; return ; fi 
+$GCYGWIN_SETUP --no-admin -q -x "$lPackage"
+}
+#================================================
+GCygwin_update() {
+$GCYGWIN_SETUP --no-admin -q -g
+}
+#================================================
+GCygwin_cyg_get() {
+lUrl="https://gitlab.com/cogline.v3/cygwin/raw/master/cyg-get?inline=false"
+wget -O /usr/bin/cyg-get $lUrl
 }
 #================================================
 GCygwin_main "$@"

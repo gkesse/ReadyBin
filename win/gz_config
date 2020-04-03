@@ -32,10 +32,11 @@ printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "init" "initialiser config"
 printf "$GPROCESS" "show" "afficher donnees"
+printf "$GPROCESS" "check <key_in>" "verifier donnee"
 printf "$GPROCESS" "set <key_in> <value_in>" "ajouter chemin"
 printf "$GPROCESS" "set_d <key_in> <value_in>" "ajouter donnee"
 printf "$GPROCESS" "get <key_in>" "lire donnee"
-printf "$GPROCESS" "check <key_in>" "verifier donnee"
+printf "$GPROCESS" "rm <key_in>" "supprimer donnee"
 printf "\n"
 }
 #================================================
@@ -73,6 +74,10 @@ GConfig_set_data "$lKey" "$lValue" ; lRunFlag=1
 elif [ "$lKey" = "get" ] ; then 
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GConfig_get_data "$lKey" ; lRunFlag=1
+# rm
+elif [ "$lKey" = "rm" ] ; then 
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GConfig_remove_data "$lKey" ; lRunFlag=1
 #
 fi
 done
@@ -204,6 +209,33 @@ lValue = gk_string("split", lLine, "=", 2)
 lDataMap[lKey] = lValue
 } END {
 lDataMap[lKeyIn] = lValueIn
+printf("") > lFile
+for(lKeyOut in lDataMap) {
+lValueOut = lDataMap[lKeyOut]
+printf("%s=%s\n", lKeyOut, lValueOut) >> lFile
+}
+}' $GCONFIG_PATH
+}
+#================================================
+GConfig_remove_data() {
+local lKeyIn=$1
+if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "key ?" yellow fg) ; return ; fi 
+GConfig_init_path
+awk -F "=" -v lKeyIn="$lKeyIn" -v lValueIn="$lValueIn" -v lFile="$GCONFIG_PATH" -i gk_string '
+BEGIN {}{
+lLine = $0
+if(lLine == "") next
+lLine = gk_string("trim", lLine)
+if(lLine == "") next
+lFirstChar = gk_string("get_c", lLine, 0)
+if(lFirstChar == "#") next
+lCount = gk_string("split_c", lLine, "=")
+if(lCount < 2) next
+lKey = gk_string("split", lLine, "=", 1)
+lValue = gk_string("split", lLine, "=", 2)
+lDataMap[lKey] = lValue
+} END {
+delete lDataMap[lKeyIn]
 printf("") > lFile
 for(lKeyOut in lDataMap) {
 lValueOut = lDataMap[lKeyOut]
