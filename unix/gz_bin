@@ -43,6 +43,7 @@ printf "$GPROCESS" "cp <file_in> <file_out>" "copier fichier"
 printf "$GPROCESS" "cd" "se deplacer dans dossier"
 printf "$GPROCESS" "rm <file_in>" "se deplacer dans dossier"
 printf "$GPROCESS" "ll" "lister fichiers"
+printf "$GPROCESS" "pwd" "afficher chemin"
 printf "$GPROCESS" "nano <file_in>" "creer fichier nano"
 printf "\n"
 }
@@ -108,6 +109,9 @@ GBin_rm "$lFile" ; lRunFlag=1
 # ll
 elif [ "$lKey" = "ll" ] ; then 
 GBin_ll ; lRunFlag=1
+# pwd
+elif [ "$lKey" = "pwd" ] ; then 
+GBin_pwd ; lRunFlag=1
 # nano
 elif [ "$lKey" = "nano" ] ; then 
 lFile=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
@@ -209,6 +213,10 @@ cd $GPWD
 #================================================
 GBin_ll() {
 ls -l $GPATH
+}
+#================================================
+GBin_pwd() {
+echo $GPATH
 }
 #================================================
 GBin_nano_create_file() {
