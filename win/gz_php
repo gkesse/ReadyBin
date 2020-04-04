@@ -25,11 +25,13 @@ GREQUEST="\033[36m%s\033[0m"
 GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
 printf "\n"
 printf "%s\n" "Description:"
-printf "\t%s\n" "Operations sur les commandes awk."
+printf "\t%s\n" "Operations sur les commandes php."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
-printf "$GPROCESS" "test <module_in>" "tester module"
+printf "$GPROCESS" "add <port_in>" "ajouter port"
+printf "$GPROCESS" "remove <port_in>" "supprimer port"
+printf "$GPROCESS" "list" "lister ports"
 printf "\n"
 }
 #================================================
@@ -43,6 +45,20 @@ lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 # test
 if [ "$lKey" = "test" ] ; then 
 GPhp_test ; lRunFlag=1
+# ini
+elif [ "$lKey" = "ini" ] ; then 
+GPhp_listen_init ; lRunFlag=1
+# add
+elif [ "$lKey" = "add" ] ; then 
+lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GPhp_listen_add "$lPort" ; lRunFlag=1
+# rem
+elif [ "$lKey" = "rem" ] ; then 
+lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GPhp_listen_remove "$lPort" ; lRunFlag=1
+# lis
+elif [ "$lKey" = "lis" ] ; then 
+GPhp_listen_list ; lRunFlag=1
 #
 fi
 done
@@ -50,17 +66,172 @@ if [ "$lRunFlag" = "0" ] ; then GPhp_help ; fi
 }
 #================================================
 GPhp_test() {
-GPhp_listen
+#GPhp_listen_list
+#GPhp_listen_add 8877
+GPhp_listen_remove 80
 }
 #================================================
-GPhp_listen() {
-awk -i gk_string '
-BEGIN {}{
+GPhp_listen_init() {
+awk '
+@include "gk_string"
+BEGIN {
+lHeaderIndex = 0
+lBodyIndex = 0
+lFooterIndex = 0
+lStatus = 1
+lCount = 0
+}{
+lLine = $0
+lFlag = 0
+if(lLine != "") {
+lLine = gk_string("trim", lLine)
+if(lLine != "") {
+lFirstChar = gk_string("get_c", lLine, 1)
+if(lFirstChar != "#") {
+lListen = gk_string("split", lLine, " ", 1)
+lPort = gk_string("split", lLine, ":", 0)
+if(lListen == "Listen") {
+lStatus = 2
+lFlag = 1
+}}}}
+if(lStatus == 2 && lFlag == 0) lStatus = 3
+if(lStatus == 1) lHeaderMap[lHeaderIndex++] = $0
+if(lStatus == 3) lFooterMap[lFooterIndex++] = $0
+} END {
+lPort = 80
+lKey = lPort "_" 0 ; lListen = "Listen 0.0.0.0:" lPort ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
+lKey = lPort "_" 1 ; lListen = "Listen [::0]:" lPort ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
+
+printf("") > FILENAME
+for(lIndex in lHeaderMap) {
+lLine = lHeaderMap[lIndex]
+printf("%s\n", lLine) >> FILENAME}
+for(lIndex in lBodyKey) {
+lKey = lBodyKey[lIndex]
+lLine = lBodyMap[lKey]
+printf("%s\n", lLine) >> FILENAME}
+for(lIndex in lFooterMap) {
+lLine = lFooterMap[lIndex]
+printf("%s\n", lLine) >> FILENAME}
+}' $GHTTPD_CONF
+}
+#================================================
+GPhp_listen_add() {
+local lPortIn=$1
+awk -v lPortIn="$lPortIn" '
+@include "gk_string"
+BEGIN {
+lHeaderIndex = 0
+lBodyIndex = 0
+lFooterIndex = 0
+lStatus = 1
+lCount = 0
+}{
+lLine = $0
+lFlag = 0
+if(lLine != "") {
+lLine = gk_string("trim", lLine)
+if(lLine != "") {
+lFirstChar = gk_string("get_c", lLine, 1)
+if(lFirstChar != "#") {
+lListen = gk_string("split", lLine, " ", 1)
+lPort = gk_string("split", lLine, ":", 0)
+if(lListen == "Listen") {
+lStatus = 2
+lFlag = 1
+lKey = lPort "_" lCount
+lBodyKey[lBodyIndex++] = lKey
+lBodyMap[lKey] = $0
+if(++lCount == 2) lCount = 0
+}}}}
+if(lStatus == 2 && lFlag == 0) lStatus = 3
+if(lStatus == 1) lHeaderMap[lHeaderIndex++] = $0
+if(lStatus == 3) lFooterMap[lFooterIndex++] = $0
+} END {
+lKey = lPortIn "_" 0
+if((lKey in lBodyMap) == 0) {
+lKey = lPortIn "_" 0 ; lListen = "Listen 0.0.0.0:" lPortIn ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
+lKey = lPortIn "_" 1 ; lListen = "Listen [::0]:" lPortIn ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
+}
+
+printf("") > FILENAME
+for(lIndex in lHeaderMap) {
+lLine = lHeaderMap[lIndex]
+printf("%s\n", lLine) >> FILENAME}
+for(lIndex in lBodyKey) {
+lKey = lBodyKey[lIndex]
+lLine = lBodyMap[lKey]
+printf("%s\n", lLine) >> FILENAME}
+for(lIndex in lFooterMap) {
+lLine = lFooterMap[lIndex]
+printf("%s\n", lLine) >> FILENAME}
+}' $GHTTPD_CONF
+}
+#================================================
+GPhp_listen_remove() {
+local lPortIn=$1
+awk -v lPortIn="$lPortIn" '
+@include "gk_string"
+BEGIN {
+lHeaderIndex = 0
+lBodyIndex = 0
+lFooterIndex = 0
+lStatus = 1
+lCount = 0
+}{
+lLine = $0
+lFlag = 0
+if(lLine != "") {
+lLine = gk_string("trim", lLine)
+if(lLine != "") {
+lFirstChar = gk_string("get_c", lLine, 1)
+if(lFirstChar != "#") {
+lListen = gk_string("split", lLine, " ", 1)
+lPort = gk_string("split", lLine, ":", 0)
+if(lListen == "Listen") {
+lStatus = 2
+lFlag = 1
+}}}}
+if(lStatus == 2 && lFlag == 0) lStatus = 3
+if(lStatus == 1) lHeaderMap[lHeaderIndex++] = $0
+if(lStatus == 3) lFooterMap[lFooterIndex++] = $0
+} END {
+lKey = lPortIn "_" 0
+if((lKey in lBodyMap) == 1) {
+lKey = lPortIn "_" 0 ; delete lBodyKey[lIndexMap[0]] ; delete lBodyMap[lKey]
+lKey = lPortIn "_" 1 ; delete lBodyKey[lIndexMap[1]] ; delete lBodyMap[lKey]
+}
+
+printf("") > FILENAME
+for(lIndex in lHeaderMap) {
+lLine = lHeaderMap[lIndex]
+printf("%s\n", lLine) >> FILENAME}
+for(lIndex in lBodyKey) {
+lKey = lBodyKey[lIndex]
+lLine = lBodyMap[lKey]
+printf("%s\n", lLine) >> FILENAME}
+for(lIndex in lFooterMap) {
+lLine = lFooterMap[lIndex]
+printf("%s\n", lLine) >> FILENAME}
+}' $GHTTPD_CONF
+}
+#================================================
+GPhp_listen_list() {
+local lPortIn=$1
+awk '
+@include "gk_string"
+BEGIN {lCount = 0}{
 lLine = $0
 if(lLine == "") next
-lFirstChar = gk_
+lLine = gk_string("trim", lLine)
 if(lLine == "") next
-printf("%d : %s\n" NR, lLine)
+lFirstChar = gk_string("get_c", lLine, 1)
+if(lFirstChar == "#") next
+lListen = gk_string("split", lLine, " ", 1)
+lPort = gk_string("split", lLine, ":", 0)
+if(lListen != "Listen") next
+printf("%d : %d : %d : %s\n", NR, lPort, lCount, lLine)
+if(++lCount == 2) lCount = 0
 } END {}' $GHTTPD_CONF
 }
 #================================================

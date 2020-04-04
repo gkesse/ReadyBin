@@ -176,7 +176,8 @@ function GString_get_char(str, pos) {
 }
 #================================================
 function GString_split(str, sep, pos) {
-    split(str, lMap, sep)
+    lSize = split(str, lMap, sep)
+    if(pos == 0) pos = lSize
     return GString_trim(lMap[pos])
 }
 #================================================
