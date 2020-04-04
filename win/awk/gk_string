@@ -8,13 +8,13 @@ function gk_string(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9,  lKey, lString, lPos,
     for(i = 0; i < lLength; ) {
         lKey = lArgMap[i++]
         if(lKey == "") break
-        # help
-        else if(lKey == "help") {
-            GString_help()
-        }
         # test
         if(lKey == "test") {
             GString_test()
+        }
+        # help
+        if(lKey == "help") {
+            GString_help()
         }
         # trim
         else if(lKey == "trim") {
@@ -50,32 +50,62 @@ function gk_string(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9,  lKey, lString, lPos,
             lString = lArgMap[i++]
             return GString_to_lower(lString)
         }
+        # to_n
+        else if(lKey == "to_n") {
+            lString = lArgMap[i++]
+            return GString_to_number(lString)
+        }
+        # index
+        else if(lKey == "index") {
+            lString = lArgMap[i++]
+            lSub = lArgMap[i++]
+            return GString_index(lString, lSub)
+        }
+        # size
+        else if(lKey == "size") {
+            lString = lArgMap[i++]
+            return GString_size(lString)
+        }
+        # sub_l
+        else if(lKey == "sub_l") {
+            lString = lArgMap[i++]
+            lPos = lArgMap[i++]
+            lSize = lArgMap[i++]
+            return GString_substr_left(lString, lPos, lSize)
+        }
+        # sub_r
+        else if(lKey == "sub_r") {
+            lString = lArgMap[i++]
+            lPos = lArgMap[i++]
+            lSize = lArgMap[i++]
+            return GString_substr_right(lString, lPos, lSize)
+        }
+        # sort
+        else if(lKey == "sort") {
+            lString = lArgMap[i++]
+            lSepIn = lArgMap[i++]
+            lSepOut = lArgMap[i++]
+            return GString_sort(lString, lSepIn, lSepOut)
+        }
+        # sort_i
+        else if(lKey == "sort_i") {
+            lString = lArgMap[i++]
+            lSepIn = lArgMap[i++]
+            lSepMap = lArgMap[i++]
+            lSepOut = lArgMap[i++]
+            return GString_sort_map(lString, lSepIn, lSepMap, lSepOut)
+        }
+        # contain
+        else if(lKey == "contain") {
+            lString = lArgMap[i++]
+            lPattern = lArgMap[i++]
+            return GString_contain(lString, lPattern)
+        }
+        # concat
+        else if(lKey == "concat") {
+            return GString_to_lower(i, lArgMap)
+        }
     }
-}
-#================================================
-function GString_help() {
-    lScript="gk_string"
-    printf("\n")
-    printf("%s\n", "Description:")
-    printf("\t%s\n", "Operations sur les commandes awk.")
-    printf("\n")
-    printf("%s\n", "Utilisation:")
-    gk_help("u", lScript, "help", "afficher aide")
-    gk_help("u", lScript, "test", "tester module")
-    gk_help("u", lScript, "trim", "enlever espace chaine")
-    gk_help("u", lScript, "split", "decouper chaine")
-    gk_help("u", lScript, "split_c", "compter decoupe chaine")
-    gk_help("u", lScript, "to_u", "convertir chaine majuscule")
-    gk_help("u", lScript, "to_l", "convertir chaine minuscule")
-    gk_help("u", lScript, "to_n", "convertir chaine nombre")
-    gk_help("u", lScript, "get_c", "lire caractere chaine")
-    gk_help("u", lScript, "sub_l", "lire sous-chaine gauche")
-    gk_help("u", lScript, "sub_r", "lire sous-chaine droite")
-    gk_help("u", lScript, "srot", "trier liste chaines")
-    gk_help("u", lScript, "srot_i", "trier index map chaines")
-    gk_help("u", lScript, "contain", "contenir chaine")
-    gk_help("u", lScript, "concat", "concatener chaines")
-    printf("\n")
 }
 #================================================
 function GString_test() {
@@ -100,6 +130,31 @@ function GString_test() {
     printf("to_number: [%d]\n", GString_to_number("123"))
     printf("to_number: [%d]\n", GString_to_number("0123"))
     printf("to_number: [%d]\n", GString_to_number("0x123"))
+}
+#================================================
+function GString_help() {
+    lScript="gk_string"
+    printf("\n")
+    printf("%s\n", "Description:")
+    printf("\t%s\n", "Operations sur les commandes awk.")
+    printf("\n")
+    printf("%s\n", "Utilisation:")
+    gk_help("u", lScript, "help", "afficher aide")
+    gk_help("u", lScript, "test", "tester module")
+    gk_help("u", lScript, "trim <string_in>", "enlever espace chaine")
+    gk_help("u", lScript, "split <string_in> <sep_in> <pos_in>", "decouper chaine")
+    gk_help("u", lScript, "split_c <string_in> <sep_in>", "compter decoupe chaine")
+    gk_help("u", lScript, "to_u <string_in>", "convertir chaine majuscule")
+    gk_help("u", lScript, "to_l <string_in>", "convertir chaine minuscule")
+    gk_help("u", lScript, "to_n <string_in>", "convertir chaine nombre")
+    gk_help("u", lScript, "get_c <string_in> <pos_in>", "lire caractere chaine")
+    gk_help("u", lScript, "sub_l <string_in> <pos_in> <size_in>", "lire sous-chaine gauche")
+    gk_help("u", lScript, "sub_r <string_in> <pos_in> <size_in>", "lire sous-chaine droite")
+    gk_help("u", lScript, "srot <string_in> <sep_in> <sep_out>", "trier liste chaines")
+    gk_help("u", lScript, "srot_i <string_in> <sep_in> <sep_map_in> <sep_out>", "trier index map chaines")
+    gk_help("u", lScript, "contain <string_in>", "contenir chaine")
+    gk_help("u", lScript, "concat <string_in>", "concatener chaines")
+    printf("\n")
 }
 #================================================
 function GString_trim_left(str) {
@@ -205,11 +260,8 @@ function GString_to_number(str) {
     return strtonum(str)
 }
 #================================================
-function GString_concat(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
-    i = 0 ; lArgMap[i++] = p0 ; lArgMap[i++] = p1 ; lArgMap[i++] = p2 ; lArgMap[i++] = p3 ; lArgMap[i++] = p4 ; lArgMap[i++] = p5 ; lArgMap[i++] = p6 ; lArgMap[i++] = p7 ; lArgMap[i++] = p8 ; lArgMap[i++] = p9
-    lLength = i
-    lConcat = ""
-    for(i = 0; i < lLength; ) {
+function GString_concat(i, argMap) {
+    for(; i < lLength; ) {
         lString = lArgMap[i++]
         lConcat = lConcat lString
     }
