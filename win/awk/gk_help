@@ -1,0 +1,38 @@
+#!/bin/awk -f
+#================================================
+function gk_help(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9,  lKey, lString, lPos, lSep) {
+    i = 0 ; lArgMap[i++] = p0 ; lArgMap[i++] = p1 ; lArgMap[i++] = p2 ; lArgMap[i++] = p3 ; lArgMap[i++] = p4 ; lArgMap[i++] = p5 ; lArgMap[i++] = p6 ; lArgMap[i++] = p7 ; lArgMap[i++] = p8 ; lArgMap[i++] = p9
+    lLength = i
+    for(i = 0; i < lLength; ) {
+        lKey = lArgMap[i++]
+        if(lKey == "") break
+        # help
+        if(lKey == "help") {
+            GHelp_help()
+        }
+        # u
+        else if(lKey == "u") {
+            lScript = lArgMap[i++]
+            lRequest = lArgMap[i++]
+            lComment = lArgMap[i++]
+            GHelp_using(lScript, lRequest, lComment)
+        }
+    }
+}
+#================================================
+function GHelp_help() {
+    lScript="gk_help"
+    printf("\n")
+    printf("%s\n", "Description:")
+    printf("\t%s\n", "Operations sur les aides.")
+    printf("\n")
+    printf("%s\n", "Utilisation:")
+    GHelp_using(lScript, "help", "afficher aide")
+    GHelp_using(lScript, "u <script_in> <request_in> <comment_in>", "ecrire ligne utilisation")
+    printf("\n")
+}
+#================================================
+function GHelp_using(script, request, comment) {
+    printf("\t\033[0;35m%s\033[0m \033[36m%s\033[0m : \033[0;33m%s\033[0m\n", script, request, comment)
+}
+#================================================

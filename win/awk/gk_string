@@ -1,11 +1,17 @@
 #!/bin/awk -f
 #================================================
+@include "gk_help"
+#================================================
 function gk_string(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9,  lKey, lString, lPos, lSep) {
     i = 0 ; lArgMap[i++] = p0 ; lArgMap[i++] = p1 ; lArgMap[i++] = p2 ; lArgMap[i++] = p3 ; lArgMap[i++] = p4 ; lArgMap[i++] = p5 ; lArgMap[i++] = p6 ; lArgMap[i++] = p7 ; lArgMap[i++] = p8 ; lArgMap[i++] = p9
-    lLength = i;
+    lLength = i
     for(i = 0; i < lLength; ) {
         lKey = lArgMap[i++]
         if(lKey == "") break
+        # help
+        else if(lKey == "help") {
+            GString_help()
+        }
         # test
         if(lKey == "test") {
             GString_test()
@@ -45,6 +51,31 @@ function gk_string(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9,  lKey, lString, lPos,
             return GString_to_lower(lString)
         }
     }
+}
+#================================================
+function GString_help() {
+    lScript="gk_string"
+    printf("\n")
+    printf("%s\n", "Description:")
+    printf("\t%s\n", "Operations sur les commandes awk.")
+    printf("\n")
+    printf("%s\n", "Utilisation:")
+    gk_help("u", lScript, "help", "afficher aide")
+    gk_help("u", lScript, "test", "tester module")
+    gk_help("u", lScript, "trim", "enlever espace chaine")
+    gk_help("u", lScript, "split", "decouper chaine")
+    gk_help("u", lScript, "split_c", "compter decoupe chaine")
+    gk_help("u", lScript, "to_u", "convertir chaine majuscule")
+    gk_help("u", lScript, "to_l", "convertir chaine minuscule")
+    gk_help("u", lScript, "to_n", "convertir chaine nombre")
+    gk_help("u", lScript, "get_c", "lire caractere chaine")
+    gk_help("u", lScript, "sub_l", "lire sous-chaine gauche")
+    gk_help("u", lScript, "sub_r", "lire sous-chaine droite")
+    gk_help("u", lScript, "srot", "trier liste chaines")
+    gk_help("u", lScript, "srot_i", "trier index map chaines")
+    gk_help("u", lScript, "contain", "contenir chaine")
+    gk_help("u", lScript, "concat", "concatener chaines")
+    printf("\n")
 }
 #================================================
 function GString_test() {
@@ -172,5 +203,16 @@ function GString_contain(str, pattern) {
 #================================================
 function GString_to_number(str) {
     return strtonum(str)
+}
+#================================================
+function GString_concat(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9) {
+    i = 0 ; lArgMap[i++] = p0 ; lArgMap[i++] = p1 ; lArgMap[i++] = p2 ; lArgMap[i++] = p3 ; lArgMap[i++] = p4 ; lArgMap[i++] = p5 ; lArgMap[i++] = p6 ; lArgMap[i++] = p7 ; lArgMap[i++] = p8 ; lArgMap[i++] = p9
+    lLength = i
+    lConcat = ""
+    for(i = 0; i < lLength; ) {
+        lString = lArgMap[i++]
+        lConcat = lConcat lString
+    }
+    return lConcat
 }
 #================================================

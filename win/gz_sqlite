@@ -30,15 +30,19 @@ printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "query <sql_in>" "executer requete sql"
 printf "$GPROCESS" "table_c <table_in>" "creer table"
+printf "$GPROCESS" "table_cl <table_in> <table_out>" "cloner table"
 printf "$GPROCESS" "table_d <table_in>" "supprimer table"
 printf "$GPROCESS" "table_dl <table_in> <id_in>" "supprimer donnees table"
 printf "$GPROCESS" "table_i <table_in> <data_in>" "inserer donnees table"
-printf "$GPROCESS" "table_u <table_in> <id_in> <data_in>" "mise a jour donnees table"
+printf "$GPROCESS" "table_id <table_in>" "inserer donnees table defaut"
+printf "$GPROCESS" "table_u <table_in> <id_in> <data_in>" "mise a jour donnee table"
 printf "$GPROCESS" "table_s <table_in>" "selectionner donnees table"
 printf "$GPROCESS" "table_si <table_in>" "selectionner donnees table id"
 printf "$GPROCESS" "table_sl <table_in>" "selectionner donnees table limite"
-printf "$GPROCESS" "show_t" "lister tables"
+printf "$GPROCESS" "table_sc <table_in>" "schema table"
+printf "$GPROCESS" "table_r <table_in> <table_out>" "renommer table"
 printf "$GPROCESS" "schema" "schema global"
+printf "$GPROCESS" "show_t" "lister tables"
 printf "$GPROCESS" "set_r <path_in>" "initialiser racine"
 printf "$GPROCESS" "set_n <name_in>" "initialiser nom base de donnees"
 printf "$GPROCESS" "set_p <path_in>" "initialiser chemin"
@@ -61,6 +65,12 @@ GSQLite_query "$lQuery" ; lRunFlag=1
 elif [ "$lKey" = "table_c" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GSQLite_table_create "$lTable" ; lRunFlag=1
+# table_cl
+elif [ "$lKey" = "table_c" ] ; then 
+lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQLite_table_clone "$lTableIn" "$lTableOut" "$lColumn" ; lRunFlag=1
 # table_d
 elif [ "$lKey" = "table_d" ] ; then 
 lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
@@ -103,57 +113,17 @@ lId=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lValue=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GSQLite_table_update "$lTable" "$lId" "$lKey" "$lValue" ; lRunFlag=1
-# show_t
-elif [ "$lKey" = "show_t" ] ; then 
-GSQLite_show_tables ; lRunFlag=1
+# table_r
+elif [ "$lKey" = "table_r" ] ; then 
+lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GSQLite_table_rename "$lTableIn" "$lTableOut" ; lRunFlag=1
 # schema
 elif [ "$lKey" = "schema" ] ; then 
 GSQLite_schema ; lRunFlag=1
-# clone_t
-elif [ "$lKey" = "clone_t" ] ; then 
-lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_clone_table "$lTableIn" "$lTableOut" "$lColumn" ; lRunFlag=1
-# rename_t
-elif [ "$lKey" = "rename_t" ] ; then 
-lTableIn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lTableOut=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_rename_table "$lTableIn" "$lTableOut" ; lRunFlag=1
-# drop_t
-elif [ "$lKey" = "drop_t" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_drop_table "$lTable" ; lRunFlag=1
-# add_c 
-elif [ "$lKey" = "add_c" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_add_column "$lTable" "$lColumn" ; lRunFlag=1
-# drop_c
-elif [ "$lKey" = "drop_c" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_drop_column "$lTable" "$lColumn" ; lRunFlag=1
-# remove_c
-elif [ "$lKey" = "remove_c" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_remove_column "$lTable" "$lColumn" ; lRunFlag=1
-# alter_c
-elif [ "$lKey" = "alter_c" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_alter_column "$lTable" "$lColumn" ; lRunFlag=1
-# modify_c
-elif [ "$lKey" = "modify_c" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lColumn=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_modify_column "$lTable" "$lColumn" ; lRunFlag=1
-# list_c
-elif [ "$lKey" = "list_c" ] ; then 
-lTable=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lRemove=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GSQLite_list_column "$lTable" "$lRemove" ; lRunFlag=1
+# show_t
+elif [ "$lKey" = "show_t" ] ; then 
+GSQLite_show_tables ; lRunFlag=1
 # set_r
 elif [ "$lKey" = "set_r" ] ; then 
 lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
@@ -199,9 +169,19 @@ email text,
 password text);"
 }
 #================================================
-GSQLite_page_create() {
+GSQLite_table_clone() {
+local lTableIn=$1
+local lTableOut=$2
+local lColumn=$3
+if [ "$lTableIn" = "" ] ; then gz_color s "table_in ?" yellow fg ; return ; fi
+if [ "$lTableOut" = "" ] ; then gz_color s "table_out ?" yellow fg ; return ; fi
+if [ "$lColumn" = "" ] ; then gz_color s "column ?" yellow fg ; return ; fi
+GSQLite_query "create table $lTableOut as select $lColumn from $lTableIn;"
+}
+#================================================
+GSQLite_pages_create() {
 GSQLite_query "
-create table page(
+create table pages(
 id integer primary key autoincrement not null,
 name text,
 meta_desc text,
@@ -248,7 +228,7 @@ if [ "$lTable" = "" ] ; then gz_color s "table ?" yellow fg ; return ; fi
 GSQLite_${lTable}_insert_default "$lRow"
 }
 #================================================
-GSQLite_page_insert_default() {
+GSQLite_pages_insert_default() {
 GSQLite_query "insert into page
 (name,meta_desc,meta_cano) 
 values ('name','meta_desc','meta_cano');"
@@ -299,6 +279,22 @@ set password = '$lPassword'
 where id = $lId;"
 }
 #================================================
+GSQLite_table_update_struct() {
+local lTable=$1
+if [ "$lTable" = "" ] ; then gz_color s "table ?" yellow fg ; return ; fi
+GSQLite_${lTable}_update_struct
+}
+#================================================
+GSQLite_pages_update_struct() {
+GSQLite_query "
+create table pages(
+id integer primary key autoincrement not null,
+name text,
+meta_desc text,
+meta_cano text,
+links text);"
+}
+#================================================
 GSQLite_table_select() {
 local lTable=$1
 if [ "$lTable" = "" ] ; then gz_color s "table ?" yellow fg ; return ; fi
@@ -327,77 +323,20 @@ if [ "$lTable" = "" ] ; then gz_color s "table ?" yellow fg ; return ; fi
 GSQLite_query ".schema $lTable"
 }
 #================================================
-GSQLite_show_tables() {
-GSQLite_query ".tables"
+GSQLite_table_rename() {
+local lTableIn=$1
+local lTableOut=$2
+if [ "$lTableIn" = "" ] ; then gz_color s "table_in ?" yellow fg ; return ; fi
+if [ "$lTableOut" = "" ] ; then gz_color s "table_out ?" yellow fg ; return ; fi
+GSQLite_query "alter table $lTableIn rename to $lTableOut;"
 }
 #================================================
 GSQLite_schema() {
 GSQLite_query ".schema"
 }
 #================================================
-GSQLite_clone_table() {
-local lTableIn=$1
-local lTableOut=$2
-local lColumn=$3
-lQuery="create table $lTableOut AS select $lColumn from $lTableIn;"
-GSQLite_query "$lQuery"
-}
-#================================================
-GSQLite_rename_table() {
-local lTableIn=$1
-local lTableOut=$2
-lQuery="alter table $lTableIn rename to $lTableOut;"
-GSQLite_query "$lQuery"
-}
-#================================================
-GSQLite_add_column() {
-local lTable=$1
-local lColumn=$2
-lQuery="alter table $lTable add $lColumn;"
-GSQLite_query "$lQuery"
-}
-#================================================
-GSQLite_drop_column() {
-local lTable=$1
-local lColumn=$2
-lQuery="alter table $lTable drop column $lColumn;"
-GSQLite_query "$lQuery"
-}
-#================================================
-GSQLite_remove_column() {
-local lTable=$1
-local lColumn=$2
-lTableNew="${lTable}_new_clone"
-lColumnNew=$(GSQLite_list_column "$lTable" "$lColumn")
-GSQLite_clone_table "$lTable" "$lTableNew" "$lColumnNew"
-GSQLite_drop_table "$lTable"
-GSQLite_rename_table "$lTableNew" "$lTable"
-}
-#================================================
-GSQLite_alter_column() {
-local lTable=$1
-local lColumn=$2
-lQuery="alter table $lTable alter column $lColumn;"
-GSQLite_query "$lQuery"
-}
-#================================================
-GSQLite_modify_column() {
-local lTable=$1
-local lColumn=$2
-lQuery="alter table $lTable modify column $lColumn;"
-GSQLite_query "$lQuery"
-}
-#================================================
-GSQLite_list_column() {
-local lTable=$1
-local lRemove=$2
-lQuery="pragma table_info($lTable);"
-GSQLite_query "$lQuery" | awk -F "|" -v lRemove="$lRemove" '
-BEGIN {lFlag = 0}
-{if($2 == lRemove) {next}
-if(lFlag == 1) {printf(", ")}
-lFlag = 1
-printf("%s", $2)}'
+GSQLite_show_tables() {
+GSQLite_query ".tables"
 }
 #================================================
 GSQLite_set_root() {

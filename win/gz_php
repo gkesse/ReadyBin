@@ -3,18 +3,20 @@
 GPWD=$PWD
 #================================================
 GPATH=$(gz_config get GPATH)
+GHTTPD_CONF=$(gz_config get GHTTPD_CONF)
 #================================================
+lCheckIn="GHTTPD_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export AWKPATH="$GPATH/awk"
 #================================================
-GAwk_main() {
+GPhp_main() {
 lArgSize="$#"
-if [ "$lArgSize" = "0" ] ; then GAwk_help "$@"
-else GAwk_process "$@" ; fi
+if [ "$lArgSize" = "0" ] ; then GPhp_help "$@"
+else GPhp_process "$@" ; fi
 }
 #================================================
-GAwk_help() {
+GPhp_help() {
 lScript=$(gz_string filename "$0")
 GSCRIPT="\t\033[0;35m${lScript}\033[0m"
 GCOMMENT="\033[0;33m%s\033[0m"
@@ -27,53 +29,40 @@ printf "\t%s\n" "Operations sur les commandes awk."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
-printf "$GPROCESS" "t <module_in>" "tester module"
-printf "$GPROCESS" "h <module_in>" "afficher aide module"
-printf "$GPROCESS" "r <module_in> <func_in>" "executer fonction module"
+printf "$GPROCESS" "test <module_in>" "tester module"
 printf "\n"
 }
 #================================================
-GAwk_process() {
+GPhp_process() {
 lArgSize="$#"
 lArgCount=1
 lRunFlag=0
 while [ 1 ] ; do
 if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-# t
-if [ "$lKey" = "t" ] ; then 
-lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GAwk_module_test "$lModule" ; lRunFlag=1
-# h
-elif [ "$lKey" = "h" ] ; then 
-lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GAwk_module_help "$lModule" ; lRunFlag=1
-# r
-elif [ "$lKey" = "r" ] ; then 
-lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-lFunc=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GAwk_module_run "$lModule" "$lFunc" ; lRunFlag=1
+# test
+if [ "$lKey" = "test" ] ; then 
+GPhp_test ; lRunFlag=1
 #
 fi
 done
-if [ "$lRunFlag" = "0" ] ; then GAwk_help ; fi 
+if [ "$lRunFlag" = "0" ] ; then GPhp_help ; fi 
 }
 #================================================
-GAwk_module_test() {
-local lModule=$1
-awk -i $lModule -v lModule="$lModule" 'BEGIN {@lModule("test")}'
+GPhp_test() {
+GPhp_listen
 }
 #================================================
-GAwk_module_help() {
-local lModule=$1
-awk -i $lModule -v lModule="$lModule" 'BEGIN {@lModule("help")}'
+GPhp_listen() {
+awk -i gk_string '
+BEGIN {}{
+lLine = $0
+if(lLine == "") next
+lFirstChar = gk_
+if(lLine == "") next
+printf("%d : %s\n" NR, lLine)
+} END {}' $GHTTPD_CONF
 }
 #================================================
-GAwk_module_run() {
-local lModule=$1
-local lFunc=$2
-awk -i $lModule -v lModule="$lModule" -v lFunc="$lFunc" 'BEGIN {@lModule(lFunc)}'
-}
-#================================================
-GAwk_main "$@"
+GPhp_main "$@"
 #================================================
