@@ -4,9 +4,11 @@ GPWD=$PWD
 #================================================
 GPATH=$(gz_config get GPATH)
 GHTTPD_CONF=$(gz_config get GHTTPD_CONF)
+GHTTPD_VHOSTS_CONF=$(gz_config get GHTTPD_VHOSTS_CONF)
 #================================================
-lCheckIn="GHTTPD_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GHTTPD_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GHTTPD_VHOSTS_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export AWKPATH="$GPATH/awk"
 #================================================
@@ -68,7 +70,8 @@ if [ "$lRunFlag" = "0" ] ; then GPhp_help ; fi
 GPhp_test() {
 #GPhp_listen_list
 #GPhp_listen_add 8877
-GPhp_listen_remove 80
+#GPhp_listen_remove 80
+GPhp_vhosts_list
 }
 #================================================
 GPhp_listen_init() {
@@ -217,7 +220,6 @@ printf("%s\n", lLine) >> FILENAME}
 }
 #================================================
 GPhp_listen_list() {
-local lPortIn=$1
 awk '
 @include "gk_string"
 BEGIN {lCount = 0}{
@@ -233,6 +235,21 @@ if(lListen != "Listen") next
 printf("%d : %d : %d : %s\n", NR, lPort, lCount, lLine)
 if(++lCount == 2) lCount = 0
 } END {}' $GHTTPD_CONF
+}
+#================================================
+GPhp_vhosts_list() {
+awk '
+@include "gk_string"
+BEGIN {}{
+lLine = $0
+if(lLine != "") {lLine = gk_string("trim", lLine) ; if(lLine != "") {lFirstChar = gk_string("get_c", lLine, 1) ; if(lFirstChar != "#") {
+lContain = gk_string("contain", lLine, "<VirtualHost.*:.*>")
+if(lContain == 1) {
+printf("%d : %s\n", NR, $0)
+lStatus = 2
+lFlag = 1
+}}}}
+} END {}' $GHTTPD_VHOSTS_CONF
 }
 #================================================
 GPhp_main "$@"

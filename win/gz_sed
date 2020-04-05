@@ -1,0 +1,116 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+GSED_PATH=$(gz_config get GSED_PATH)
+#================================================
+lCheckIn="GSED_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+export AWKPATH="$GPATH/awk"
+#================================================
+GSed_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GSed_help "$@"
+else GSed_process "$@" ; fi
+}
+#================================================
+GSed_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les commandes sed."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "\n"
+}
+#================================================
+GSed_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# test
+if [ "$lKey" = "test" ] ; then 
+GSed_test ; lRunFlag=1
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GSed_help ; fi 
+}
+#================================================
+GSed_test() {
+GSed_delete_line 2 ; echo
+GSed_delete_pattern "del" ; echo
+GSed_print_pattern "print" ; echo
+GSed_replace_pattern "old" "new" ; echo
+GSed_replace_char "êéè" "eee" ; echo
+GSed_search_replace_pattern "<(.*)>.*<(.*)>" "<\2> voici la nouvelle ligne <\1>"; echo
+}
+#================================================
+GSed_delete_line() {
+local lLine=$1
+sed "$lLine d" << _EOF_
+voici la ligne 1
+voici la ligne 2
+voici la ligne 3
+_EOF_
+}
+#================================================
+GSed_delete_pattern() {
+local lPattern=$1
+sed "/$lPattern/ d" << _EOF_
+voici la ligne 1
+voici la ligne 2 del
+voici la ligne 3
+_EOF_
+}
+#================================================
+GSed_print_pattern() {
+local lPattern=$1
+sed -n "/$lPattern/ p" << _EOF_
+voici la ligne 1
+voici la ligne 2 print
+voici la ligne 3
+_EOF_
+}
+#================================================
+GSed_replace_pattern() {
+local lPatternIn=$1
+local lPatternOut=$2
+sed "s/$lPatternIn/$lPatternOut/g" << _EOF_
+voici la ligne 1
+old voici la ligne 2 old
+voici la ligne 3
+_EOF_
+}
+#================================================
+GSed_replace_char() {
+local lCharIn=$1
+local lCharOut=$2
+sed "y/$lCharIn/$lCharOut/" << _EOF_
+voici la ligne 1
+voici la ligne 2 évènement
+voici la ligne 3
+_EOF_
+}
+#================================================
+GSed_search_replace_pattern() {
+local lPatternIn=$1
+local lPatternOut=$2
+sed -r "s/$lPatternIn/$lPatternOut/" << _EOF_
+voici la ligne 1
+<haut> voici la ligne 2 <bas>
+voici la ligne 3
+_EOF_
+}
+#================================================
+GSed_main "$@"
+#================================================
