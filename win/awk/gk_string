@@ -105,6 +105,13 @@ function gk_string(p0, p1, p2, p3, p4, p5, p6, p7, p8, p9,  lKey, lString, lPos,
         else if(lKey == "concat") {
             return GString_to_lower(i, lArgMap)
         }
+        # replace
+        else if(lKey == "replace") {
+            lString = lArgMap[i++]
+            lPattern = lArgMap[i++]
+            lReplace = lArgMap[i++]
+            return GString_replace(lString, lPattern, lReplace)
+        }
     }
 }
 #================================================
@@ -154,6 +161,7 @@ function GString_help() {
     gk_help("u", lScript, "srot_i <string_in> <sep_in> <sep_map_in> <sep_out>", "trier index map chaines")
     gk_help("u", lScript, "contain <string_in>", "contenir chaine")
     gk_help("u", lScript, "concat <string_in>", "concatener chaines")
+    gk_help("u", lScript, "replace <string_in> <pattern_in> <replace_in>", "remplacer chaine")
     printf("\n")
 }
 #================================================
@@ -267,5 +275,9 @@ function GString_concat(i, argMap) {
         lConcat = lConcat lString
     }
     return lConcat
+}
+#================================================
+function GString_replace(str, pattern, replace) {
+    return gensub(pattern, replace, "g", str)
 }
 #================================================
