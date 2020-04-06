@@ -3,7 +3,6 @@
 GPWD=$PWD
 #================================================
 GPATH=$(gz_config get GPATH) ; . "$GPATH"/.config
-echo "$GPHP_FIREFOX"
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GHTTPD_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
