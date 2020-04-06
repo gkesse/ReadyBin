@@ -90,7 +90,7 @@ lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GPhp_vhosts_show "$lPort" ; lRunFlag=1
 # exe
 elif [ "$lKey" = "exe" ] ; then 
-GPhp_scripts_exe "$@" ; lRunFlag=1 ; break
+GPhp_script_exe "$@" ; lRunFlag=1 ; break
 #
 fi
 done
@@ -516,7 +516,7 @@ printf("%s\n", lSep) >> FILENAME
 }' $GHTTPD_VHOSTS_CONF
 }
 #================================================
-GPhp_scripts_exe() {
+GPhp_script_exe() {
 local lScript=$2
 cd $GPHP_SCRIPT
 $GPHP_BIN $lScript $3 $4 $5 $6 $7 $8 $9
