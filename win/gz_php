@@ -133,6 +133,9 @@ else if(lStatus == 3) {lFooterMap[lFooterIndex++] = $0}
 lPort = 80
 lKey = lPort "_" 0 ; lListen = "Listen 0.0.0.0:" lPort ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
 lKey = lPort "_" 1 ; lListen = "Listen [::0]:" lPort ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
+lPort = 443
+lKey = lPort "_" 0 ; lListen = "Listen 0.0.0.0:" lPort ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
+lKey = lPort "_" 1 ; lListen = "Listen [::0]:" lPort ; lBodyKey[lBodyIndex++] = lKey ; lBodyMap[lKey] = lListen
 
 printf("") > FILENAME
 for(lIndex in lHeaderMap) {
@@ -203,6 +206,7 @@ printf("%s\n", lLine) >> FILENAME}
 GPhp_listen_remove() {
 local lPortIn=$1
 if [ "$lPortIn" = "80" ] ; then gz_color s "impossible de supprimer le port 80" yellow fg ; return ; fi
+if [ "$lPortIn" = "443" ] ; then gz_color s "impossible de supprimer le port 443" yellow fg ; return ; fi
 awk -v lPortIn="$lPortIn" '
 @include "gk_string"
 BEGIN {
@@ -448,7 +452,7 @@ for(lIndex in lBodyKey) {
 lKey = lBodyKey[lIndex]
 lLine = lBodyMap[lKey]
 lContain = gk_string("contain", lLine, "<VirtualHost.*>")
-if(lContain == 1) printf("%s\n", lSep)
+if(lContain == 1) printf("%s\n", lSep) >> FILENAME
 printf("%s\n", lLine) >> FILENAME
 }
 printf("%s\n", lSep) >> FILENAME
@@ -458,6 +462,7 @@ printf("%s\n", lSep) >> FILENAME
 GPhp_vhosts_remove() {
 local lPortIn=$1
 if [ "$lPortIn" = "80" ] ; then gz_color s "impossible de supprimer le port 80" yellow fg ; return ; fi
+if [ "$lPortIn" = "443" ] ; then gz_color s "impossible de supprimer le port 443" yellow fg ; return ; fi
 awk -v lPortIn="$lPortIn" '
 @include "gk_string"
 BEGIN {
@@ -509,11 +514,10 @@ for(lIndex in lBodyKey) {
 lKey = lBodyKey[lIndex]
 lLine = lBodyMap[lKey]
 lContain = gk_string("contain", lLine, "<VirtualHost.*>")
-if(lContain == 1) printf("%s\n", lSep)
+if(lContain == 1) printf("%s\n", lSep) >> FILENAME
 printf("%s\n", lLine) >> FILENAME
 }
 printf("%s\n", lSep) >> FILENAME
-}
 }' $GHTTPD_VHOSTS_CONF
 }
 #================================================
