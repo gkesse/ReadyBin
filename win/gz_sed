@@ -2,7 +2,7 @@
 #================================================
 GPWD=$PWD
 #================================================
-GSED_PATH=$(gz_config get GSED_PATH)
+GPATH=$(gz_config get GPATH) ; . "$GPATH"/.config
 #================================================
 lCheckIn="GSED_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================

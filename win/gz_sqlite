@@ -2,7 +2,7 @@
 #================================================
 GPWD=$PWD
 #================================================
-GSQLITE_DB_PATH=$(gz_config get GSQLITE_DB_PATH)
+GPATH=$(gz_config get GPATH) ; . "$GPATH"/.config
 #================================================
 lCheckIn="GSQLITE_DB_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
