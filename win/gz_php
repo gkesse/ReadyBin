@@ -2,12 +2,8 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH=$(gz_config get GPATH)
-GHTTPD_CONF=$(gz_config get GHTTPD_CONF)
-GHTTPD_VHOSTS_CONF=$(gz_config get GHTTPD_VHOSTS_CONF)
-GWEB_ROOT=$(gz_config get GWEB_ROOT)
-GPHP_BIN=$(gz_config get GPHP_BIN)
-GPHP_SCRIPT=$(gz_config get GPHP_SCRIPT)
+GPATH=$(gz_config get GPATH) ; . "$GPATH"/.config
+echo "$GPHP_FIREFOX"
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GHTTPD_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
@@ -15,6 +11,7 @@ lCheckIn="GHTTPD_VHOSTS_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckI
 lCheckIn="GWEB_ROOT" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GPHP_BIN" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GPHP_SCRIPT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GPHP_FIREFOX" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export AWKPATH="$GPATH/awk"
 #================================================
@@ -45,6 +42,7 @@ printf "$GPROCESS" "lis" "lister ports"
 printf "$GPROCESS" "lis_v" "lister virtual host"
 printf "$GPROCESS" "sho_v <port_in>" "afficher virtual host"
 printf "$GPROCESS" "exe <script_in>" "executer script"
+printf "$GPROCESS" "url <url_in>" "executer firefox"
 printf "\n"
 }
 #================================================
@@ -91,6 +89,10 @@ GPhp_vhosts_show "$lPort" ; lRunFlag=1
 # exe
 elif [ "$lKey" = "exe" ] ; then 
 GPhp_script_exe "$@" ; lRunFlag=1 ; break
+# url
+elif [ "$lKey" = "url" ] ; then 
+lUrl=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GPhp_firefox_open_url "$lPort" ; lRunFlag=1
 #
 fi
 done
@@ -521,6 +523,11 @@ local lScript=$2
 cd $GPHP_SCRIPT
 $GPHP_BIN $lScript $3 $4 $5 $6 $7 $8 $9
 cd $GPWD
+}
+#================================================
+GPhp_firefox_open_url() {
+local lUrl=$1
+"$GPHP_FIREFOX" https://readydev.ovh
 }
 #================================================
 GPhp_main "$@"
