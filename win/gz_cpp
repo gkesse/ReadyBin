@@ -78,19 +78,19 @@ $GECLIPSE_PATH/eclipse
 #================================================
 GCpp_compile() {
 cd $GCPP_BUILD
-make compile -f Makefile.config
+mingw32-make compile -f Makefile.config
 cd $GPWD
 }
 #================================================
 GCpp_run() {
 cd $GCPP_BUILD
-make run -f Makefile.config
+mingw32-make run -f Makefile.config
 cd $GPWD
 }
 #================================================
 GCpp_all() {
 cd $GCPP_BUILD
-make -f Makefile.config
+mingw32-make -f Makefile.config
 cd $GPWD
 }
 #================================================
