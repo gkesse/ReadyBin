@@ -6,11 +6,15 @@ GPATH=$(gz_config get GPATH)
 GHTTPD_CONF=$(gz_config get GHTTPD_CONF)
 GHTTPD_VHOSTS_CONF=$(gz_config get GHTTPD_VHOSTS_CONF)
 GWEB_ROOT=$(gz_config get GWEB_ROOT)
+GPHP_BIN=$(gz_config get GPHP_BIN)
+GPHP_SCRIPT=$(gz_config get GPHP_SCRIPT)
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GHTTPD_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GHTTPD_VHOSTS_CONF" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GWEB_ROOT" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GPHP_BIN" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GPHP_SCRIPT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export AWKPATH="$GPATH/awk"
 #================================================
@@ -39,7 +43,8 @@ printf "$GPROCESS" "rem <port_in>" "supprimer port"
 printf "$GPROCESS" "rem_v <port_in>" "supprimer virtual port"
 printf "$GPROCESS" "lis" "lister ports"
 printf "$GPROCESS" "lis_v" "lister virtual host"
-printf "$GPROCESS" "sho_v <port_in>" "show virtual host"
+printf "$GPROCESS" "sho_v <port_in>" "afficher virtual host"
+printf "$GPROCESS" "exe <script_in>" "executer script"
 printf "\n"
 }
 #================================================
@@ -60,13 +65,33 @@ GPhp_listen_init ; lRunFlag=1
 elif [ "$lKey" = "add" ] ; then 
 lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GPhp_listen_add "$lPort" ; lRunFlag=1
+# add_v
+elif [ "$lKey" = "add_v" ] ; then 
+lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lWebRoot=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GPhp_vhosts_add "$lPort" "$lWebRoot" ; lRunFlag=1
 # rem
 elif [ "$lKey" = "rem" ] ; then 
 lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GPhp_listen_remove "$lPort" ; lRunFlag=1
+# rem_v
+elif [ "$lKey" = "rem_v" ] ; then 
+lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GPhp_vhosts_remove "$lPort" ; lRunFlag=1
 # lis
 elif [ "$lKey" = "lis" ] ; then 
 GPhp_listen_list ; lRunFlag=1
+# lis_v
+elif [ "$lKey" = "lis_v" ] ; then 
+GPhp_vhosts_list ; lRunFlag=1
+# sho_v
+elif [ "$lKey" = "sho_v" ] ; then 
+lPort=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GPhp_vhosts_show "$lPort" ; lRunFlag=1
+# exe
+elif [ "$lKey" = "exe" ] ; then 
+lScript=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GPhp_scripts_exe "$lScript" ; lRunFlag=1
 #
 fi
 done
@@ -282,10 +307,17 @@ lBodyKey[lBodyIndex++] = lKey
 lStatus = 5
 }
 } END {
+lSep = "#================================================"
+printf("%s\n", lSep)
+printf("%s\n", "# Virtual Hosts")
 for(lIndex in lBodyKey) {
 lKey = lBodyKey[lIndex]
-printf("%s\n", lBodyMap[lKey])
+lLine = lBodyMap[lKey]
+lContain = gk_string("contain", lLine, "<VirtualHost.*>")
+if(lContain == 1) printf("%s\n", lSep)
+printf("%s\n", lLine)
 }
+printf("%s\n", lSep)
 }' $GHTTPD_VHOSTS_CONF
 }
 #================================================
@@ -328,10 +360,17 @@ lBodyKey[lBodyIndex++] = lKey
 lStatus = 5
 }
 } END {
+lSep = "#================================================"
+printf("%s\n", lSep)
+printf("%s\n", "# Virtual Hosts")
 for(lIndex in lIndexMap) {
-lKey = lBodyKey[lIndex]
-printf("%s\n", lBodyMap[lKey])
+lKey = lIndexMap[lIndex]
+lLine = lBodyMap[lKey]
+lContain = gk_string("contain", lLine, "<VirtualHost.*>")
+if(lContain == 1) printf("%s\n", lSep)
+printf("%s\n", lLine)
 }
+printf("%s\n", lSep)
 }' $GHTTPD_VHOSTS_CONF
 }
 #================================================
@@ -402,16 +441,17 @@ lLine = "</VirtualHost>" ; lKey = lPortIn "_" lCount++ ; lBodyMap[lKey] = lLine 
 
 if(lExist == 0) {
 lSep = "#================================================"
-printf("%s\n", lSep)
-printf("%s\n", "# Virtual Hosts")
+printf("") > FILENAME
+printf("%s\n", lSep) >> FILENAME
+printf("%s\n", "# Virtual Hosts") >> FILENAME
 for(lIndex in lBodyKey) {
 lKey = lBodyKey[lIndex]
 lLine = lBodyMap[lKey]
 lContain = gk_string("contain", lLine, "<VirtualHost.*>")
 if(lContain == 1) printf("%s\n", lSep)
-printf("%s\n", lLine)
+printf("%s\n", lLine) >> FILENAME
 }
-printf("%s\n", lSep)
+printf("%s\n", lSep) >> FILENAME
 }}' $GHTTPD_VHOSTS_CONF
 }
 #================================================
@@ -460,11 +500,28 @@ lKey = lIndexMap[lIndex]
 delete lBodyMap[lKey]
 delete lBodyKey[lIndex]
 }
+
+lSep = "#================================================"
+printf("") > FILENAME
+printf("%s\n", lSep) >> FILENAME
+printf("%s\n", "# Virtual Hosts") >> FILENAME
 for(lIndex in lBodyKey) {
 lKey = lBodyKey[lIndex]
-printf("%s\n", lBodyMap[lKey])
+lLine = lBodyMap[lKey]
+lContain = gk_string("contain", lLine, "<VirtualHost.*>")
+if(lContain == 1) printf("%s\n", lSep)
+printf("%s\n", lLine) >> FILENAME
+}
+printf("%s\n", lSep) >> FILENAME
 }
 }' $GHTTPD_VHOSTS_CONF
+}
+#================================================
+GPhp_scripts_exe() {
+local lScript=$1
+cd $GPHP_SCRIPT
+$GPHP_BIN $lScript
+cd $GPWD
 }
 #================================================
 GPhp_main "$@"
