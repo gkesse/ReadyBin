@@ -5,10 +5,14 @@ GPWD=$PWD
 GPATH=$(gz_config get GPATH) ; . $GPATH/.config
 #================================================
 lCheckIn="GCPP_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GCPP_MAKEFILE" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GGIT_MOD" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GGIT_URL" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GECLIPSE_PATH" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GJAVA_PATH" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GMINGW_PATH" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GQT_BIN" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GQT_MINGW" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export "PATH=$GJAVA_PATH:$PATH"
 export "PATH=$GMINGW_PATH:$PATH"
@@ -34,9 +38,18 @@ printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "tes" "tester module"
 printf "$GPROCESS" "ecl" "lancer eclipse"
+printf "$GPROCESS" "cle" "nettoyer module"
 printf "$GPROCESS" "com" "compiler module"
 printf "$GPROCESS" "run" "executer module"
-printf "$GPROCESS" "all" "compiler executer module"
+printf "$GPROCESS" "all" "nettoyer compiler executer module"
+printf "$GPROCESS" "qma" "qmake module"
+printf "$GPROCESS" "qma_c" "qmake compiler module"
+printf "$GPROCESS" "qma_cl" "qmake clean module"
+printf "$GPROCESS" "qma_r" "qmake executer module"
+printf "$GPROCESS" "qma_a" "qmake nettoyer compiler executer module"
+printf "$GPROCESS" "git_cl" "git cloner module"
+printf "$GPROCESS" "git_pu" "git tirer modifications module"
+printf "$GPROCESS" "git_pa" "git ajouter commiter pousser modifications module"
 printf "\n"
 }
 #================================================
@@ -49,19 +62,47 @@ if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 # tes
 if [ "$lKey" = "test" ] ; then 
-GCpp_test ; lRunFlag=1
+GCpp_test ; lRunFlag=1 ; break
 # ecl
 elif [ "$lKey" = "ecl" ] ; then 
-GCpp_eclipse ; lRunFlag=1
+GCpp_eclipse ; lRunFlag=1 ; break
+# cle
+elif [ "$lKey" = "cle" ] ; then 
+GCpp_clean ; lRunFlag=1 ; break
 # com
 elif [ "$lKey" = "com" ] ; then 
-GCpp_compile ; lRunFlag=1
+GCpp_compile ; lRunFlag=1 ; break
 # run
 elif [ "$lKey" = "run" ] ; then 
-GCpp_run ; lRunFlag=1
+GCpp_run "$@" ; lRunFlag=1 ; break
 # all
 elif [ "$lKey" = "all" ] ; then 
-GCpp_all ; lRunFlag=1
+GCpp_all "$@" ; lRunFlag=1 ; break
+# qma
+elif [ "$lKey" = "qma" ] ; then 
+GCpp_qmake ; lRunFlag=1 ; break
+# qma_c
+elif [ "$lKey" = "qma_c" ] ; then 
+GCpp_qmake_compile ; lRunFlag=1 ; break
+# qma_cl
+elif [ "$lKey" = "qma_cl" ] ; then 
+GCpp_qmake_clean ; lRunFlag=1 ; break
+# qma_r
+elif [ "$lKey" = "qma_r" ] ; then 
+GCpp_qmake_run "$@" ; lRunFlag=1 ; break
+# qma_a
+elif [ "$lKey" = "qma_a" ] ; then 
+GCpp_qmake_all "$@" ; lRunFlag=1 ; break
+# git_cl
+elif [ "$lKey" = "git_cl" ] ; then 
+lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GCpp_git_clone "$lName" ; lRunFlag=1 ; break
+# git_pa
+elif [ "$lKey" = "git_pa" ] ; then 
+GCpp_git_push_all ; lRunFlag=1 ; break
+# git_pu
+elif [ "$lKey" = "git_pu" ] ; then 
+GCpp_git_push_all ; lRunFlag=1 ; break
 #
 fi
 done
@@ -76,6 +117,12 @@ GCpp_eclipse() {
 $GECLIPSE_PATH/eclipse
 }
 #================================================
+GCpp_clean() {
+cd $GCPP_BUILD
+mingw32-make clean -f Makefile.config
+cd $GPWD
+}
+#================================================
 GCpp_compile() {
 cd $GCPP_BUILD
 mingw32-make compile -f Makefile.config
@@ -83,14 +130,62 @@ cd $GPWD
 }
 #================================================
 GCpp_run() {
-cd $GCPP_BUILD
-mingw32-make run -f Makefile.config
+cd $GCPP_BUILD ; echo
+bin/gp_cpp $2 $3 $4 $5 $6 $7 $8 $9
 cd $GPWD
 }
 #================================================
 GCpp_all() {
+GCpp_compile
+GCpp_run "$@"
+}
+#================================================
+GCpp_qmake() {
 cd $GCPP_BUILD
-mingw32-make -f Makefile.config
+mingw32-make qmake -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_qmake_compile() {
+cd $GCPP_BUILD
+mingw32-make
+cd $GPWD
+}
+#================================================
+GCpp_qmake_clean() {
+cd $GCPP_BUILD
+mingw32-make clean
+cd $GPWD
+}
+#================================================
+GCpp_qmake_run() {
+GCpp_run "$@"
+}
+#================================================
+GCpp_qmake_all() {
+GCpp_qmake
+GCpp_qmake_compile
+GCpp_qmake_run "$@"
+}
+#================================================
+GCpp_git_clone() {
+local lName=$1
+cd $GGIT_ROOT
+git clone $GGIT_URL $lName
+cd $GPWD
+}
+#================================================
+GCpp_git_push_all() {
+cd $GGIT_ROOT/$GGIT_MOD
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+cd $GPWD
+}
+#================================================
+GCpp_git_pull() {
+cd $GGIT_ROOT/$GGIT_MOD
+git pull
 cd $GPWD
 }
 #================================================
