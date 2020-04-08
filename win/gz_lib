@@ -1,0 +1,88 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+GPATH=$(gz_config get GPATH) ; . $GPATH/.config
+#================================================
+lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GLIB_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+GLib_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GLib_help "$@"
+else GLib_process "$@" ; fi
+}
+#================================================
+GLib_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les applications c++."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "tes" "tester module"
+printf "$GPROCESS" "git_cl" "git cloner module"
+printf "$GPROCESS" "git_pu" "git tirer modifications module"
+printf "$GPROCESS" "git_pa" "git ajouter commiter pousser modifications module"
+printf "\n"
+}
+#================================================
+GLib_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# tes
+if [ "$lKey" = "test" ] ; then 
+GLib_test ; lRunFlag=1 ; break
+# git_cl
+elif [ "$lKey" = "git_cl" ] ; then 
+lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GLib_git_clone "$lName" ; lRunFlag=1 ; break
+# git_pa
+elif [ "$lKey" = "git_pa" ] ; then 
+GLib_git_push_all ; lRunFlag=1 ; break
+# git_pu
+elif [ "$lKey" = "git_pu" ] ; then 
+GLib_git_push_all ; lRunFlag=1 ; break
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GLib_help ; fi 
+}
+#================================================
+GLib_test() {
+GLib_run
+}
+#================================================
+GLib_git_clone() {
+local lName=$1
+cd $GGIT_ROOT
+git clone $GGIT_URL $lName
+cd $GPWD
+}
+#================================================
+GLib_git_push_all() {
+cd $GLIB_PATH
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+cd $GPWD
+}
+#================================================
+GLib_git_pull() {
+cd $GLIB_PATH
+git pull
+cd $GPWD
+}
+#================================================
+GLib_main "$@"
+#================================================

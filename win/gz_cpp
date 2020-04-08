@@ -5,6 +5,7 @@ GPWD=$PWD
 GPATH=$(gz_config get GPATH) ; . $GPATH/.config
 #================================================
 lCheckIn="GCPP_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCPP_LOG" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_MOD" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_URL" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
@@ -42,6 +43,7 @@ printf "$GPROCESS" "cle" "nettoyer module"
 printf "$GPROCESS" "com" "compiler module"
 printf "$GPROCESS" "run" "executer module"
 printf "$GPROCESS" "all" "nettoyer compiler executer module"
+printf "$GPROCESS" "log" "afficher log"
 printf "$GPROCESS" "qma" "qmake module"
 printf "$GPROCESS" "qma_c" "qmake compiler module"
 printf "$GPROCESS" "qma_cl" "qmake clean module"
@@ -78,6 +80,9 @@ GCpp_run "$@" ; lRunFlag=1 ; break
 # all
 elif [ "$lKey" = "all" ] ; then 
 GCpp_all "$@" ; lRunFlag=1 ; break
+# log
+elif [ "$lKey" = "log" ] ; then 
+GCpp_log ; lRunFlag=1 ; break
 # qma
 elif [ "$lKey" = "qma" ] ; then 
 GCpp_qmake ; lRunFlag=1 ; break
@@ -125,6 +130,7 @@ cd $GPWD
 #================================================
 GCpp_compile() {
 cd $GCPP_BUILD
+rm -f bin/gp_cpp
 mingw32-make compile -f Makefile.config
 cd $GPWD
 }
@@ -140,6 +146,10 @@ GCpp_compile
 GCpp_run "$@"
 }
 #================================================
+GCpp_log() {
+tail -f $GCPP_LOG/debug.txt
+}
+#================================================
 GCpp_qmake() {
 cd $GCPP_BUILD
 mingw32-make qmake -f Makefile.config
@@ -148,6 +158,7 @@ cd $GPWD
 #================================================
 GCpp_qmake_compile() {
 cd $GCPP_BUILD
+rm -f bin/gp_cpp
 mingw32-make
 cd $GPWD
 }
