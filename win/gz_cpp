@@ -6,6 +6,7 @@ GPATH=$(gz_config get GPATH) ; . $GPATH/.config
 #================================================
 lCheckIn="GCPP_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_LOG" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCPP_DATA" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_MOD" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_URL" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
@@ -17,6 +18,8 @@ lCheckIn="GQT_MINGW" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCh
 #================================================
 export "PATH=$GJAVA_PATH:$PATH"
 export "PATH=$GMINGW_PATH:$PATH"
+#================================================
+export "AWKPATH=$GPATH/awk"
 #================================================
 GCpp_main() {
 lArgSize="$#"
@@ -83,6 +86,12 @@ GCpp_all "$@" ; lRunFlag=1 ; break
 # log
 elif [ "$lKey" = "log" ] ; then 
 GCpp_log ; lRunFlag=1 ; break
+# log_c
+elif [ "$lKey" = "log_c" ] ; then 
+GCpp_log_clear ; lRunFlag=1 ; break
+# res
+elif [ "$lKey" = "res" ] ; then 
+GCpp_resource_qt ; lRunFlag=1 ; break
 # qma
 elif [ "$lKey" = "qma" ] ; then 
 GCpp_qmake ; lRunFlag=1 ; break
@@ -148,6 +157,45 @@ GCpp_run "$@"
 #================================================
 GCpp_log() {
 tail -f $GCPP_LOG/debug.txt
+}
+#================================================
+GCpp_log_clear() {
+> $GCPP_LOG/debug.txt
+}
+#================================================
+GCpp_resource_qt() {
+lResFile="$GCPP_DATA/resources.qrc"
+lResRoot="$GCPP_DATA/data"
+cd $lResRoot
+find . -iname "*.*" | awk -v lResFile="$lResFile" '
+@include "gk_string"
+BEGIN {lLast = "" ; lIndex = 0 ; lResFlag = 0
+lLineMap[lIndex++] = "<!DOCTYPE RCC>"
+lLineMap[lIndex++] = "<RCC version=\"1.0\">"
+}
+{if($0 == ".") next
+if(gk_string("contain", $0, "readme") == 1) next
+lPrefix = gk_string("split", $0, "/", 2)
+if(lLast != lPrefix) {
+lLast = lPrefix
+if(lResFlag == 1) lLineMap[lIndex++] = "    </qresource>"
+lResFlag = 1
+lLineMap[lIndex++] = "    <qresource prefix=\"/" lPrefix "\">"
+}
+lAlias = gensub(/.*\/(.*)/, "\\1", "g", $0)
+lPath = gensub(/.\/(.*)/, "data/\\1", "g", $0)
+lLineMap[lIndex++] = "        <file alias=\"" lAlias "\">" lPath "</file>"
+} END {
+if(lResFlag == 1) lLineMap[lIndex++] = "    </qresource>"
+lLineMap[lIndex++] = "</RCC>"
+printf("") > lResFile
+for(lIndex in lLineMap) {
+lLine = lLineMap[lIndex]
+printf("%s\n", lLine) >> lResFile
+}
+}'
+cat $lResFile
+cd $GPWD
 }
 #================================================
 GCpp_qmake() {
