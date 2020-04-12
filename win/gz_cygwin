@@ -4,7 +4,10 @@ GPWD=$PWD
 #================================================
 GPATH=$(gz_config get GPATH) ; . $GPATH/.config
 #================================================
-lCheckIn="GCYGWIN_SETUP" ; if [ "${!lCheckIn}" = "" ] || ! [ -f "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCYGWIN_SETUP" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+lSetup=$(uname -a | awk '{lSetup="setup-x86.exe" ; if($6 == "x86_64") lSetup="setup-x86_64.exe" ; print lSetup}')
+GCYGWIN_SETUP=$GCYGWIN_SETUP/$lSetup
 #================================================
 GCygwin_main() {
 lArgSize="$#"

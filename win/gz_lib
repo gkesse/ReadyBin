@@ -63,6 +63,7 @@ if [ "$lRunFlag" = "0" ] ; then GLib_help ; fi
 #================================================
 GLib_install() {
 GLib_module_install "qt_awesome" "cpp" "win" "64"
+GLib_module_install "exprtk" "cpp" "win" "64"
 }
 #================================================
 GLib_module_install() {
@@ -96,6 +97,30 @@ if ! [ -f "$lArchive" ] ; then wget $lUrl ; fi
 if ! [ -d "$lDepot" ] ; then unzip $lArchive ; fi
 if ! [ -d "$lDstRoot" ] ; then mkdir -p $lDstRoot ; fi
 if ! [ -d "$lDstPath" ] ; then cp -rf $lDepot $lDstRoot ; fi
+cd $GPWD
+}
+#================================================
+GLib_exprtk_cpp_win_64_install() {
+local lModule=$1
+local lLanguage=$2
+local lPlateform=$3
+local lArchi=$4
+if [ "$lModule" = "" ] ; then echo $(gz_color s "module ?" yellow fg) ; return ; fi 
+lUrl="https://codeplexarchive.blob.core.windows.net/archive/projects/fastmathparser/fastmathparser.zip"
+lSource=$lModule/source
+lArchive=fastmathparser.zip
+lDepot=sourceCode/fastmathparser
+lDstRoot=$GLIB_DEV/$lModule/${lLanguage}_${lPlateform}_${lArchi}
+lDstPath=$lDstRoot/exprtk.hpp
+cd $GLIB_BUILD
+if ! [ -d "$lSource" ] ; then mkdir -p $lSource ; fi
+cd $lSource
+if ! [ -f "$lArchive" ] ; then wget $lUrl ; fi
+if ! [ -d "$lDepot" ] ; then unzip $lArchive ; fi
+if ! [ -d "$lDstRoot" ] ; then mkdir -p $lDstRoot ; fi
+if ! [ -f "$lDstPath" ] ; then 
+cp -rf $lDepot/exprtk.hpp $lDstRoot
+fi
 cd $GPWD
 }
 #================================================

@@ -7,6 +7,7 @@ GPATH=$(gz_config get GPATH) ; . $GPATH/.config
 lCheckIn="GCPP_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_LOG" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_DATA" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GGIT_HOME" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_MOD" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GGIT_URL" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
@@ -17,7 +18,7 @@ lCheckIn="GQT_BIN" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lChec
 lCheckIn="GQT_MINGW" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export "PATH=$GJAVA_PATH:$PATH"
-export "PATH=$GMINGW_PATH:$PATH"
+export "PATH=$GGIT_HOME:$PATH"
 #================================================
 export "AWKPATH=$GPATH/awk"
 #================================================
@@ -83,6 +84,18 @@ GCpp_run "$@" ; lRunFlag=1 ; break
 # all
 elif [ "$lKey" = "all" ] ; then 
 GCpp_all "$@" ; lRunFlag=1 ; break
+# cyg_cl
+elif [ "$lKey" = "cyg_cl" ] ; then 
+GCpp_cygwin_clean; lRunFlag=1 ; break
+# cyg_c
+elif [ "$lKey" = "cyg_c" ] ; then 
+GCpp_cygwin_compile ; lRunFlag=1 ; break
+# cyg_r
+elif [ "$lKey" = "cyg_r" ] ; then 
+GCpp_cygwin_run "$@" ; lRunFlag=1 ; break
+# cyg_a
+elif [ "$lKey" = "cyg_a" ] ; then 
+GCpp_cygwin_all "$@" ; lRunFlag=1 ; break
 # log
 elif [ "$lKey" = "log" ] ; then 
 GCpp_log ; lRunFlag=1 ; break
@@ -133,14 +146,14 @@ $GECLIPSE_PATH/eclipse
 #================================================
 GCpp_clean() {
 cd $GCPP_BUILD
-mingw32-make clean -f Makefile.config
+$GMINGW_PATH/mingw32-make clean -f Makefile.config
 cd $GPWD
 }
 #================================================
 GCpp_compile() {
 cd $GCPP_BUILD
 rm -f bin/gp_cpp
-mingw32-make compile -f Makefile.config
+$GMINGW_PATH/mingw32-make compile -f Makefile.config
 cd $GPWD
 }
 #================================================
@@ -153,6 +166,30 @@ cd $GPWD
 GCpp_all() {
 GCpp_compile
 GCpp_run "$@"
+}
+#================================================
+GCpp_cygwin_clean() {
+cd $GCPP_BUILD
+make clean -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_cygwin_compile() {
+cd $GCPP_BUILD
+rm -f bin/gp_cpp
+make compile -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_cygwin_run() {
+cd $GCPP_BUILD ; echo
+bin/gp_cpp $2 $3 $4 $5 $6 $7 $8 $9
+cd $GPWD
+}
+#================================================
+GCpp_cygwin_all() {
+GCpp_cygwin_compile
+GCpp_cygwin_run "$@"
 }
 #================================================
 GCpp_log() {
