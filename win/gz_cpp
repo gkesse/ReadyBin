@@ -18,7 +18,6 @@ lCheckIn="GQT_BIN" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lChec
 lCheckIn="GQT_MINGW" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export "PATH=$GJAVA_PATH:$PATH"
-export "PATH=$GGIT_HOME:$PATH"
 #================================================
 export "AWKPATH=$GPATH/awk"
 #================================================
