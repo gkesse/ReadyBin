@@ -1,6 +1,7 @@
 @echo off 
 ::===============================================
 set "GBIN_PATH=C:\Users\Admin\Downloads\Programs\ReadyBin"
+set "GCPP_PATH=C:\Users\Admin\Downloads\Programs\ReadyCpp"
 set "GCPP_BUILD=C:\Users\Admin\Downloads\Programs\ReadyCpp\win"
 set "GJAVA_HOME=C:\Program Files\Java\jdk-11.0.1\bin"
 set "GMUPARSER_BIN=C:\Users\Admin\Downloads\Programs\ReadyLib\dev\muparser\mingw\bin"

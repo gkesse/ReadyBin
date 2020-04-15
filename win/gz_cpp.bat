@@ -2,6 +2,8 @@
 ::===============================================
 call .config.bat
 ::===============================================
+if "%GCPP_PATH%" == "" ( echo GCPP_PATH ? & goto :eof ) 
+if not exist %GCPP_PATH% ( echo GCPP_PATH ? & goto :eof )
 if "%GCPP_BUILD%" == "" ( echo GCPP_BUILD ? & goto :eof ) 
 if not exist %GCPP_BUILD% ( echo GCPP_BUILD ? & goto :eof )
 if "%GMUPARSER_BIN%" == "" ( echo GMUPARSER_BIN ? & goto :eof ) 
@@ -13,7 +15,7 @@ if not exist %GMINGW_BIN_64% ( echo GMINGW_BIN_64 ? & goto :eof )
 if "%GCYGWIN_BIN%" == "" ( echo GCYGWIN_BIN ? & goto :eof ) 
 if not exist %GCYGWIN_BIN% ( echo GCYGWIN_BIN ? & goto :eof )
 ::===============================================
-::set PATH=%GMINGW_BIN%;%PATH%
+set PATH=%GMINGW_BIN_64%;%PATH%
 set PATH=%GMUPARSER_BIN%;%PATH%
 set PATH=%GCPP_BUILD%\bin;%PATH%
 ::===============================================
@@ -35,6 +37,7 @@ echo %GTAB%Operations sur les applications c++.
 echo.
 echo Utilisation:
 echo %GTAB%%GSCRPIT% : afficher aide
+echo %GTAB%%GSCRPIT% tes : tester module
 echo %GTAB%%GSCRPIT% cle : nettoyer module
 echo %GTAB%%GSCRPIT% rmv : supprimer module
 echo %GTAB%%GSCRPIT% com : compiler module
@@ -44,6 +47,8 @@ echo %GTAB%%GSCRPIT% qma : qmake module
 echo %GTAB%%GSCRPIT% qma_c : qmake compiler module
 echo %GTAB%%GSCRPIT% qma_a : qmake compiler executer module
 echo %GTAB%%GSCRPIT% log : afficher log module
+echo %GTAB%%GSCRPIT% git_pa : git ajouter commiter pousser modifications
+echo %GTAB%%GSCRPIT% git_pu : git tirer modifications
 echo.
 goto :eof
 ::===============================================
@@ -59,8 +64,10 @@ if "%1" == "tes" ( goto :GCpp_test
 ) else ( if "%1" == "qma_cl" ( goto :GCpp_qmake_clean
 ) else ( if "%1" == "qma_a" ( goto :GCpp_qmake_all
 ) else ( if "%1" == "log" ( goto :GCpp_log
+) else ( if "%1" == "git_pa" ( goto :GCpp_git_push_all
+) else ( if "%1" == "git_pu" ( goto :GCpp_git_pull
 ) else ( goto :GCpp_help
-)))))))))))
+)))))))))))))
 goto :eof
 ::===============================================
 :GCpp_test
@@ -82,7 +89,7 @@ goto :eof
 ::===============================================
 :GCpp_compile
 cd %GCPP_BUILD%
-del bin\*.exe
+del bin\gz_cpp.exe
 mingw32-make compile -f Makefile.config
 cd %GPWD%
 goto :eof
@@ -108,7 +115,7 @@ goto :eof
 ::===============================================
 :GCpp_qmake_compile
 cd %GCPP_BUILD%
-del bin\*.exe
+del bin\gz_cpp.exe
 mingw32-make
 cd %GPWD%
 goto :eof
@@ -127,7 +134,22 @@ goto :eof
 ::===============================================
 :GCpp_log
 cd %GCPP_BUILD%
-%GCYGWIN_BIN%/tail -f data\debug\debug\debug.txt
+set "lPath=%HOMEDRIVE%%HOMEPATH%\.readydev\readycpp\data\debug\debug.txt"
+%GCYGWIN_BIN%\tail -f %lPath%
+cd %GPWD%
+goto :eof
+::===============================================
+:GCpp_git_push_all
+cd %GCPP_PATH%
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+cd %GPWD%
+goto :eof
+::===============================================
+:GCpp_git_pull
+cd %GCPP_PATH%
+git pull
 cd %GPWD%
 goto :eof
 ::===============================================
