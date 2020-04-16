@@ -8,6 +8,8 @@ if "%GCPP_BUILD%" == "" ( echo GCPP_BUILD ? & goto :eof )
 if not exist %GCPP_BUILD% ( echo GCPP_BUILD ? & goto :eof )
 if "%GMUPARSER_BIN%" == "" ( echo GMUPARSER_BIN ? & goto :eof ) 
 if not exist %GMUPARSER_BIN% ( echo GMUPARSER_BIN ? & goto :eof )
+if "%GOPENCV_BIN%" == "" ( echo GOPENCV_BIN ? & goto :eof ) 
+if not exist %GOPENCV_BIN% ( echo GOPENCV_BIN ? & goto :eof )
 if "%GMINGW_BIN%" == "" ( echo GMINGW_BIN ? & goto :eof ) 
 if not exist %GMINGW_BIN% ( echo GMINGW_BIN ? & goto :eof )
 if "%GMINGW_BIN_64%" == "" ( echo GMINGW_BIN_64 ? & goto :eof ) 
@@ -15,8 +17,9 @@ if not exist %GMINGW_BIN_64% ( echo GMINGW_BIN_64 ? & goto :eof )
 if "%GCYGWIN_BIN%" == "" ( echo GCYGWIN_BIN ? & goto :eof ) 
 if not exist %GCYGWIN_BIN% ( echo GCYGWIN_BIN ? & goto :eof )
 ::===============================================
-set PATH=%GMINGW_BIN_64%;%PATH%
+set PATH=%GMINGW_BIN%;%PATH%
 set PATH=%GMUPARSER_BIN%;%PATH%
+set PATH=%GOPENCV_BIN%;%PATH%
 set PATH=%GCPP_BUILD%\bin;%PATH%
 ::===============================================
 set "GPWD=%cd%"
@@ -115,7 +118,7 @@ goto :eof
 ::===============================================
 :GCpp_qmake_compile
 cd %GCPP_BUILD%
-del bin\gz_cpp.exe
+del bin\gp_cpp.exe
 mingw32-make
 cd %GPWD%
 goto :eof
