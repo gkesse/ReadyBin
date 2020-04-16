@@ -45,11 +45,13 @@ goto :eof
 gz_bin git_pa &^
 gz_lib git_pa &^
 gz_cpp git_pa &^
+echo ok
 goto :eof
 ::===============================================
 :GGit_git_pull
 gz_bin git_pu &^
 gz_lib git_pu &^
 gz_cpp git_pu &^
+echo ok
 goto :eof
 ::===============================================
