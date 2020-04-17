@@ -9,6 +9,7 @@ set "GMUPARSER_BIN=C:\Users\Admin\Downloads\Programs\ReadyLib\dev\muparser\mingw
 set "GOPENCV_BIN=C:\Users\Admin\Downloads\Programs\ReadyLib\dev\opencv\mingw\bin"
 set "GMINGW_BIN=C:\MinGW\bin"
 set "GMINGW_BIN_64=C:\Users\Admin\Downloads\x86_64-8.1.0-release-win32-sjlj-rt_v6-rev0\mingw64\bin"
+set "GMINGW_QT=C:\Qt\Qt5.8.0\Tools\mingw530_32\bin"
 set "GCMAKE_BIN=C:\Program Files\CMake\bin"
 set "GCYGWIN_BIN=C:\cygwin\bin"
 ::===============================================
