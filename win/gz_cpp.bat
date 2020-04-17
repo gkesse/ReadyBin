@@ -12,14 +12,15 @@ if "%GOPENCV_BIN%" == "" ( echo GOPENCV_BIN ? & goto :eof )
 if not exist %GOPENCV_BIN% ( echo GOPENCV_BIN ? & goto :eof )
 if "%GMINGW_BIN%" == "" ( echo GMINGW_BIN ? & goto :eof ) 
 if not exist %GMINGW_BIN% ( echo GMINGW_BIN ? & goto :eof )
-if "%GMINGW_BIN_64%" == "" ( echo GMINGW_BIN_64 ? & goto :eof ) 
-if not exist %GMINGW_BIN_64% ( echo GMINGW_BIN_64 ? & goto :eof )
+if "%GMINGW_W64%" == "" ( echo GMINGW_W64 ? & goto :eof ) 
+if not exist %GMINGW_W64% ( echo GMINGW_W64 ? & goto :eof )
 if "%GMINGW_QT%" == "" ( echo GMINGW_QT ? & goto :eof ) 
 if not exist %GMINGW_QT% ( echo GMINGW_QT ? & goto :eof )
 if "%GCYGWIN_BIN%" == "" ( echo GCYGWIN_BIN ? & goto :eof ) 
 if not exist %GCYGWIN_BIN% ( echo GCYGWIN_BIN ? & goto :eof )
 ::===============================================
 set "PATH=%GMINGW_BIN%;%PATH%"
+set "PATH=%GMINGW_W64%;%PATH%"
 set "PATH=%GMUPARSER_BIN%;%PATH%"
 set "PATH=%GOPENCV_BIN%;%PATH%"
 set "PATH=%GCPP_BUILD%\bin;%PATH%"
