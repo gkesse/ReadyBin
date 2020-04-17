@@ -45,6 +45,7 @@ goto :eof
 gz_bin git_pa &^
 gz_lib git_pa &^
 gz_cpp git_pa &^
+gz_c git_pa &^
 goto :eof
 ::===============================================
 :GGit_git_pull
