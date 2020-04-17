@@ -3,6 +3,7 @@
 set "GBIN_PATH=C:\Users\Admin\Downloads\Programs\ReadyBin"
 set "GLIB_PATH=C:\Users\Admin\Downloads\Programs\ReadyLib"
 set "GCPP_PATH=C:\Users\Admin\Downloads\Programs\ReadyCpp"
+set "GCPP_BUILD=C:\Users\Admin\Downloads\Programs\ReadyCpp\win"
 set "GC_PATH=C:\Users\Admin\Downloads\Programs\ReadyC"
 set "GC_BUILD=C:\Users\Admin\Downloads\Programs\ReadyC\win"
 set "GJAVA_HOME=C:\Program Files\Java\jdk-11.0.1\bin"
