@@ -52,5 +52,6 @@ goto :eof
 gz_bin git_pu &^
 gz_lib git_pu &^
 gz_cpp git_pu &^
+gz_c git_pu &^
 goto :eof
 ::===============================================

@@ -6,16 +6,29 @@ if "%GC_PATH%" == "" ( echo GC_PATH ? & goto :eof )
 if not exist %GC_PATH% ( echo GC_PATH ? & goto :eof )
 if "%GC_BUILD%" == "" ( echo GC_BUILD ? & goto :eof ) 
 if not exist %GC_BUILD% ( echo GC_BUILD ? & goto :eof )
+if "%GPKGCONFIG_BIN%" == "" ( echo GPKGCONFIG_BIN ? & goto :eof ) 
+if not exist %GPKGCONFIG_BIN% ( echo GPKGCONFIG_BIN ? & goto :eof )
 if "%GMINGW_BIN%" == "" ( echo GMINGW_BIN ? & goto :eof ) 
 if not exist %GMINGW_BIN% ( echo GMINGW_BIN ? & goto :eof )
 if "%GMINGW_W64%" == "" ( echo GMINGW_W64 ? & goto :eof ) 
 if not exist %GMINGW_W64% ( echo GMINGW_W64 ? & goto :eof )
 if "%GCYGWIN_BIN%" == "" ( echo GCYGWIN_BIN ? & goto :eof ) 
 if not exist %GCYGWIN_BIN% ( echo GCYGWIN_BIN ? & goto :eof )
+if "%GGTK_BIN%" == "" ( echo GGTK_BIN ? & goto :eof ) 
+if not exist %GGTK_BIN% ( echo GGTK_BIN ? & goto :eof )
 ::===============================================
+set "PATH=%GGTK_BIN%;%PATH%"
 set "PATH=%GMINGW_W64%;%PATH%"
 set "PATH=%GMINGW_BIN%;%PATH%"
 set "PATH=%GC_BUILD%\bin;%PATH%"
+set "PATH=%GPKGCONFIG_BIN%;%PATH%"
+::===============================================
+set "PKG_CONFIG_PATH="
+set "PKG_CONFIG_PATH=%GLIB_PATH%\dev\gtk\3.6.4\mingw32\lib\pkgconfig;%PKG_CONFIG_PATH%"
+::===============================================
+::set "GPKG_NAME=gtk+-3.0"
+::pkg-config %GPKG_NAME% --cflags
+::pkg-config %GPKG_NAME% --clibs
 ::===============================================
 set "GPWD=%cd%"
 ::===============================================
