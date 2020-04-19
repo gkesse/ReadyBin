@@ -2,11 +2,9 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH=$(gz_config get GPATH) ; . $GPATH/.config
+. $GPATH/.config
 #================================================
-lCheckIn="GGIT_HOME" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-#================================================
-export "PATH=$GGIT_HOME:$PATH"
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 GGit_main() {
 lArgSize="$#"
@@ -33,6 +31,8 @@ printf "$GPROCESS" "con_ue" "configurer user email"
 printf "$GPROCESS" "con_ce" "configurer code editor"
 printf "$GPROCESS" "con_l" "lister configurations"
 printf "$GPROCESS" "con_a" "configurer tout"
+printf "$GPROCESS" "git_pu" "git tirer modifications module"
+printf "$GPROCESS" "git_pa" "git ajouter commiter pousser modifications module"
 printf "\n"
 }
 #================================================
@@ -61,6 +61,12 @@ GGit_config_all ; lRunFlag=1 ; break
 # con_l
 elif [ "$lKey" = "con_l" ] ; then 
 GGit_config_list ; lRunFlag=1 ; break
+# git_pa
+elif [ "$lKey" = "git_pa" ] ; then 
+GGit_push_all ; lRunFlag=1 ; break
+# git_pu
+elif [ "$lKey" = "git_pu" ] ; then 
+GGit_pull_all ; lRunFlag=1 ; break
 #
 fi
 done
@@ -97,6 +103,16 @@ GGit_config_code_editor
 #================================================
 GGit_config_list() {
 git config --list
+}
+#================================================
+GGit_push_all() {
+gz_bin git_pa
+gz_c git_pa
+}
+#================================================
+GGit_pull_all() {
+gz_bin git_pu
+gz_c git_pu
 }
 #================================================
 GGit_main "$@"

@@ -1,0 +1,52 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+GEclipse_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GEclipse_help "$@"
+else GEclipse_process "$@" ; fi
+}
+#================================================
+GEclipse_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les commandes eclipse."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "\n"
+}
+#================================================
+GEclipse_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# sta
+if [ "$lKey" = "sta" ] ; then 
+GEclipse_start ; lRunFlag=1
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GEclipse_help ; fi 
+}
+#================================================
+GEclipse_start() {
+eclipse
+}
+#================================================
+GEclipse_main "$@"
+#================================================

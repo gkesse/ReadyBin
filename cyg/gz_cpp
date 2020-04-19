@@ -2,23 +2,16 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH=$(gz_config get GPATH) ; . $GPATH/.config
+. $GPATH/.config
 #================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCPP_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_LOG" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_DATA" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GGIT_HOME" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GGIT_MOD" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GGIT_URL" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GECLIPSE_PATH" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GJAVA_PATH" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GMINGW_PATH" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GQT_BIN" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GQT_MINGW" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-#================================================
-export "PATH=$GJAVA_PATH:$PATH"
-export "PATH=$GGIT_HOME:$PATH"
 #================================================
 export "AWKPATH=$GPATH/awk"
 #================================================
@@ -42,7 +35,6 @@ printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "tes" "tester module"
-printf "$GPROCESS" "ecl" "lancer eclipse"
 printf "$GPROCESS" "cle" "nettoyer module"
 printf "$GPROCESS" "com" "compiler module"
 printf "$GPROCESS" "run" "executer module"
@@ -69,9 +61,6 @@ lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 # tes
 if [ "$lKey" = "test" ] ; then 
 GCpp_test ; lRunFlag=1 ; break
-# ecl
-elif [ "$lKey" = "ecl" ] ; then 
-GCpp_eclipse ; lRunFlag=1 ; break
 # cle
 elif [ "$lKey" = "cle" ] ; then 
 GCpp_clean ; lRunFlag=1 ; break
@@ -138,10 +127,6 @@ if [ "$lRunFlag" = "0" ] ; then GCpp_help ; fi
 #================================================
 GCpp_test() {
 GCpp_run
-}
-#================================================
-GCpp_eclipse() {
-$GECLIPSE_PATH/eclipse
 }
 #================================================
 GCpp_clean() {
@@ -265,14 +250,19 @@ GCpp_qmake_run "$@"
 }
 #================================================
 GCpp_git_clone() {
-local lName=$1
-cd $GGIT_ROOT
-git clone $GGIT_URL $lName
+local lRoot=$1
+local lUrl=$2
+local lName=$3
+lCheckIn="lRoot" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="lUrl" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lRoot=$(gz_cygwin c "$lRoot")
+cd $lRoot
+git clone $lUrl $lName
 cd $GPWD
 }
 #================================================
 GCpp_git_push_all() {
-cd $GGIT_ROOT/$GGIT_MOD
+cd $GCPP_PATH
 git add --all
 git commit -m "Initial Commit"
 git push -u origin master
@@ -280,7 +270,7 @@ cd $GPWD
 }
 #================================================
 GCpp_git_pull() {
-cd $GGIT_ROOT/$GGIT_MOD
+cd $GCPP_PATH
 git pull
 cd $GPWD
 }
