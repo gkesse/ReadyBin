@@ -125,7 +125,10 @@ cd $GPWD
 }
 #================================================
 GC_log_clear() {
-> $GC_LOG/debug.txt
+cd $GC_BUILD
+lPath=$HOME/.readydev/readyc/data/debug/debug.txt
+> $lPath
+cd $GPWD
 }
 #================================================
 GC_git_clone() {

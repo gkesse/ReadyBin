@@ -25,6 +25,7 @@ printf "\t%s\n" "Operations sur les commandes eclipse."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "sta" "demarrer eclipse"
 printf "\n"
 }
 #================================================

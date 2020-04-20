@@ -7,11 +7,7 @@ GPWD=$PWD
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GCPP_LOG" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GCPP_DATA" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GMINGW_PATH" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GQT_BIN" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GQT_MINGW" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 export "AWKPATH=$GPATH/awk"
 #================================================
@@ -178,11 +174,17 @@ GCpp_cygwin_run "$@"
 }
 #================================================
 GCpp_log() {
-tail -f $GCPP_LOG/debug.txt
+cd $GCPP_BUILD
+lPath=$HOME/.readydev/readycpp/data/debug/debug.txt
+tail -f $lPath
+cd $GPWD
 }
 #================================================
 GCpp_log_clear() {
-> $GCPP_LOG/debug.txt
+cd $GCPP_BUILD
+lPath=$HOME/.readydev/readycpp/data/debug/debug.txt
+> $lPath
+cd $GPWD
 }
 #================================================
 GCpp_resource_qt() {
