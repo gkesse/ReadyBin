@@ -127,14 +127,14 @@ GCpp_run
 #================================================
 GCpp_clean() {
 cd $GCPP_BUILD
-$GMINGW_PATH/mingw32-make clean -f Makefile.config
+make clean -f Makefile.config
 cd $GPWD
 }
 #================================================
 GCpp_compile() {
 cd $GCPP_BUILD
 rm -f bin/gp_cpp
-$GMINGW_PATH/mingw32-make compile -f Makefile.config
+make compile -f Makefile.config
 cd $GPWD
 }
 #================================================
@@ -224,20 +224,20 @@ cd $GPWD
 #================================================
 GCpp_qmake() {
 cd $GCPP_BUILD
-mingw32-make qmake -f Makefile.config
+make qmake -f Makefile.config
 cd $GPWD
 }
 #================================================
 GCpp_qmake_compile() {
 cd $GCPP_BUILD
 rm -f bin/gp_cpp
-mingw32-make
+make
 cd $GPWD
 }
 #================================================
 GCpp_qmake_clean() {
 cd $GCPP_BUILD
-mingw32-make clean
+make clean
 cd $GPWD
 }
 #================================================
