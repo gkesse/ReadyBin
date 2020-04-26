@@ -107,12 +107,14 @@ git config --list
 #================================================
 GGit_push_all() {
 gz_bin git_pa
-gz_c git_pa
+gz_c git_pu
+gz_cpp git_pu
 }
 #================================================
 GGit_pull_all() {
 gz_bin git_pu
 gz_c git_pu
+gz_cpp git_pu
 }
 #================================================
 GGit_main "$@"
