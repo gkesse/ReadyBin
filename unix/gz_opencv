@@ -5,8 +5,8 @@ GPWD=$PWD
 . $GPATH/.config
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GOpenCV_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-lCheckIn="GOpenCV_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GOPENCV_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GOPENCV_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 GOpenCV_main() {
 lArgSize="$#"
@@ -47,7 +47,7 @@ while [ 1 ] ; do
 if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 # tes
-if [ "$lKey" = "test" ] ; then 
+if [ "$lKey" = "tes" ] ; then 
 GOpenCV_test ; lRunFlag=1 ; break
 # cle
 elif [ "$lKey" = "cle" ] ; then 
@@ -88,26 +88,26 @@ if [ "$lRunFlag" = "0" ] ; then GOpenCV_help ; fi
 }
 #================================================
 GOpenCV_test() {
-GOpenCV_run
+echo "$FUNCNAME"
 }
 #================================================
 GOpenCV_clean() {
-cd $GOpenCV_BUILD
-make clean -f Makefile.config
+cd $GOPENCV_BUILD
+make clean
 cd $GPWD
 }
 #================================================
 GOpenCV_compile() {
-cd $GOpenCV_BUILD
-rm -f bin/gp_c
-make compile -f Makefile.config
+cd $GOPENCV_BUILD
+rm -f bin/*
+make compile
 cd $GPWD
 }
 #================================================
 GOpenCV_run() {
-cd $GOpenCV_BUILD
+cd $GOPENCV_BUILD
 echo
-gp_c $2 $3 $4 $5 $6 $7 $8 $9
+bin/gp_opencv $2 $3 $4 $5 $6 $7 $8 $9
 echo
 cd $GPWD
 }
@@ -118,14 +118,14 @@ GOpenCV_run "$@"
 }
 #================================================
 GOpenCV_log() {
-cd $GOpenCV_BUILD
+cd $GOPENCV_BUILD
 lPath=$HOME/.readydev/readyc/data/debug/debug.txt
 tail -f $lPath
 cd $GPWD
 }
 #================================================
 GOpenCV_log_clear() {
-cd $GOpenCV_BUILD
+cd $GOPENCV_BUILD
 lPath=$HOME/.readydev/readyc/data/debug/debug.txt
 > $lPath
 cd $GPWD
@@ -144,7 +144,7 @@ cd $GPWD
 }
 #================================================
 GOpenCV_git_push_all() {
-cd $GOpenCV_PATH
+cd $GOPENCV_PATH
 git add --all
 git commit -m "Initial Commit"
 git push -u origin master
@@ -152,7 +152,7 @@ cd $GPWD
 }
 #================================================
 GOpenCV_git_pull() {
-cd $GOpenCV_PATH
+cd $GOPENCV_PATH
 git pull
 cd $GPWD
 }
