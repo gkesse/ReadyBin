@@ -4,6 +4,8 @@ GPWD=$PWD
 #================================================
 GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix
 #================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
 GCONFIG_NAME=.config
 GCONFIG_PATH=$GPATH/$GCONFIG_NAME
 #================================================
@@ -30,9 +32,9 @@ printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "init" "initialiser config"
 printf "$GPROCESS" "show" "afficher donnees"
-printf "$GPROCESS" "set" "ajouter donnee"
-printf "$GPROCESS" "get" "lire donnee"
-printf "$GPROCESS" "check" "verifier donnee"
+printf "$GPROCESS" "set <key_in> <value_in>" "ajouter donnee"
+printf "$GPROCESS" "get <key_in>" "lire donnee"
+printf "$GPROCESS" "check <key_in>" "verifier donnee"
 printf "\n"
 }
 #================================================
@@ -57,7 +59,7 @@ elif [ "$lKey" = "check" ] ; then
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GConfig_check_data "$lKey" ; lRunFlag=1
 # set
-elif [ "$lKey" = "set_d" ] ; then 
+elif [ "$lKey" = "set" ] ; then 
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lValue=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GConfig_set_data "$lKey" "$lValue" ; lRunFlag=1

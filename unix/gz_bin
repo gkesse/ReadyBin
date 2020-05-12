@@ -5,8 +5,8 @@ GPWD=$PWD
 GPATH=$(gz_config get GPATH)
 GBIN_PATH=$(gz_config get GBIN_PATH)
 #================================================
-if [ "$GPATH" = "" ] || ! [ -d "$GPATH" ] ; then echo $(gz_color s "GPATH ?" yellow fg) ; exit ; fi 
-if [ "$GBIN_PATH" = "" ] || ! [ -d "$GBIN_PATH" ] ; then echo $(gz_color s "GBIN_PATH ?" yellow fg) ; exit ; fi 
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
 GBin_main() {
 lArgSize="$#"
