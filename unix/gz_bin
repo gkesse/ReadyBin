@@ -86,15 +86,15 @@ if [ "$lRunFlag" = "0" ] ; then GBin_help ; fi
 #================================================
 GBin_git_push_all() {
 cd $GBIN_PATH
-git add --all
-git commit -m "Initial Commit"
-git push -u origin master
+sudo git add --all
+sudo git commit -m "Initial Commit"
+sudo git push -u origin master
 cd $GPWD
 }
 #================================================
 GBin_git_pull() {
 cd $GBIN_PATH
-git pull
+sudo git pull
 cd $GPWD
 }
 #================================================
