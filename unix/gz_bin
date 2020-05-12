@@ -2,8 +2,7 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH=$(gz_config get GPATH)
-GBIN_PATH=$(gz_config get GBIN_PATH)
+. $GPATH/.config
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
@@ -27,17 +26,8 @@ printf "\t%s\n" "Operations sur le dossier ReadyBin."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
-printf "$GPROCESS" "git_s" "afficher status git"
-printf "$GPROCESS" "git_a" "ajouter fichiers git"
-printf "$GPROCESS" "git_c" "commiter modifications git"
-printf "$GPROCESS" "git_p" "pousser modifications git"
-printf "$GPROCESS" "git_pu" "tirer modifications git"
 printf "$GPROCESS" "git_pa" "ajouter commiter valider modifications git"
-printf "$GPROCESS" "git_sn" "initialiser nom utilisateur git"
-printf "$GPROCESS" "git_se" "initialiser email utilisateur git"
-printf "$GPROCESS" "git_ls" "lister config git"
-printf "$GPROCESS" "set_p" "initialiser chemin"
-printf "$GPROCESS" "get_p" "lire chemin"
+printf "$GPROCESS" "git_pu" "tirer modifications git"
 printf "$GPROCESS" "chmod" "autoriser permission fichiers"
 printf "$GPROCESS" "cp <file_in> <file_out>" "copier fichier"
 printf "$GPROCESS" "cd" "se deplacer dans dossier"
@@ -55,17 +45,7 @@ lRunFlag=0
 while [ 1 ] ; do
 if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-# git_s
-if [ "$lKey" = "git_s" ] ; then 
-GBin_git_status ; lRunFlag=1
-# git_a
-elif [ "$lKey" = "git_a" ] ; then 
-GBin_git_add_all ; lRunFlag=1
-# git_c
-elif [ "$lKey" = "git_c" ] ; then 
-GBin_git_commit ; lRunFlag=1
-# git_p
-elif [ "$lKey" = "git_p" ] ; then 
+if [ "$lKey" = "git_p" ] ; then 
 GBin_git_push ; lRunFlag=1
 # git_pa
 elif [ "$lKey" = "git_pa" ] ; then 
@@ -73,24 +53,6 @@ GBin_git_push_all ; lRunFlag=1
 # git_pu
 elif [ "$lKey" = "git_pu" ] ; then 
 GBin_git_pull ; lRunFlag=1
-# git_sn
-elif [ "$lKey" = "git_sn" ] ; then 
-lUsername=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GBin_git_set_user_name "$lUsername" ; lRunFlag=1
-# git_se
-elif [ "$lKey" = "git_se" ] ; then 
-lEmail=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GBin_git_set_user_email "$lEmail" ; lRunFlag=1
-# git_ls
-elif [ "$lKey" = "git_ls" ] ; then 
-GBin_git_config_list ; lRunFlag=1
-# set_p
-elif [ "$lKey" = "set_p" ] ; then 
-lPath=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GBin_set_path "$lPath" ; lRunFlag=1
-# get_p
-elif [ "$lKey" = "get_p" ] ; then 
-GBin_get_path ; lRunFlag=1
 # chmod
 elif [ "$lKey" = "chmod" ] ; then 
 GBin_chmod ; lRunFlag=1
@@ -122,30 +84,6 @@ done
 if [ "$lRunFlag" = "0" ] ; then GBin_help ; fi 
 }
 #================================================
-GBin_git_status() {
-cd $GBIN_PATH
-git status
-cd $GPWD
-}
-#================================================
-GBin_git_add_all() {
-cd $GBIN_PATH
-git add --all
-cd $GPWD
-}
-#================================================
-GBin_git_commit() {
-cd $GBIN_PATH
-git commit -m "Initial Commit"
-cd $GPWD
-}
-#================================================
-GBin_git_push() {
-cd $GBIN_PATH
-git push -u origin master
-cd $GPWD
-}
-#================================================
 GBin_git_push_all() {
 cd $GBIN_PATH
 git add --all
@@ -158,34 +96,6 @@ GBin_git_pull() {
 cd $GBIN_PATH
 git pull
 cd $GPWD
-}
-#================================================
-GBin_git_set_user_name() {
-local lUsername=$1
-cd $GBIN_PATH
-git config --global user.name "$lUsername"
-cd $GPWD
-}
-#================================================
-GBin_git_set_user_email() {
-local lEmail=$1
-cd $GBIN_PATH
-git config --global user.email "$lEmail"
-cd $GPWD
-}
-#================================================
-GBin_git_config_list() {
-local lEmail=$1
-git config --list
-cd $GPWD
-}
-#================================================
-GBin_set_path() {
-export GBIN_PATH=$1
-}
-#================================================
-GBin_get_path() {
-echo $GBIN_PATH
 }
 #================================================
 GBin_chmod() {

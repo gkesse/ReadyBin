@@ -1,0 +1,149 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+GPATH=$(gz_config get GPATH) ; . $GPATH/.config
+#================================================
+lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GLIB_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GLIB_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GLIB_DEV" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+GLib_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GLib_help "$@"
+else GLib_process "$@" ; fi
+}
+#================================================
+GLib_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les applications c++."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "ins" "installer module"
+printf "$GPROCESS" "git_cl" "git cloner module"
+printf "$GPROCESS" "git_pu" "git tirer modifications module"
+printf "$GPROCESS" "git_pa" "git ajouter commiter pousser modifications module"
+printf "\n"
+}
+#================================================
+GLib_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# ins
+if [ "$lKey" = "ins" ] ; then 
+GLib_install ; lRunFlag=1 ; break
+# git_cl
+elif [ "$lKey" = "git_cl" ] ; then 
+lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GLib_git_clone "$lName" ; lRunFlag=1 ; break
+# git_pa
+elif [ "$lKey" = "git_pa" ] ; then 
+GLib_git_push_all ; lRunFlag=1 ; break
+# git_pu
+elif [ "$lKey" = "git_pu" ] ; then 
+GLib_git_push_all ; lRunFlag=1 ; break
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GLib_help ; fi 
+}
+#================================================
+GLib_install() {
+GLib_module_install "qt_awesome" "cpp" "win" "64"
+GLib_module_install "exprtk" "cpp" "win" "64"
+}
+#================================================
+GLib_module_install() {
+local lModule=$1
+local lLanguage=$2
+local lPlateform=$3
+local lArchi=$4
+if [ "$lModule" = "" ] ; then echo $(gz_color s "module ?" yellow fg) ; return ; fi 
+if [ "$lLanguage" = "" ] ; then echo $(gz_color s "language ?" yellow fg) ; return ; fi 
+if [ "$lPlateform" = "" ] ; then echo $(gz_color s "plateform ?" yellow fg) ; return ; fi 
+if [ "$lArchi" = "" ] ; then echo $(gz_color s "archi ?" yellow fg) ; return ; fi 
+GLib_${lModule}_${lLanguage}_${lPlateform}_${lArchi}_install "$@"
+}
+#================================================
+GLib_qt_awesome_cpp_win_64_install() {
+local lModule=$1
+local lLanguage=$2
+local lPlateform=$3
+local lArchi=$4
+if [ "$lModule" = "" ] ; then echo $(gz_color s "module ?" yellow fg) ; return ; fi 
+lUrl="https://github.com/gamecreature/QtAwesome/archive/master.zip"
+lSource=$lModule/source
+lArchive=master.zip
+lDepot=QtAwesome-master/QtAwesome
+lDstRoot=$GLIB_DEV/$lModule/${lLanguage}_${lPlateform}_${lArchi}
+lDstPath=$lDstRoot/QtAwesome
+cd $GLIB_BUILD
+if ! [ -d "$lSource" ] ; then mkdir -p $lSource ; fi
+cd $lSource
+if ! [ -f "$lArchive" ] ; then wget $lUrl ; fi
+if ! [ -d "$lDepot" ] ; then unzip $lArchive ; fi
+if ! [ -d "$lDstRoot" ] ; then mkdir -p $lDstRoot ; fi
+if ! [ -d "$lDstPath" ] ; then cp -rf $lDepot $lDstRoot ; fi
+cd $GPWD
+}
+#================================================
+GLib_exprtk_cpp_win_64_install() {
+local lModule=$1
+local lLanguage=$2
+local lPlateform=$3
+local lArchi=$4
+if [ "$lModule" = "" ] ; then echo $(gz_color s "module ?" yellow fg) ; return ; fi 
+lUrl="https://codeplexarchive.blob.core.windows.net/archive/projects/fastmathparser/fastmathparser.zip"
+lSource=$lModule/source
+lArchive=fastmathparser.zip
+lDepot=sourceCode/fastmathparser
+lDstRoot=$GLIB_DEV/$lModule/${lLanguage}_${lPlateform}_${lArchi}
+lDstPath=$lDstRoot/exprtk.hpp
+cd $GLIB_BUILD
+if ! [ -d "$lSource" ] ; then mkdir -p $lSource ; fi
+cd $lSource
+if ! [ -f "$lArchive" ] ; then wget $lUrl ; fi
+if ! [ -d "$lDepot" ] ; then unzip $lArchive ; fi
+if ! [ -d "$lDstRoot" ] ; then mkdir -p $lDstRoot ; fi
+if ! [ -f "$lDstPath" ] ; then 
+cp -rf $lDepot/exprtk.hpp $lDstRoot
+fi
+cd $GPWD
+}
+#================================================
+GLib_git_clone() {
+local lName=$1
+cd $GGIT_ROOT
+git clone $GGIT_URL $lName
+cd $GPWD
+}
+#================================================
+GLib_git_push_all() {
+cd $GLIB_PATH
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+cd $GPWD
+}
+#================================================
+GLib_git_pull() {
+cd $GLIB_PATH
+git pull
+cd $GPWD
+}
+#================================================
+GLib_main "$@"
+#================================================

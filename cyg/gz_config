@@ -2,7 +2,7 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH="C:\Users\Admin\Downloads\Programs\ReadyBin\win" ; GPATH=$(cygpath -u "$GPATH")
+GPATH="C:\Users\Admin\Downloads\Programs\ReadyBin\cyg" ; GPATH=$(cygpath -u "$GPATH")
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
 #================================================
@@ -33,7 +33,9 @@ printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "init" "initialiser config"
 printf "$GPROCESS" "show" "afficher donnees"
 printf "$GPROCESS" "check <key_in>" "verifier donnee"
-printf "$GPROCESS" "set <key_in> <value_in>" "ajouter chemin"
+printf "$GPROCESS" "set <key_in> <value_in>" "ajouter chemin CYGWIN"
+printf "$GPROCESS" "set_s <key_in> <value_in>" "ajouter chemin CYGWIN espace"
+printf "$GPROCESS" "set_w <key_in> <value_in>" "ajouter chemin WINDOWS"
 printf "$GPROCESS" "set_d <key_in> <value_in>" "ajouter donnee"
 printf "$GPROCESS" "get <key_in>" "lire donnee"
 printf "$GPROCESS" "rm <key_in>" "supprimer donnee"
@@ -65,6 +67,16 @@ elif [ "$lKey" = "set" ] ; then
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 lValue=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GConfig_set_path "$lKey" "$lValue" ; lRunFlag=1
+# set_s
+elif [ "$lKey" = "set_s" ] ; then 
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lValue=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GConfig_set_path_space "$lKey" "$lValue" ; lRunFlag=1
+# set_w
+elif [ "$lKey" = "set_d" ] ; then 
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lValue=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GConfig_set_windows "$lKey" "$lValue" ; lRunFlag=1
 # set_d
 elif [ "$lKey" = "set_d" ] ; then 
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
@@ -162,6 +174,67 @@ GConfig_set_path() {
 local lKeyIn=$1
 local lValueIn=$2
 lValueIn=$(cygpath -u "$lValueIn")
+if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "key ?" yellow fg) ; return ; fi 
+if [ "$lValueIn" = "" ] ; then echo $(gz_color s "value ?" yellow fg) ; return ; fi 
+GConfig_init_path
+awk -F "=" -v lKeyIn="$lKeyIn" -v lValueIn="$lValueIn" -v lFile="$GCONFIG_PATH" -i gk_string '
+BEGIN {}{
+lLine = $0
+if(lLine == "") next
+lLine = gk_string("trim", lLine)
+if(lLine == "") next
+lFirstChar = gk_string("get_c", lLine, 0)
+if(lFirstChar == "#") next
+lCount = gk_string("split_c", lLine, "=")
+if(lCount < 2) next
+lKey = gk_string("split", lLine, "=", 1)
+lValue = gk_string("split", lLine, "=", 2)
+lDataMap[lKey] = lValue
+} END {
+lDataMap[lKeyIn] = lValueIn
+printf("") > lFile
+for(lKeyOut in lDataMap) {
+lValueOut = lDataMap[lKeyOut]
+printf("%s=%s\n", lKeyOut, lValueOut) >> lFile
+}
+}' $GCONFIG_PATH
+}
+#================================================
+GConfig_set_path_space() {
+local lKeyIn=$1
+local lValueIn=$2
+lValueIn=$(cygpath -u "$lValueIn")
+lValueIn="\"$lValueIn\""
+if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "key ?" yellow fg) ; return ; fi 
+if [ "$lValueIn" = "" ] ; then echo $(gz_color s "value ?" yellow fg) ; return ; fi 
+GConfig_init_path
+awk -F "=" -v lKeyIn="$lKeyIn" -v lValueIn="$lValueIn" -v lFile="$GCONFIG_PATH" -i gk_string '
+BEGIN {}{
+lLine = $0
+if(lLine == "") next
+lLine = gk_string("trim", lLine)
+if(lLine == "") next
+lFirstChar = gk_string("get_c", lLine, 0)
+if(lFirstChar == "#") next
+lCount = gk_string("split_c", lLine, "=")
+if(lCount < 2) next
+lKey = gk_string("split", lLine, "=", 1)
+lValue = gk_string("split", lLine, "=", 2)
+lDataMap[lKey] = lValue
+} END {
+lDataMap[lKeyIn] = lValueIn
+printf("") > lFile
+for(lKeyOut in lDataMap) {
+lValueOut = lDataMap[lKeyOut]
+printf("%s=%s\n", lKeyOut, lValueOut) >> lFile
+}
+}' $GCONFIG_PATH
+}
+#================================================
+GConfig_set_windows() {
+local lKeyIn=$1
+local lValueIn=$2
+lValueIn=$(echo "$lValueIn" | sed -e 's/\\/\\\\\\\\\\\\\\\\/g')
 if [ "$lKeyIn" = "" ] ; then echo $(gz_color s "key ?" yellow fg) ; return ; fi 
 if [ "$lValueIn" = "" ] ; then echo $(gz_color s "value ?" yellow fg) ; return ; fi 
 GConfig_init_path

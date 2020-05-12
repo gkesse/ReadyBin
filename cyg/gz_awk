@@ -2,10 +2,9 @@
 #================================================
 GPWD=$PWD
 #================================================
-GPATH=$(gz_config get GPATH)
+GPATH=$(gz_config get GPATH) ; . $GPATH/.config
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
-#================================================
 #================================================
 export AWKPATH="$GPATH/awk"
 #================================================
@@ -29,6 +28,7 @@ printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
 printf "$GPROCESS" "t <module_in>" "tester module"
+printf "$GPROCESS" "h <module_in>" "afficher aide module"
 printf "$GPROCESS" "r <module_in> <func_in>" "executer fonction module"
 printf "\n"
 }
@@ -44,6 +44,10 @@ lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 if [ "$lKey" = "t" ] ; then 
 lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
 GAwk_module_test "$lModule" ; lRunFlag=1
+# h
+elif [ "$lKey" = "h" ] ; then 
+lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GAwk_module_help "$lModule" ; lRunFlag=1
 # r
 elif [ "$lKey" = "r" ] ; then 
 lModule=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
@@ -58,6 +62,11 @@ if [ "$lRunFlag" = "0" ] ; then GAwk_help ; fi
 GAwk_module_test() {
 local lModule=$1
 awk -i $lModule -v lModule="$lModule" 'BEGIN {@lModule("test")}'
+}
+#================================================
+GAwk_module_help() {
+local lModule=$1
+awk -i $lModule -v lModule="$lModule" 'BEGIN {@lModule("help")}'
 }
 #================================================
 GAwk_module_run() {

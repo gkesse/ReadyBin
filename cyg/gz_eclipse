@@ -2,15 +2,17 @@
 #================================================
 GPWD=$PWD
 #================================================
-GBIN_PATH="C:\Users\Admin\Downloads\Programs\ReadyBin";GBIN_PATH=$(gz_cygwin c "$GBIN_PATH")
+. $GPATH/.config
 #================================================
-GMd5_main() {
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+GEclipse_main() {
 lArgSize="$#"
-if [ "$lArgSize" = "0" ] ; then GMd5_help "$@"
-else GMd5_process "$@" ; fi
+if [ "$lArgSize" = "0" ] ; then GEclipse_help "$@"
+else GEclipse_process "$@" ; fi
 }
 #================================================
-GMd5_help() {
+GEclipse_help() {
 lScript=$(gz_string filename "$0")
 GSCRIPT="\t\033[0;35m${lScript}\033[0m"
 GCOMMENT="\033[0;33m%s\033[0m"
@@ -19,35 +21,33 @@ GREQUEST="\033[36m%s\033[0m"
 GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
 printf "\n"
 printf "%s\n" "Description:"
-printf "\t%s\n" "Operations sur le cryptage des chaines."
+printf "\t%s\n" "Operations sur les commandes eclipse."
 printf "\n"
 printf "%s\n" "Utilisation:"
 printf "$GHELP" "afficher aide"
-printf "$GPROCESS" "h <string_in>" "crypter une chaine"
+printf "$GPROCESS" "sta" "demarrer eclipse"
 printf "\n"
 }
 #================================================
-GMd5_process() {
+GEclipse_process() {
 lArgSize="$#"
 lArgCount=1
 lRunFlag=0
 while [ 1 ] ; do
 if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
 lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-# h
-if [ "$lKey" = "h" ] ; then 
-lString=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
-GMd5_hash "$lString" ; lRunFlag=1
+# sta
+if [ "$lKey" = "sta" ] ; then 
+GEclipse_start ; lRunFlag=1
 #
 fi
 done
-if [ "$lRunFlag" = "0" ] ; then GMd5_help ; fi 
+if [ "$lRunFlag" = "0" ] ; then GEclipse_help ; fi 
 }
 #================================================
-GMd5_hash() {
-local lString=$1
-echo -n "$lString" | md5sum | awk '{print $1}'
+GEclipse_start() {
+eclipse
 }
 #================================================
-GMd5_main "$@"
+GEclipse_main "$@"
 #================================================

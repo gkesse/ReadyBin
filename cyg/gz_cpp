@@ -1,0 +1,281 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCPP_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCPP_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GCPP_DATA" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+export "AWKPATH=$GPATH/awk"
+#================================================
+GCpp_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GCpp_help "$@"
+else GCpp_process "$@" ; fi
+}
+#================================================
+GCpp_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur les applications c++."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "tes" "tester module"
+printf "$GPROCESS" "cle" "nettoyer module"
+printf "$GPROCESS" "com" "compiler module"
+printf "$GPROCESS" "run" "executer module"
+printf "$GPROCESS" "all" "nettoyer compiler executer module"
+printf "$GPROCESS" "log" "afficher log"
+printf "$GPROCESS" "qma" "qmake module"
+printf "$GPROCESS" "qma_c" "qmake compiler module"
+printf "$GPROCESS" "qma_cl" "qmake clean module"
+printf "$GPROCESS" "qma_r" "qmake executer module"
+printf "$GPROCESS" "qma_a" "qmake nettoyer compiler executer module"
+printf "$GPROCESS" "git_cl" "git cloner module"
+printf "$GPROCESS" "git_pu" "git tirer modifications module"
+printf "$GPROCESS" "git_pa" "git ajouter commiter pousser modifications module"
+printf "\n"
+}
+#================================================
+GCpp_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# tes
+if [ "$lKey" = "test" ] ; then 
+GCpp_test ; lRunFlag=1 ; break
+# cle
+elif [ "$lKey" = "cle" ] ; then 
+GCpp_clean ; lRunFlag=1 ; break
+# com
+elif [ "$lKey" = "com" ] ; then 
+GCpp_compile ; lRunFlag=1 ; break
+# run
+elif [ "$lKey" = "run" ] ; then 
+GCpp_run "$@" ; lRunFlag=1 ; break
+# all
+elif [ "$lKey" = "all" ] ; then 
+GCpp_all "$@" ; lRunFlag=1 ; break
+# cyg_cl
+elif [ "$lKey" = "cyg_cl" ] ; then 
+GCpp_cygwin_clean; lRunFlag=1 ; break
+# cyg_c
+elif [ "$lKey" = "cyg_c" ] ; then 
+GCpp_cygwin_compile ; lRunFlag=1 ; break
+# cyg_r
+elif [ "$lKey" = "cyg_r" ] ; then 
+GCpp_cygwin_run "$@" ; lRunFlag=1 ; break
+# cyg_a
+elif [ "$lKey" = "cyg_a" ] ; then 
+GCpp_cygwin_all "$@" ; lRunFlag=1 ; break
+# log
+elif [ "$lKey" = "log" ] ; then 
+GCpp_log ; lRunFlag=1 ; break
+# log_c
+elif [ "$lKey" = "log_c" ] ; then 
+GCpp_log_clear ; lRunFlag=1 ; break
+# res
+elif [ "$lKey" = "res" ] ; then 
+GCpp_resource_qt ; lRunFlag=1 ; break
+# qma
+elif [ "$lKey" = "qma" ] ; then 
+GCpp_qmake ; lRunFlag=1 ; break
+# qma_c
+elif [ "$lKey" = "qma_c" ] ; then 
+GCpp_qmake_compile ; lRunFlag=1 ; break
+# qma_cl
+elif [ "$lKey" = "qma_cl" ] ; then 
+GCpp_qmake_clean ; lRunFlag=1 ; break
+# qma_r
+elif [ "$lKey" = "qma_r" ] ; then 
+GCpp_qmake_run "$@" ; lRunFlag=1 ; break
+# qma_a
+elif [ "$lKey" = "qma_a" ] ; then 
+GCpp_qmake_all "$@" ; lRunFlag=1 ; break
+# git_cl
+elif [ "$lKey" = "git_cl" ] ; then 
+lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GCpp_git_clone "$lName" ; lRunFlag=1 ; break
+# git_pa
+elif [ "$lKey" = "git_pa" ] ; then 
+GCpp_git_push_all ; lRunFlag=1 ; break
+# git_pu
+elif [ "$lKey" = "git_pu" ] ; then 
+GCpp_git_push_all ; lRunFlag=1 ; break
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GCpp_help ; fi 
+}
+#================================================
+GCpp_test() {
+GCpp_run
+}
+#================================================
+GCpp_clean() {
+cd $GCPP_BUILD
+make clean -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_compile() {
+cd $GCPP_BUILD
+rm -f bin/gp_cpp
+make compile -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_run() {
+cd $GCPP_BUILD ; echo
+gp_cpp $2 $3 $4 $5 $6 $7 $8 $9
+cd $GPWD
+}
+#================================================
+GCpp_all() {
+GCpp_compile
+GCpp_run "$@"
+}
+#================================================
+GCpp_cygwin_clean() {
+cd $GCPP_BUILD
+make clean -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_cygwin_compile() {
+cd $GCPP_BUILD
+rm -f bin/gp_cpp
+make compile -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_cygwin_run() {
+cd $GCPP_BUILD ; echo
+bin/gp_cpp $2 $3 $4 $5 $6 $7 $8 $9
+cd $GPWD
+}
+#================================================
+GCpp_cygwin_all() {
+GCpp_cygwin_compile
+GCpp_cygwin_run "$@"
+}
+#================================================
+GCpp_log() {
+cd $GCPP_BUILD
+lPath=$HOME/.readydev/readycpp/data/debug/debug.txt
+tail -f $lPath
+cd $GPWD
+}
+#================================================
+GCpp_log_clear() {
+cd $GCPP_BUILD
+lPath=$HOME/.readydev/readycpp/data/debug/debug.txt
+> $lPath
+cd $GPWD
+}
+#================================================
+GCpp_resource_qt() {
+lResFile="$GCPP_DATA/resources.qrc"
+lResRoot="$GCPP_DATA/data"
+cd $lResRoot
+find . -iname "*.*" | awk -v lResFile="$lResFile" '
+@include "gk_string"
+BEGIN {lLast = "" ; lIndex = 0 ; lResFlag = 0
+lLineMap[lIndex++] = "<!DOCTYPE RCC>"
+lLineMap[lIndex++] = "<RCC version=\"1.0\">"
+}
+{if($0 == ".") next
+if(gk_string("contain", $0, "readme") == 1) next
+lPrefix = gk_string("split", $0, "/", 2)
+if(lLast != lPrefix) {
+lLast = lPrefix
+if(lResFlag == 1) lLineMap[lIndex++] = "    </qresource>"
+lResFlag = 1
+lLineMap[lIndex++] = "    <qresource prefix=\"/" lPrefix "\">"
+}
+lAlias = gensub(/.*\/(.*)/, "\\1", "g", $0)
+lPath = gensub(/.\/(.*)/, "data/\\1", "g", $0)
+lLineMap[lIndex++] = "        <file alias=\"" lAlias "\">" lPath "</file>"
+} END {
+if(lResFlag == 1) lLineMap[lIndex++] = "    </qresource>"
+lLineMap[lIndex++] = "</RCC>"
+printf("") > lResFile
+for(lIndex in lLineMap) {
+lLine = lLineMap[lIndex]
+printf("%s\n", lLine) >> lResFile
+}
+}'
+cat $lResFile
+cd $GPWD
+}
+#================================================
+GCpp_qmake() {
+cd $GCPP_BUILD
+make qmake -f Makefile.config
+cd $GPWD
+}
+#================================================
+GCpp_qmake_compile() {
+cd $GCPP_BUILD
+rm -f bin/gp_cpp
+make
+cd $GPWD
+}
+#================================================
+GCpp_qmake_clean() {
+cd $GCPP_BUILD
+make clean
+cd $GPWD
+}
+#================================================
+GCpp_qmake_run() {
+GCpp_run "$@"
+}
+#================================================
+GCpp_qmake_all() {
+GCpp_qmake
+GCpp_qmake_compile
+GCpp_qmake_run "$@"
+}
+#================================================
+GCpp_git_clone() {
+local lRoot=$1
+local lUrl=$2
+local lName=$3
+lCheckIn="lRoot" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="lUrl" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lRoot=$(gz_cygwin c "$lRoot")
+cd $lRoot
+git clone $lUrl $lName
+cd $GPWD
+}
+#================================================
+GCpp_git_push_all() {
+cd $GCPP_PATH
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+cd $GPWD
+}
+#================================================
+GCpp_git_pull() {
+cd $GCPP_PATH
+git pull
+cd $GPWD
+}
+#================================================
+GCpp_main "$@"
+#================================================
