@@ -42,7 +42,6 @@ goto :eof
 goto :eof
 ::===============================================
 :GGit_git_push_all
-gz_bin git_pa &^
 gz_lib git_pa &^
 gz_cpp git_pa &^
 gz_c git_pa &^
@@ -50,7 +49,6 @@ gz_dev git_pa &^
 goto :eof
 ::===============================================
 :GGit_git_pull
-gz_bin git_pu &^
 gz_lib git_pu &^
 gz_cpp git_pu &^
 gz_c git_pu &^
