@@ -1,0 +1,15 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GOPT_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+cd $GOPT_PATH
+git clone https://aur.archlinux.org/snapd.git
+cd snapd
+makepkg -si
+cd $GPWD
+#================================================
