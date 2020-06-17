@@ -1,0 +1,15 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GGIT_USER_NAME" ; if [ "${!lCheckIn}" = "" ] || [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GGIT_USER_EMAIL" ; if [ "${!lCheckIn}" = "" ] || [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GGIT_CORE_EDITOR" ; if [ "${!lCheckIn}" = "" ] || [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+sudo git config --global user.name "$GGIT_USER_NAME"
+sudo git config --global user.email "$GGIT_USER_EMAIL"
+sudo git config --global core.editor "$GGIT_CORE_EDITOR"
+#================================================

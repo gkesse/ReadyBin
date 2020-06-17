@@ -1,0 +1,15 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+VBoxClient --clipboard
+VBoxClient --draganddrop
+VBoxClient --seamless
+VBoxClient --checkhostversion
+VBoxClient --vmsvga
+VBoxClient --vmsvga-x11
+#================================================

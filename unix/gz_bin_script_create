@@ -1,0 +1,25 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "Erreur: $lCheckIn ?" ; exit ; fi 
+lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "Erreur: $lCheckIn ?" ; exit ; fi 
+#================================================
+if [ -z "$1" ] ; then echo "Erreur: nom fichier script absent" ; exit ; fi
+#================================================
+cd $GBIN_PATH/unix
+echo '#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+
+#================================================' > $1
+chmod 777 $1
+cd $GPWD
+#================================================
