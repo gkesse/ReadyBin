@@ -4,7 +4,7 @@ GPWD=$PWD
 #================================================
 GPATH=/home/pi/Programs/ReadyStudio/ReadyBin/unix
 #================================================
-lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
 GCONFIG_NAME=.config
 GCONFIG_PATH=$GPATH/$GCONFIG_NAME

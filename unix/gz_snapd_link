@@ -4,7 +4,9 @@ GPWD=$PWD
 #================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
 sudo ln -s /var/lib/snapd/snap /snap
+#================================================
+cd $GPWD
 #================================================

@@ -7,10 +7,11 @@ GPWD=$PWD
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 lCheckIn="GOPT_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-cd $GOPT_PATH
-git clone https://aur.archlinux.org/snapd.git
-cd snapd
-makepkg -si
+lPath=$GOPT_PATH/certbot_auto
+if ! [ -d "$lPath" ] ; then mkdir -p $lPath ; fi
+cd $lPath
+wget https://dl.eff.org/certbot-auto
+chmod a+x ./certbot-auto
 #================================================
 cd $GPWD
 #================================================
