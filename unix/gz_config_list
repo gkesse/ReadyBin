@@ -5,11 +5,8 @@ GPWD=$PWD
 . $GPATH/.config
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
-lCheckIn="GDEV_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-cd $GDEV_PATH
-sudo git pull
-sudo chmod -R 777 $GDEV_PATH
+
 #================================================
 cd $GPWD
 #================================================
