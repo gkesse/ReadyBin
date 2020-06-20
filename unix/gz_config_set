@@ -1,0 +1,39 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+lArgIn="$1" ; lArgName="cle" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+lArgIn="$2" ; lArgName="valeur" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+#================================================
+lConfigFile=$GPATH/.config
+#================================================
+awk -F "=" -v lKeyIn="$1" -v lValueIn="$2" -v lConfigFile="$lConfigFile" '
+function ltrim(s) {sub(/^[ \t\r\n]+/, "", s); return s}
+function rtrim(s) {sub(/[ \t\r\n]+$/, "", s); return s}
+function trim(s) {return rtrim(ltrim(s));}
+BEGIN {}{
+lLine = $0
+if(lLine == "") next
+lLine = trim(lLine)
+if(lLine == "") next
+lFirstChar = substr(lLine, 1, 1)
+if(lFirstChar == "#") next
+lCount = split(lLine, lMap, "=")
+if(lCount < 2) next
+lKey = lMap[1]
+lValue = lMap[2]
+lDataMap[lKey] = lValue
+} END {
+lDataMap[lKeyIn] = lValueIn
+printf("") > lConfigFile
+for(lKeyOut in lDataMap) {
+lValueOut = lDataMap[lKeyOut]
+printf("%s=%s\n", lKeyOut, lValueOut) >> lConfigFile
+}}' $lConfigFile
+#================================================
+cd $GPWD
+#================================================

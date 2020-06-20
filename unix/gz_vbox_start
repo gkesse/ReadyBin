@@ -5,12 +5,13 @@ GPWD=$PWD
 . $GPATH/.config
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
-lCheckIn="GOPT_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-cd $GOPT_PATH
-git clone https://aur.archlinux.org/snapd.git
-cd snapd
-makepkg -si
+VBoxClient --clipboard
+VBoxClient --draganddrop
+VBoxClient --seamless
+VBoxClient --checkhostversion
+VBoxClient --vmsvga
+VBoxClient --vmsvga-x11
 #================================================
 cd $GPWD
 #================================================

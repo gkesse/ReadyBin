@@ -5,12 +5,12 @@ GPWD=$PWD
 . $GPATH/.config
 #================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
-lCheckIn="GOPT_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-cd $GOPT_PATH
-git clone https://aur.archlinux.org/snapd.git
-cd snapd
-makepkg -si
+cd $GBIN_PATH
+sudo git pull
+sudo chmod -R 777 $GDEV_PATH
 #================================================
 cd $GPWD
 #================================================
+

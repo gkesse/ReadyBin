@@ -4,7 +4,7 @@ GPWD=$PWD
 #================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
 lFstab=/etc/fstab
 lSharedDoc=/mnt/shared_doc
@@ -15,4 +15,6 @@ if ! grep -q "$lSharedDoc" "$lFstab"; then
 fi
 #================================================
 cat $lFstab
+#================================================
+cd $GPWD
 #================================================
