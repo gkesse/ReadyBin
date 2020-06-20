@@ -6,12 +6,10 @@ if "%GPATH%" == "" ( echo ERREUR : GPATH ? & goto :eof ) & if not exist %GPATH% 
 ::===============================================
 call %GPATH%/.config.bat
 ::===============================================
-if "%GBIN_PATH%" == "" ( echo ERREUR : GBIN_PATH ? & goto :eof ) & if not exist "%GBIN_PATH%" ( echo ERREUR : GBIN_PATH ? & goto :eof )
+if "%GC_PATH%" == "" ( echo ERREUR : GC_PATH ? & goto :eof ) & if not exist "%GC_PATH%" ( echo ERREUR : GC_PATH ? & goto :eof )
 ::===============================================
-cd %GBIN_PATH%
-git add --all
-git commit -m "Initial Commit"
-git push -u origin master
+cd %GC_PATH%
+git pull
 ::===============================================
 cd %GPWD%
 ::===============================================

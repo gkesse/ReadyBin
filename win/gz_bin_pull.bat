@@ -6,7 +6,7 @@ if "%GPATH%" == "" ( echo ERREUR : GPATH ? & goto :eof ) & if not exist %GPATH% 
 ::===============================================
 call %GPATH%/.config.bat
 ::===============================================
-if "%GBIN_PATH%" == "" ( echo GBIN_PATH ? & goto :eof ) & if not exist "%GBIN_PATH%" ( echo GBIN_PATH ? & goto :eof )
+if "%GBIN_PATH%" == "" ( echo ERREUR : GBIN_PATH ? & goto :eof ) & if not exist "%GBIN_PATH%" ( echo ERREUR : GBIN_PATH ? & goto :eof )
 ::===============================================
 cd %GBIN_PATH%
 git pull

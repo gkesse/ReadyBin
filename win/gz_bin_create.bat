@@ -6,12 +6,14 @@ if "%GPATH%" == "" ( echo ERREUR : GPATH ? & goto :eof ) & if not exist %GPATH% 
 ::===============================================
 call %GPATH%/.config.bat
 ::===============================================
-if "%GBIN_PATH%" == "" ( echo ERREUR : GBIN_PATH ? & goto :eof ) & if not exist "%GBIN_PATH%" ( echo ERREUR : GBIN_PATH ? & goto :eof )
+set "lArgIn=%~1" & set "lArgName=nom_script"
+if "%lArgIn%" == "" ( echo ERREUR : %lArgName% ? & goto :eof ) 
 ::===============================================
-cd %GBIN_PATH%
-git add --all
-git commit -m "Initial Commit"
-git push -u origin master
+set "lScriptFile=%~1"
+set "lDefaultFile=%GPATH%/.default"
+::===============================================
+cd %GPATH%
+cat %lDefaultFile%>%lScriptFile%
 ::===============================================
 cd %GPWD%
 ::===============================================

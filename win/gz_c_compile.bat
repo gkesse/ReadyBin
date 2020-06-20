@@ -25,12 +25,13 @@ echo %lAnswerKey%| tr '[:upper:]' '[:lower:]'>%lTmpFile_01%
 set /p lAnswerIn=<%lTmpFile_01%
 if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof ) 
 echo OUI : operation effectuee
-echo.
 ::===============================================
+echo.
 cd %GC_BUILD%
 set "lBinFile=bin\gp_c.exe"
 if exist "%lBinFile%" ( del %lBinFile% )
-mingw32-make compile -f Makefile.config
+mingw32-make argv="%*"
+echo.
 ::===============================================
 cd %GPWD%
 ::===============================================
