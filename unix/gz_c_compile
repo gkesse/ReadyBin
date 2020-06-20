@@ -1,0 +1,161 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GC_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="GC_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+#================================================
+GC_main() {
+lArgSize="$#"
+if [ "$lArgSize" = "0" ] ; then GC_help "$@"
+else GC_process "$@" ; fi
+}
+#================================================
+GC_help() {
+lScript=$(gz_string filename "$0")
+GSCRIPT="\t\033[0;35m${lScript}\033[0m"
+GCOMMENT="\033[0;33m%s\033[0m"
+GHELP="$GSCRIPT : $GCOMMENT\n"
+GREQUEST="\033[36m%s\033[0m"
+GPROCESS="$GSCRIPT $GREQUEST : $GCOMMENT\n"
+printf "\n"
+printf "%s\n" "Description:"
+printf "\t%s\n" "Operations sur le module C."
+printf "\n"
+printf "%s\n" "Utilisation:"
+printf "$GHELP" "afficher aide"
+printf "$GPROCESS" "tes" "tester module"
+printf "$GPROCESS" "cle" "nettoyer module"
+printf "$GPROCESS" "com" "compiler module"
+printf "$GPROCESS" "run" "executer module"
+printf "$GPROCESS" "all" "nettoyer compiler executer module"
+printf "$GPROCESS" "log" "afficher log"
+printf "$GPROCESS" "git_cl" "git cloner module"
+printf "$GPROCESS" "git_pu" "git tirer modifications module"
+printf "$GPROCESS" "git_pa" "git ajouter commiter pousser modifications module"
+printf "\n"
+}
+#================================================
+GC_process() {
+lArgSize="$#"
+lArgCount=1
+lRunFlag=0
+while [ 1 ] ; do
+if [ "$lArgCount" -gt "$lArgSize" ] ; then break ; fi
+lKey=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+# tes
+if [ "$lKey" = "tes" ] ; then 
+GC_test ; lRunFlag=1 ; break
+# cle
+elif [ "$lKey" = "cle" ] ; then 
+GC_clean ; lRunFlag=1 ; break
+# com
+elif [ "$lKey" = "com" ] ; then 
+GC_compile ; lRunFlag=1 ; break
+# run
+elif [ "$lKey" = "run" ] ; then 
+GC_run "$@" ; lRunFlag=1 ; break
+# all
+elif [ "$lKey" = "all" ] ; then 
+GC_all "$@" ; lRunFlag=1 ; break
+elif [ "$lKey" = "cyg_a" ] ; then 
+GC_cygwin_all "$@" ; lRunFlag=1 ; break
+# log
+elif [ "$lKey" = "log" ] ; then 
+GC_log ; lRunFlag=1 ; break
+# log_c
+elif [ "$lKey" = "log_c" ] ; then 
+GC_log_clear ; lRunFlag=1 ; break
+# git_cl
+elif [ "$lKey" = "git_cl" ] ; then 
+lRoot=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lUrl=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+lName=${!lArgCount} ; lArgCount=$(gz_string math "$lArgCount + 1")
+GC_git_clone "$lRoot" "$lUrl" "$lName" ; lRunFlag=1 ; break
+# git_pa
+elif [ "$lKey" = "git_pa" ] ; then 
+GC_git_push_all ; lRunFlag=1 ; break
+# git_pu
+elif [ "$lKey" = "git_pu" ] ; then 
+GC_git_push_all ; lRunFlag=1 ; break
+#
+fi
+done
+if [ "$lRunFlag" = "0" ] ; then GC_help ; fi 
+}
+#================================================
+GC_test() {
+echo "$FUNCNAME"
+}
+#================================================
+GC_clean() {
+cd $GC_BUILD
+make clean
+cd $GPWD
+}
+#================================================
+GC_compile() {
+cd $GC_BUILD
+rm -f bin/*
+make compile
+cd $GPWD
+}
+#================================================
+GC_run() {
+cd $GC_BUILD
+echo
+gp_c $2 $3 $4 $5 $6 $7 $8 $9
+echo
+cd $GPWD
+}
+#================================================
+GC_all() {
+GC_compile
+GC_run "$@"
+}
+#================================================
+GC_log() {
+cd $GC_BUILD
+lPath=$GC_BUILD/data/debug/debug.txt
+tail -f $lPath
+cd $GPWD
+}
+#================================================
+GC_log_clear() {
+cd $GC_BUILD
+lPath=$HOME/.readydev/readyc/data/debug/debug.txt
+> $lPath
+cd $GPWD
+}
+#================================================
+GC_git_clone() {
+local lRoot=$1
+local lUrl=$2
+local lName=$3
+lCheckIn="lRoot" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lCheckIn="lUrl" ; if [ "${!lCheckIn}" = "" ] ; then echo $(gz_color s "$lCheckIn ?" yellow fg) ; exit ; fi 
+lRoot=$(gz_cygwin c "$lRoot")
+cd $lRoot
+git clone $lUrl $lName
+cd $GPWD
+}
+#================================================
+GC_git_push_all() {
+cd $GC_PATH
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+cd $GPWD
+}
+#================================================
+GC_git_pull() {
+cd $GC_PATH
+git pull
+cd $GPWD
+}
+#================================================
+GC_main "$@"
+#================================================
