@@ -1,14 +1,14 @@
 @echo off
 ::===============================================
-call .config.bat
-::===============================================
-if "%GBIN_PATH%" == "" ( echo GBIN_PATH ? & goto :eof ) 
-if not exist "%GBIN_PATH%" ( echo GBIN_PATH ? & goto :eof )
-::===============================================
 set "GPWD=%cd%"
 ::===============================================
-cd %GBIN_PATH%
+if "%GPATH%" == "" ( echo ERREUR : GPATH ? & goto :eof ) & if not exist %GPATH% ( echo ERREUR : GPATH ? & goto :eof )
 ::===============================================
+call %GPATH%/.config.bat
+::===============================================
+if "%GBIN_PATH%" == "" ( echo GBIN_PATH ? & goto :eof ) & if not exist "%GBIN_PATH%" ( echo GBIN_PATH ? & goto :eof )
+::===============================================
+cd %GBIN_PATH%
 git pull
 ::===============================================
 cd %GPWD%
