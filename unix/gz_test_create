@@ -1,0 +1,19 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GTEST_DEFAULT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GTEST_ROOT" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+if [ -z "$1" ] ; then echo "Erreur: nom projet absent" ; exit ; fi 
+#================================================
+cd $GTEST_ROOT
+if ! [ -d "$1" ] ; then 
+cp -rf $GTEST_DEFAULT $1
+fi
+#================================================
+cd $GPWD
+#================================================

@@ -1,0 +1,15 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GOPT_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+if [ -z $1 ] ; then echo "erreur: certificate_name ?" ; exit ; fi 
+#================================================
+sudo certbot delete --cert-name $1
+#================================================
+cd $GPWD
+#================================================

@@ -1,0 +1,17 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GDEV_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+cd $GDEV_PATH
+sudo git add --all
+sudo git commit -m "Initial Commit"
+sudo git push -u origin master
+#================================================
+cd $GPWD
+#================================================
+

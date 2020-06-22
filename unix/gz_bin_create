@@ -12,7 +12,9 @@ lArgIn="$1" ; lArgName="nom_script" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR 
 #================================================
 lScriptFile=$1
 #================================================
-cd $GBIN_PATH/unix
+lPath=$GBIN_PATH/unix
+#================================================
+cd $lPath
 echo '#!/bin/bash
 #================================================
 GPWD=$PWD
