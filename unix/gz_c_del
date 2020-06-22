@@ -8,10 +8,15 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 #================================================
 lCheckIn="GC_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
+lArgIn="$1" ; lArgName="nom_module" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+#================================================
+lModuleName=$1
+#================================================
 # Configurations
 printf "\n"
 printf "Configurations :\n"
 printf "\t%-20s : %s\n" "GC_BUILD" "$GC_BUILD"
+printf "\t%-20s : %s\n" "nom_module" "$lModuleName"
 printf "\n"
 #================================================
 read -p "Confirmation de continuer (Oui|[N]on) ? " lAnswer
@@ -21,7 +26,7 @@ case $lAnswer in
 esac
 #================================================
 cd $GC_BUILD
-make argv="$*"
+rm -f build/$lModuleName.o
 #================================================
 cd $GPWD
 #================================================
