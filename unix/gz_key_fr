@@ -6,13 +6,7 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 #================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
-#================================================
-lArgIn="$1" ; lArgName="nom_script" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
-#================================================
-lScriptFile=$GBIN_PATH/unix/$1
-#================================================
-rm -f $lScriptFile
+sudo loadkeys fr
 #================================================
 cd $GPWD
 #================================================

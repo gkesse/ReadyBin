@@ -6,13 +6,24 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 #================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GC_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-lArgIn="$1" ; lArgName="nom_script" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+# Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%-20s : %s\n" "GC_PATH" "$GC_PATH"
+printf "\n"
 #================================================
-lScriptFile=$GBIN_PATH/unix/$1
+read -p "Confirmation de continuer (Oui|[N]on) ? " lAnswer
+case $lAnswer in
+    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
+    * ) echo "NON : operation annulee" ; echo ; exit ;;
+esac
 #================================================
-rm -f $lScriptFile
+cd $GC_PATH
+sudo git add --all
+sudo git commit -m "Initial Commit"
+sudo git push -u origin master
 #================================================
 cd $GPWD
 #================================================
