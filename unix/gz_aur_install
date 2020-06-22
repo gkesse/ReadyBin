@@ -7,12 +7,39 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 . $GPATH/.config
 #================================================
 lCheckIn="GOPT_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GAUR_URL" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-lArgIn="$1" ; lArgName="nom_script" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+lArgIn="$1" ; lArgName="nom_aur" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
 #================================================
-lScriptFile=$1
+lAurName=$1
 #================================================
-
+lAurPath=$GOPT_PATH/$lAurName
+#================================================
+# Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%-20s : %s\n" "GOPT_PATH" "$GOPT_PATH"
+printf "\t%-20s : %s\n" "GAUR_URL" "$GAUR_URL"
+printf "\t%-20s : %s\n" "nom_aur" "$lAurName"
+printf "\n"
+#================================================
+if [ -d "$lAurPath" ] ; then echo "OUI : aur existant" ; echo ; fi
+#================================================
+read -p "Confirmation de continuer (Oui|[N]on) ? " lAnswer
+case $lAnswer in
+    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
+    * ) echo "NON : operation annulee" ; echo ; exit ;;
+esac
+#================================================
+cd $GOPT_PATH
+#================================================
+if ! [ -d "$lAurPath" ] ; then
+sudo git clone $GAUR_URL $lAurName
+fi
+#================================================
+cd $lAurName
+sudo chmod -R 777 $lAurPath
+makepkg -si
 #================================================
 cd $GPWD
 #================================================

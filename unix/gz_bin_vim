@@ -28,6 +28,7 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 cd $GPWD
 #================================================' > $lScriptFile
 chmod 777 $lScriptFile
+vim $lScriptFile
 #================================================
 cd $GPWD
 #================================================
