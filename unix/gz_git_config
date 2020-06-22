@@ -9,6 +9,20 @@ lCheckIn="GGIT_USER_NAME" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${l
 lCheckIn="GGIT_USER_EMAIL" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 lCheckIn="GGIT_CORE_EDITOR" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
+# Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%-20s : %s\n" "GGIT_USER_NAME" "$GGIT_USER_NAME"
+printf "\t%-20s : %s\n" "GGIT_USER_EMAIL" "$GGIT_USER_EMAIL"
+printf "\t%-20s : %s\n" "GGIT_CORE_EDITOR" "$GGIT_CORE_EDITOR"
+printf "\n"
+#================================================
+read -p "Confirmation (Oui|[N]on) ? " lAnswer
+case $lAnswer in
+    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
+    * ) echo "NON : operation annulee" ; echo ; exit ;;
+esac
+#================================================
 sudo git config --global user.name "$GGIT_USER_NAME"
 sudo git config --global user.email "$GGIT_USER_EMAIL"
 sudo git config --global core.editor "$GGIT_CORE_EDITOR"
