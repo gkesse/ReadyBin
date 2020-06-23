@@ -14,12 +14,13 @@ lArgIn="$1" ; lArgName="nom_aur" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : $
 lAurName=$1
 #================================================
 lAurPath=$GOPT_PATH/$lAurName
+lAurUrl=https://aur.archlinux.org/${lAurName}.git
 #================================================
 # Configurations
 printf "\n"
 printf "Configurations :\n"
 printf "\t%-20s : %s\n" "GOPT_PATH" "$GOPT_PATH"
-printf "\t%-20s : %s\n" "GAUR_URL" "$GAUR_URL"
+printf "\t%-20s : %s\n" "url_aur" "$lAurUrl"
 printf "\t%-20s : %s\n" "nom_aur" "$lAurName"
 printf "\n"
 #================================================
@@ -34,7 +35,7 @@ esac
 cd $GOPT_PATH
 #================================================
 if ! [ -d "$lAurPath" ] ; then
-sudo git clone $GAUR_URL $lAurName
+sudo git clone $lAurUrl $lAurName
 fi
 #================================================
 cd $lAurName

@@ -6,12 +6,12 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 #================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GPROG_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
 # Configurations
 printf "\n"
 printf "Configurations :\n"
-printf "\t%-20s : %s\n" "GBIN_PATH" "$GBIN_PATH"
+printf "\t%-20s : %s\n" "GPROG_PATH" "$GPROG_PATH"
 printf "\n"
 #================================================
 read -p "Confirmation (Oui|[N]on) ? " lAnswer
@@ -20,7 +20,7 @@ case $lAnswer in
     * ) echo "NON : operation annulee" ; echo ; exit ;;
 esac
 #================================================
-sudo chmod -R 777 $GBIN_PATH
+sudo chmod -R 777 $GPROG_PATH
 #================================================
 cd $GPWD
 #================================================
