@@ -32,6 +32,10 @@ lDataMap[lKeyIn] = lValueIn
 printf("") > lConfigFile
 for(lKeyOut in lDataMap) {
 lValueOut = lDataMap[lKeyOut]
+lFirstChar = substr(lValueOut, 1, 1)
+if(lFirstChar != "\"")
+printf("%s=\"%s\"\n", lKeyOut, lValueOut) >> lConfigFile
+else
 printf("%s=%s\n", lKeyOut, lValueOut) >> lConfigFile
 }}' $lConfigFile
 #================================================
