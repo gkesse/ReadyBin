@@ -2,9 +2,10 @@
 #================================================
 GPWD=$PWD
 #================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 lCheckIn="GGIT_USER_NAME" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 lCheckIn="GGIT_USER_EMAIL" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 lCheckIn="GGIT_CORE_EDITOR" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
