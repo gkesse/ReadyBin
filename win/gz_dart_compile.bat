@@ -6,18 +6,20 @@ if "%GPATH%" == "" ( echo ERREUR : GPATH ? & goto :eof ) & if not exist %GPATH% 
 ::===============================================
 call %GPATH%/.config.bat
 ::===============================================
-if "%GC_BUILD%" == "" ( echo ERREUR : GC_BUILD ? & goto :eof ) & if not exist %GC_BUILD% ( echo ERREUR : GC_BUILD ? & goto :eof )
-if "%GMINGW_PATH%" == "" ( echo ERREUR : GMINGW_PATH ? & goto :eof ) & if not exist %GMINGW_PATH% ( echo ERREUR : GMINGW_PATH ? & goto :eof )
+if "%GDART_BUILD%" == "" ( echo ERREUR : GDART_BUILD ? & goto :eof ) & if not exist %GDART_BUILD% ( echo ERREUR : GDART_BUILD ? & goto :eof )
+if "%GDART_PATH%" == "" ( echo ERREUR : GDART_PATH ? & goto :eof ) & if not exist %GDART_PATH% ( echo ERREUR : GDART_PATH ? & goto :eof )
+if "%GDART_MAIN%" == "" ( echo ERREUR : GDART_PATH ? & goto :eof ) 
 ::===============================================
-set "PATH=%GMINGW_PATH%;%PATH%"
+set "PATH=%GDART_PATH%;%PATH%"
 ::===============================================
 set "lTmpFile_01=%GPATH%\tmp\tmp_file_01.txt"
 ::===============================================
 :: Configurations
 printf "\n"
 printf "Configurations :\n"
-printf "\t%%-20s : %%s\n" "GC_BUILD" "%GC_BUILD%"
-printf "\t%%-20s : %%s\n" "GMINGW_PATH" "%GMINGW_PATH%"
+printf "\t%%-20s : %%s\n" "GDART_BUILD" "%GDART_BUILD%"
+printf "\t%%-20s : %%s\n" "GDART_PATH" "%GDART_PATH%"
+printf "\t%%-20s : %%s\n" "GDART_MAIN" "%GDART_MAIN%"
 printf "\n"
 ::===============================================
 set /p "lAnswer=Confirmation de continuer (Oui|[N]on) ? : " || set "lAnswer=n"
@@ -27,8 +29,11 @@ set /p lAnswerIn=<%lTmpFile_01%
 if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof ) 
 echo OUI : operation effectuee
 ::===============================================
-cd %GC_BUILD%
-mingw32-make argv="%*"
+echo.
+cd %GDART_BUILD%
+set "lMainFile=%GDART_MAIN%"
+dart %lMainFile% %*
+echo.
 ::===============================================
 cd %GPWD%
 ::===============================================

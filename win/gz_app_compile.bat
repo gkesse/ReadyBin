@@ -6,18 +6,21 @@ if "%GPATH%" == "" ( echo ERREUR : GPATH ? & goto :eof ) & if not exist %GPATH% 
 ::===============================================
 call %GPATH%/.config.bat
 ::===============================================
-if "%GC_BUILD%" == "" ( echo ERREUR : GC_BUILD ? & goto :eof ) & if not exist %GC_BUILD% ( echo ERREUR : GC_BUILD ? & goto :eof )
+if "%GAPP_BUILD%" == "" ( echo ERREUR : GAPP_BUILD ? & goto :eof ) & if not exist %GAPP_BUILD% ( echo ERREUR : GAPP_BUILD ? & goto :eof )
 if "%GMINGW_PATH%" == "" ( echo ERREUR : GMINGW_PATH ? & goto :eof ) & if not exist %GMINGW_PATH% ( echo ERREUR : GMINGW_PATH ? & goto :eof )
+if "%GQT_PATH%" == "" ( echo ERREUR : GQT_PATH ? & goto :eof ) & if not exist %GQT_PATH% ( echo ERREUR : GQT_PATH ? & goto :eof )
 ::===============================================
 set "PATH=%GMINGW_PATH%;%PATH%"
+set "PATH=%GQT_PATH%;%PATH%"
 ::===============================================
 set "lTmpFile_01=%GPATH%\tmp\tmp_file_01.txt"
 ::===============================================
 :: Configurations
 printf "\n"
 printf "Configurations :\n"
-printf "\t%%-20s : %%s\n" "GC_BUILD" "%GC_BUILD%"
+printf "\t%%-20s : %%s\n" "GAPP_BUILD" "%GAPP_BUILD%"
 printf "\t%%-20s : %%s\n" "GMINGW_PATH" "%GMINGW_PATH%"
+printf "\t%%-20s : %%s\n" "GQT_PATH" "%GQT_PATH%"
 printf "\n"
 ::===============================================
 set /p "lAnswer=Confirmation de continuer (Oui|[N]on) ? : " || set "lAnswer=n"
@@ -27,8 +30,10 @@ set /p lAnswerIn=<%lTmpFile_01%
 if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof ) 
 echo OUI : operation effectuee
 ::===============================================
-cd %GC_BUILD%
-mingw32-make argv="%*"
+echo.
+cd %GAPP_BUILD%
+mingw32-make argv="%*" -f Makefile.config
+echo.
 ::===============================================
 cd %GPWD%
 ::===============================================
