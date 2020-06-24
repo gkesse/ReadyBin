@@ -7,15 +7,18 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 . $GPATH/.config
 #================================================
 lCheckIn="GGIT_ROOT" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
-lCheckIn="GGIT_REPO" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-lGitUrl="https://github.com/gkesse/${GGIT_REPO}.git"
+lArgIn="$1" ; lArgName="nom_projet" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+#================================================
+lProjectName=$1
+#================================================
+lGitUrl="https://github.com/gkesse/${lProjectName}.git"
 #================================================
 # Configurations
 printf "\n"
 printf "Configurations :\n"
 printf "\t%-20s : %s\n" "GGIT_ROOT" "$GGIT_ROOT"
-printf "\t%-20s : %s\n" "GGIT_REPO" "$GGIT_REPO"
+printf "\t%-20s : %s\n" "nom_projet" "$lProjectName"
 printf "\t%-20s : %s\n" "git_url" "$lGitUrl"
 printf "\n"
 #================================================
@@ -25,7 +28,7 @@ case $lAnswer in
     * ) echo "NON : operation annulee" ; echo ; exit ;;
 esac
 #================================================
-cd $GGIT_ROOT
+cd $lProjectName
 sudo git clone $lGitUrl
 #================================================
 cd $GPWD
