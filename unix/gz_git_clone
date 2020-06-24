@@ -28,7 +28,7 @@ case $lAnswer in
     * ) echo "NON : operation annulee" ; echo ; exit ;;
 esac
 #================================================
-cd $lProjectName
+cd $GGIT_ROOT
 sudo git clone $lGitUrl
 #================================================
 cd $GPWD
