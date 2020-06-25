@@ -1,0 +1,27 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+lArgIn="$1" ; lArgName="nom_path" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+lArgIn="$2" ; lArgName="valeur_path" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+#================================================
+lPathName=$1
+lPathValue=$2
+#================================================
+# Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%-20s : %s\n" "nom_path" "$lPathName"
+printf "\t%-20s : %s\n" "valeur_path" "$lPathValue"
+printf "\n"
+#================================================
+read -p "Confirmation de continuer (Oui|[N]on) ? " lAnswer
+case $lAnswer in
+    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
+    * ) echo "NON : operation annulee" ; echo ; exit ;;
+esac
+#================================================
+echo "export ${lPathName}=${lPathValue}" >> /etc/profile
+#================================================
+cd $GPWD
+#================================================

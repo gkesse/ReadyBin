@@ -2,16 +2,17 @@
 #================================================
 GPWD=$PWD
 #================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 lCheckIn="GBIN_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
-if [ -z $1 ] ; then echo "erreur: script_name ?" ; exit ; fi 
+lArgIn="$1" ; lArgName="nom_script" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
 #================================================
-lPath=$GBIN_PATH/unix
-cd $lPath
-rm -f $1
+lScriptFile=$GBIN_PATH/unix/$1
+#================================================
+rm -f $lScriptFile
 #================================================
 cd $GPWD
 #================================================

@@ -1,0 +1,23 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+. $GPATH/.config
+#================================================
+sudo pacman -Syu \
+xorg-server \
+virtualbox-guest-utils \
+xorg-xhost \
+xorg-xauth \
+xorg-xclock
+#================================================
+# Polices pour sites multilingue
+sudo pacman -Syu xorg-fonts-type1 ttf-dejavu font-bh-ttf \
+font-bitstream-speedo gsfonts sdl_ttf ttf-bitstream-vera \
+ttf-liberation \
+ttf-freefont ttf-arphic-uming ttf-baekmuk 
+#================================================
+cd $GPWD
+#================================================

@@ -2,9 +2,9 @@
 #================================================
 GPWD=$PWD
 #================================================
-. $GPATH/.config
-#================================================
 lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+. $GPATH/.config
 #================================================
 lArgIn="$1" ; lArgName="cle" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
 lArgIn="$2" ; lArgName="valeur" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
@@ -32,6 +32,10 @@ lDataMap[lKeyIn] = lValueIn
 printf("") > lConfigFile
 for(lKeyOut in lDataMap) {
 lValueOut = lDataMap[lKeyOut]
+lFirstChar = substr(lValueOut, 1, 1)
+if(lFirstChar != "\"")
+printf("%s=\"%s\"\n", lKeyOut, lValueOut) >> lConfigFile
+else
 printf("%s=%s\n", lKeyOut, lValueOut) >> lConfigFile
 }}' $lConfigFile
 #================================================
