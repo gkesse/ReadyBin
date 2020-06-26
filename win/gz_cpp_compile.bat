@@ -8,8 +8,10 @@ call %GPATH%/.config.bat
 ::===============================================
 if "%GCPP_BUILD%" == "" ( echo ERREUR : GCPP_BUILD ? & goto :eof ) & if not exist %GCPP_BUILD% ( echo ERREUR : GCPP_BUILD ? & goto :eof )
 if "%GMINGW_PATH%" == "" ( echo ERREUR : GMINGW_PATH ? & goto :eof ) & if not exist %GMINGW_PATH% ( echo ERREUR : GMINGW_PATH ? & goto :eof )
+if "%GQT_PATH%" == "" ( echo ERREUR : GQT_PATH ? & goto :eof ) & if not exist %GQT_PATH% ( echo ERREUR : GQT_PATH ? & goto :eof )
 ::===============================================
 set "PATH=%GMINGW_PATH%;%PATH%"
+set "PATH=%GQT_PATH%;%PATH%"
 ::===============================================
 set "lTmpFile_01=%GPATH%\tmp\tmp_file_01.txt"
 ::===============================================
@@ -18,6 +20,7 @@ printf "\n"
 printf "Configurations :\n"
 printf "\t%%-20s : %%s\n" "GCPP_BUILD" "%GCPP_BUILD%"
 printf "\t%%-20s : %%s\n" "GMINGW_PATH" "%GMINGW_PATH%"
+printf "\t%%-20s : %%s\n" "GMINGW_PATH" "%GQT_PATH%"
 printf "\n"
 ::===============================================
 set /p "lAnswer=Confirmation de continuer (Oui|[N]on) ? : " || set "lAnswer=n"
@@ -29,9 +32,7 @@ echo OUI : operation effectuee
 ::===============================================
 echo.
 cd %GCPP_BUILD%
-set "lBinFile=bin\gp_cpp.exe"
-if exist "%lBinFile%" ( del %lBinFile% )
-mingw32-make argv="%*"
+mingw32-make argv="%*" -f Makefile.config
 echo.
 ::===============================================
 cd %GPWD%

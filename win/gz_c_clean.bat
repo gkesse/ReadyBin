@@ -27,8 +27,12 @@ set /p lAnswerIn=<%lTmpFile_01%
 if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof ) 
 echo OUI : operation effectuee
 ::===============================================
+echo.
 cd %GC_BUILD%
-mingw32-make argv="%*"
+set "lBinFile=bin\gp_c.exe"
+if exist "%lBinFile%" ( del %lBinFile% )
+mingw32-make clean argv="%*"
+echo.
 ::===============================================
 cd %GPWD%
 ::===============================================
