@@ -11,7 +11,7 @@ lArgIn="$1" ; lArgName="nom_script" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR 
 lScriptFile=$GBIN_PATH/unix/$1
 #================================================
 vim $lScriptFile
-chmod 777 $lScriptFile
+sudo chmod 777 $lScriptFile
 #================================================
 cd $GPWD
 #================================================
