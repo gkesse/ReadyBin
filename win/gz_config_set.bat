@@ -18,6 +18,23 @@ set "lTmpFile_03=%GPATH%\tmp\tmp_file_03.txt"
 ::===============================================
 set "lConfigFile=%GPATH%/.config.bat"
 ::===============================================
+:: Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%%-20s : %%s\n" "G_KEY" "%G_KEY%"
+printf "\t%%-20s : %%s\n" "G_VALUE" "%G_VALUE%"
+printf "\n"
+::===============================================
+set "lTmpConfigFile=%GPATH%\tmp\tmp_config_file.txt"
+::===============================================
+set /p "lAnswer=Confirmation de continuer (Oui|[N]on) ? : " || set "lAnswer=n"
+set "lAnswerKey=%lAnswer:~0,1%"
+echo %lAnswerKey%| tr '[:upper:]' '[:lower:]'>%lTmpConfigFile%
+set /p lAnswerIn=<%lTmpConfigFile%
+if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof ) 
+echo OUI : operation effectuee
+echo.
+::===============================================
 printf "">%lTmpFile_03%
 ::===============================================
 for /f "tokens=*" %%a in (%lConfigFile%) do call :GConfig_SetData %%a

@@ -11,6 +11,8 @@ if "%GMINGW_PATH%" == "" ( echo ERREUR : GMINGW_PATH ? & goto :eof ) & if not ex
 ::===============================================
 set "PATH=%GMINGW_PATH%;%PATH%"
 ::===============================================
+set "lTmpFile_01=%GPATH%\tmp\tmp_file_01.txt"
+::===============================================
 :: Configurations
 printf "\n"
 printf "Configurations :\n"
@@ -18,18 +20,15 @@ printf "\t%%-20s : %%s\n" "GC_BUILD" "%GC_BUILD%"
 printf "\t%%-20s : %%s\n" "GMINGW_PATH" "%GMINGW_PATH%"
 printf "\n"
 ::===============================================
-set "lTmpConfigFile=%GPATH%\tmp\tmp_config_file.txt"
-::===============================================
 set /p "lAnswer=Confirmation de continuer (Oui|[N]on) ? : " || set "lAnswer=n"
 set "lAnswerKey=%lAnswer:~0,1%"
-echo %lAnswerKey%| tr '[:upper:]' '[:lower:]'>%lTmpConfigFile%
-set /p lAnswerIn=<%lTmpConfigFile%
+echo %lAnswerKey%| tr '[:upper:]' '[:lower:]'>%lTmpFile_01%
+set /p lAnswerIn=<%lTmpFile_01%
 if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof ) 
 echo OUI : operation effectuee
-echo.
 ::===============================================
 cd %GC_BUILD%
-mingw32-make argv="%*"
+mingw32-make run argv="%*"
 ::===============================================
 cd %GPWD%
 ::===============================================

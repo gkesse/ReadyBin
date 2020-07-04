@@ -6,16 +6,12 @@ if "%GPATH%" == "" ( echo ERREUR : GPATH ? & goto :eof ) & if not exist %GPATH% 
 ::===============================================
 call %GPATH%/.config.bat
 ::===============================================
-if "%GC_BUILD%" == "" ( echo ERREUR : GC_BUILD ? & goto :eof ) & if not exist %GC_BUILD% ( echo ERREUR : GC_BUILD ? & goto :eof )
-if "%GMINGW_PATH%" == "" ( echo ERREUR : GMINGW_PATH ? & goto :eof ) & if not exist %GMINGW_PATH% ( echo ERREUR : GMINGW_PATH ? & goto :eof )
-::===============================================
-set "PATH=%GMINGW_PATH%;%PATH%"
+if "%GC_LOG_FILE%" == "" ( echo ERREUR : GC_LOG_FILE ? & goto :eof ) & if not exist "%GC_LOG_FILE%" ( echo ERREUR : GC_LOG_FILE ? & goto :eof )
 ::===============================================
 :: Configurations
 printf "\n"
 printf "Configurations :\n"
-printf "\t%%-20s : %%s\n" "GC_BUILD" "%GC_BUILD%"
-printf "\t%%-20s : %%s\n" "GMINGW_PATH" "%GMINGW_PATH%"
+printf "\t%%-20s : %%s\n" "GC_LOG_FILE" "%GC_LOG_FILE%"
 printf "\n"
 ::===============================================
 set "lTmpConfigFile=%GPATH%\tmp\tmp_config_file.txt"
@@ -28,8 +24,7 @@ if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof )
 echo OUI : operation effectuee
 echo.
 ::===============================================
-cd %GC_BUILD%
-mingw32-make argv="%*"
+printf "">%GC_LOG_FILE%
 ::===============================================
 cd %GPWD%
 ::===============================================
