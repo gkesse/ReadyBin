@@ -6,17 +6,14 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 #================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GC_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lArgIn="$1" ; lArgName="package" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
 #================================================
-lArgIn="$1" ; lArgName="nom_module" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
-#================================================
-lModuleName=$1
+G_PACKAGE=$1
 #================================================
 # Configurations
 printf "\n"
 printf "Configurations :\n"
-printf "\t%-20s : %s\n" "GC_BUILD" "$GC_BUILD"
-printf "\t%-20s : %s\n" "nom_module" "$lModuleName"
+printf "\t%-20s : %s\n" "G_PACKAGE" "$G_PACKAGE"
 printf "\n"
 #================================================
 read -p "Confirmation (Oui|[N]on) ? " lAnswer
@@ -25,8 +22,7 @@ case $lAnswer in
     * ) echo "NON : operation annulee" ; echo ; exit ;;
 esac
 #================================================
-cd $GC_BUILD
-rm -f build/$lModuleName.o
+pacman -Ss --needed $G_PACKAGE
 #================================================
 cd $GPWD
 #================================================

@@ -26,7 +26,7 @@ printf "\n"
 #================================================
 if [ -d "$lAurPath" ] ; then echo "OUI : aur existant" ; echo ; fi
 #================================================
-read -p "Confirmation de continuer (Oui|[N]on) ? " lAnswer
+read -p "Confirmation (Oui|[N]on) ? " lAnswer
 case $lAnswer in
     [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
     * ) echo "NON : operation annulee" ; echo ; exit ;;

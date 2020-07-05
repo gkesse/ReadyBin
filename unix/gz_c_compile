@@ -14,7 +14,7 @@ printf "Configurations :\n"
 printf "\t%-20s : %s\n" "GC_BUILD" "$GC_BUILD"
 printf "\n"
 #================================================
-read -p "Confirmation de continuer (Oui|[N]on) ? " lAnswer
+read -p "Confirmation (Oui|[N]on) ? " lAnswer
 case $lAnswer in
     [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
     * ) echo "NON : operation annulee" ; echo ; exit ;;

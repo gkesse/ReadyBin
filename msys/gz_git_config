@@ -6,17 +6,16 @@ lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then 
 #================================================
 . $GPATH/.config
 #================================================
-lCheckIn="GC_BUILD" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
-#================================================
-lArgIn="$1" ; lArgName="nom_module" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
-#================================================
-lModuleName=$1
+lCheckIn="GGIT_USER_NAME" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GGIT_USER_EMAIL" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+lCheckIn="GGIT_CORE_EDITOR" ; if [ "${!lCheckIn}" = "" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
 #================================================
 # Configurations
 printf "\n"
 printf "Configurations :\n"
-printf "\t%-20s : %s\n" "GC_BUILD" "$GC_BUILD"
-printf "\t%-20s : %s\n" "nom_module" "$lModuleName"
+printf "\t%-20s : %s\n" "GGIT_USER_NAME" "$GGIT_USER_NAME"
+printf "\t%-20s : %s\n" "GGIT_USER_EMAIL" "$GGIT_USER_EMAIL"
+printf "\t%-20s : %s\n" "GGIT_CORE_EDITOR" "$GGIT_CORE_EDITOR"
 printf "\n"
 #================================================
 read -p "Confirmation (Oui|[N]on) ? " lAnswer
@@ -25,8 +24,9 @@ case $lAnswer in
     * ) echo "NON : operation annulee" ; echo ; exit ;;
 esac
 #================================================
-cd $GC_BUILD
-rm -f build/$lModuleName.o
+git config --global user.name "$GGIT_USER_NAME"
+git config --global user.email "$GGIT_USER_EMAIL"
+git config --global core.editor "$GGIT_CORE_EDITOR"
 #================================================
 cd $GPWD
 #================================================
