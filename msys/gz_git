@@ -164,7 +164,6 @@ fi
 #================================================
 GGit_CLONE() {
 echo
-. gz_confirm_in
 cd $G_DEPOT_ROOT
 G_DEPOT_URL="${G_GIT_ROOT}/${G_DEPOT_NAME}.git"
 git clone $G_DEPOT_URL $G_DEPOT_CLONE
@@ -194,7 +193,6 @@ fi
 #================================================
 GGit_PULL() {
 echo
-. gz_confirm_in
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
 git pull
@@ -224,7 +222,6 @@ fi
 #================================================
 GGit_PUSH() {
 echo
-. gz_confirm_in
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
 git add --all
