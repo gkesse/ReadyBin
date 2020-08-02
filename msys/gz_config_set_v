@@ -1,0 +1,58 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+. $GPATH/.config
+#================================================
+lArgIn="$1" ; lArgName="cle" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+lArgIn="$2" ; lArgName="valeur" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+#================================================
+G_CONFIG_FILE=$GPATH/.config
+G_KEY=$1
+G_VALUE=$2
+#================================================
+# Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%-20s : %s\n" "G_KEY" "$G_KEY"
+printf "\t%-20s : %s\n" "G_VALUE" "$G_VALUE"
+printf "\n"
+#================================================
+read -p "Confirmation (Oui|[N]on) ? " lAnswer
+case $lAnswer in
+    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
+    * ) echo "NON : operation annulee" ; echo ; exit ;;
+esac
+#================================================
+awk -F "=" -v lKeyIn="$G_KEY" -v lValueIn="$G_VALUE" -v G_CONFIG_FILE="$G_CONFIG_FILE" '
+function ltrim(s) {sub(/^[ \t\r\n]+/, "", s); return s}
+function rtrim(s) {sub(/[ \t\r\n]+$/, "", s); return s}
+function trim(s) {return rtrim(ltrim(s));}
+BEGIN {}{
+lLine = $0
+if(lLine == "") next
+lLine = trim(lLine)
+if(lLine == "") next
+lFirstChar = substr(lLine, 1, 1)
+if(lFirstChar == "#") next
+lCount = split(lLine, lMap, "=")
+if(lCount < 2) next
+lKey = lMap[1]
+lValue = lMap[2]
+lDataMap[lKey] = lValue
+} END {
+lDataMap[lKeyIn] = lValueIn
+printf("") > G_CONFIG_FILE
+for(lKeyOut in lDataMap) {
+lValueOut = lDataMap[lKeyOut]
+lFirstChar = substr(lValueOut, 1, 1)
+if(lFirstChar != "\"")
+printf("%s=\"%s\"\n", lKeyOut, lValueOut) >> G_CONFIG_FILE
+else
+printf("%s=%s\n", lKeyOut, lValueOut) >> G_CONFIG_FILE
+}}' $G_CONFIG_FILE
+#================================================
+cd $GPWD
+#================================================

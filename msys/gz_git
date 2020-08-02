@@ -18,6 +18,10 @@ case "$G_STATE" in
     "S_PUSH_DEPOT_NAME") GGit_PUSH_DEPOT_NAME ;;
     "S_PUSH") GGit_PUSH ;;
     #
+    "S_PULL_DEPOT_ROOT") GGit_PULL_DEPOT_ROOT ;;
+    "S_PULL_DEPOT_NAME") GGit_PULL_DEPOT_NAME ;;
+    "S_PULL") GGit_PULL ;;
+    #
     "S_SAVE") GGit_SAVE ;;
     "S_LOAD") GGit_LOAD ;;
     *) break ;;
@@ -60,6 +64,36 @@ elif [ "$lAnswer" = "2" ] ; then G_STATE="S_PULL_DEPOT_ROOT" ; G_GIT_ID="$lAnswe
 fi
 }
 #================================================
+GGit_PULL_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PULL_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GGit_PULL_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PULL" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_PULL() {
+echo
+. gz_confirm_in
+G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
+cd $G_DEPOT_PATH
+git pull
+G_STATE="S_SAVE"
+echo
+}
+#================================================
 GGit_PUSH_DEPOT_ROOT() {
 read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
 if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
@@ -93,12 +127,14 @@ echo
 }
 #================================================
 GGit_SAVE() {
+gz_config_edit_in "G_GIT_ID" "$G_GIT_ID"
 gz_config_edit_in "G_DEPOT_ROOT" "$G_DEPOT_ROOT"
 gz_config_edit_in "G_DEPOT_NAME" "$G_DEPOT_NAME"
 G_STATE="S_END"
 }
 #================================================
 GGit_LOAD() {
+G_GIT_ID=$(gz_config_read_in "G_GIT_ID")
 G_DEPOT_ROOT=$(gz_config_read_in "G_DEPOT_ROOT")
 G_DEPOT_NAME=$(gz_config_read_in "G_DEPOT_NAME")
 G_STATE="S_METHOD"

@@ -1,0 +1,32 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPKG_CONFIG_PATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+lArgIn="$1" ; lArgName="nom_librairie" ; if [ -z "${lArgIn}" ] ; then echo "ERREUR : ${lArgName} ?" ; exit ; fi
+#================================================
+G_LIBRARY_NAME=$1
+#================================================
+# Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%-20s : %s\n" "GPKG_CONFIG_PATH" "$GPKG_CONFIG_PATH"
+printf "\t%-20s : %s\n" "G_LIBRARY_NAME" "$G_LIBRARY_NAME"
+printf "\n"
+#================================================
+read -p "Confirmation(Oui|[N]on) ? " lAnswer
+case $lAnswer in
+    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
+    * ) echo "NON : operation annulee" ; echo ; exit ;;
+esac
+#================================================
+pkg-config --cflags $G_LIBRARY_NAME
+echo
+#================================================
+cd $GPWD
+#================================================

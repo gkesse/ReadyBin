@@ -1,0 +1,26 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+. $GPATH/.config
+#================================================
+G_CONFIG_FILE=$GPATH/.config
+#================================================
+# Configurations
+printf "\n"
+printf "Configurations :\n"
+printf "\t%-20s : %s\n" "G_CONFIG_FILE" "$G_CONFIG_FILE"
+printf "\n"
+#================================================
+read -p "Confirmation (Oui|[N]on) ? " lAnswer
+case $lAnswer in
+    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
+    * ) echo "NON : operation annulee" ; echo ; exit ;;
+esac
+#================================================
+vim $G_CONFIG_FILE
+#================================================
+cd $GPWD
+#================================================
