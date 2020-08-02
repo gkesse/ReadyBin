@@ -1,0 +1,318 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+GViews_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_ADMIN") GViews_ADMIN ;;
+    "S_INIT") GViews_INIT ;;
+    "S_METHOD") GViews_METHOD ;;
+    "S_CHOICE") GViews_CHOICE ;;
+    #
+    "S_CREATE_READYDEV_DB") GViews_CREATE_READYDEV_DB ;;
+    "S_CREATE") GViews_CREATE ;;
+    #
+    "S_EXTRACT_READYDEV_DB") GViews_EXTRACT_READYDEV_DB ;;
+    "S_EXTRACT") GViews_EXTRACT ;;
+    #
+    "S_ADD_READYDEV_DB") GViews_ADD_READYDEV_DB ;;
+    "S_ADD_VIEW_KEY") GViews_ADD_VIEW_KEY ;;
+    "S_ADD_VIEW_COUNT") GViews_ADD_VIEW_COUNT ;;
+    "S_ADD_VIEW_KEY_CHECK") GViews_ADD_VIEW_KEY_CHECK ;;
+    "S_ADD_INSERT") GViews_ADD_INSERT ;;
+    "S_ADD_UPDATE") GViews_ADD_UPDATE ;;
+    #
+    "S_SHOW_READYDEV_DB") GViews_SHOW_READYDEV_DB ;;
+    "S_SHOW") GViews_SHOW;;
+    #
+    "S_LOAD_DATA_READYDEV_DB") GViews_LOAD_DATA_READYDEV_DB ;;
+    "S_LOAD_DATA_VIEW_PATH") GViews_LOAD_DATA_VIEW_PATH ;;
+    "S_LOAD_DATA") GViews_LOAD_DATA ;;
+    #
+    "S_DELETE_READYDEV_DB") GViews_DELETE_READYDEV_DB ;;
+    "S_DELETE_VIEW_KEY") GViews_DELETE_VIEW_KEY ;;
+    "S_DELETE") GViews_DELETE ;;
+    #
+    "S_SAVE") GViews_SAVE ;;
+    "S_LOAD") GViews_LOAD ;;
+    *) break ;;
+esac    
+done
+}
+#================================================
+GViews_ADMIN() {
+gz_admin
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_INIT() {
+printf "\n"
+printf "### VIEWS ###\n"
+printf "\t%2s : %s\n" "-q" "quitter l'application"
+printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
+printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
+printf "\n"
+G_STATE="S_LOAD"
+}
+#================================================
+GViews_METHOD() {
+printf "VIEWS :\n"
+printf "\t%2s : %s\n" "1" "creer la table"
+printf "\t%2s : %s\n" "2" "extraire le schema"
+printf "\t%2s : %s\n" "3" "ajouter des donnees"
+printf "\t%2s : %s\n" "4" "afficher les donnees"
+printf "\t%2s : %s\n" "5" "supprimer une donnee"
+printf "\n"
+printf "\t%2s : %s\n" "10" "charger des donnees"
+printf "\n"
+G_STATE="S_CHOICE"
+}
+#================================================
+GViews_CHOICE() {
+read -p "VIEWS ($G_VIEWS_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEWS_ID" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+#
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_CREATE_READYDEV_DB" ; G_VIEWS_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_EXTRACT_READYDEV_DB" ; G_VIEWS_ID="$lAnswer"
+elif [ "$lAnswer" = "3" ] ; then G_STATE="S_ADD_READYDEV_DB" ; G_VIEWS_ID="$lAnswer"
+elif [ "$lAnswer" = "4" ] ; then G_STATE="S_SHOW_READYDEV_DB" ; G_VIEWS_ID="$lAnswer"
+elif [ "$lAnswer" = "5" ] ; then G_STATE="S_DELETE_READYDEV_DB" ; G_VIEWS_ID="$lAnswer"
+#
+elif [ "$lAnswer" = "10" ] ; then G_STATE="S_LOAD_DATA_READYDEV_DB" ; G_VIEWS_ID="$lAnswer"
+fi
+}
+#================================================
+GViews_DELETE_READYDEV_DB() {
+read -p "G_READYDEV_DB ($G_READYDEV_DB) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_DELETE_VIEW_KEY" ; G_READYDEV_DB="$lAnswer"
+fi
+}
+#================================================
+GViews_DELETE_VIEW_KEY() {
+read -p "G_VIEW_KEY ($G_VIEW_KEY) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_KEY" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_DELETE" ; G_VIEW_KEY="$lAnswer"
+fi
+}
+#================================================
+GViews_DELETE() {
+echo
+. gz_confirm_in
+G_DATABASE_PATH="$G_READYDEV_DB"
+. gz_sqlite_in "
+delete from VIEWS 
+where VIEW_KEY=\"$G_VIEW_KEY\"
+"
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_LOAD_DATA_READYDEV_DB() {
+read -p "G_READYDEV_DB ($G_READYDEV_DB) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_LOAD_DATA_VIEW_PATH" ; G_READYDEV_DB="$lAnswer"
+fi
+}
+#================================================
+GViews_LOAD_DATA_VIEW_PATH() {
+read -p "G_VIEW_PATH ($G_VIEW_PATH) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_PATH" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_LOAD_DATA" ; G_VIEW_PATH="$lAnswer"
+fi
+}
+#================================================
+GViews_LOAD_DATA() {
+echo
+G_DATABASE_PATH="$G_READYDEV_DB"
+jq "." "$G_VIEW_PATH" | \
+while read lLine; do
+lCount=$(echo "$lLine" | awk -F ":" '{printf("%s\n", NF)}')
+if [ "$lCount" = "1" ] ; then continue ; fi
+lKey=$(echo "$lLine" | awk -F "\"" '{printf("%s\n", $2)}')
+lValue=$(echo "$lLine" | awk -F ":" '{printf("%s\n", $2)}' | awk '{printf("%s\n", $1)}' | awk -F "," '{printf("%s\n", $1)}')
+lKey=$(echo "$lKey" | tr '[:upper:]' '[:lower:]')
+lCheck=$(. gz_sqlite_in "
+select count(*) from VIEWS
+where VIEW_KEY=\"$lKey\"
+")
+if [ "$lCheck" = "0" ] ; then 
+. gz_sqlite_in "
+insert into VIEWS (VIEW_KEY, VIEW_COUNT)
+values (\"$lKey\", $lValue)
+"
+else 
+. gz_sqlite_in "
+update VIEWS
+set VIEW_COUNT=$G_VIEW_COUNT
+where VIEW_KEY=\"$lKey\"
+"
+fi
+done
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_SHOW_READYDEV_DB() {
+read -p "G_READYDEV_DB ($G_READYDEV_DB) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_SHOW" ; G_READYDEV_DB="$lAnswer"
+fi
+}
+#================================================
+GViews_SHOW() {
+echo
+G_DATABASE_PATH="$G_READYDEV_DB"
+. gz_sqlite_in "
+.mode column
+.headers on
+.width auto
+select * from VIEWS
+"
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_ADD_READYDEV_DB() {
+read -p "G_READYDEV_DB ($G_READYDEV_DB) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_VIEW_KEY" ; G_READYDEV_DB="$lAnswer"
+fi
+}
+#================================================
+GViews_ADD_VIEW_KEY() {
+read -p "G_VIEW_KEY ($G_VIEW_KEY) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_KEY" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_VIEW_COUNT" ; G_VIEW_KEY="$lAnswer"
+fi
+}
+#================================================
+GViews_ADD_VIEW_COUNT() {
+read -p "G_VIEW_COUNT ($G_VIEW_COUNT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_COUNT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_VIEW_KEY_CHECK" ; G_VIEW_COUNT="$lAnswer"
+fi
+}
+#================================================
+GViews_ADD_VIEW_KEY_CHECK() {
+G_DATABASE_PATH="$G_READYDEV_DB"
+lCheck=$(. gz_sqlite_in "
+select count(*) from VIEWS
+where VIEW_KEY=\"$G_VIEW_KEY\"
+")
+if [ "$lCheck" = "0" ] ; then G_STATE="S_ADD_INSERT"
+else G_STATE="S_ADD_UPDATE" ; fi
+}
+#================================================
+GViews_ADD_INSERT() {
+echo
+G_DATABASE_PATH="$G_READYDEV_DB"
+. gz_sqlite_in "
+insert into VIEWS (VIEW_KEY, VIEW_COUNT)
+values (\"$G_VIEW_KEY\", $G_VIEW_COUNT)
+"
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_ADD_UPDATE() {
+echo
+G_DATABASE_PATH="$G_READYDEV_DB"
+. gz_sqlite_in "
+update VIEWS
+set VIEW_COUNT=$G_VIEW_COUNT
+where VIEW_KEY=\"$G_VIEW_KEY\"
+"
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_EXTRACT_READYDEV_DB() {
+read -p "G_READYDEV_DB ($G_READYDEV_DB) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_EXTRACT" ; G_READYDEV_DB="$lAnswer"
+fi
+}
+#================================================
+GViews_EXTRACT() {
+echo
+G_DATABASE_PATH="$G_READYDEV_DB"
+. gz_sqlite_in "
+.schema VIEWS
+"
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_CREATE_READYDEV_DB() {
+read -p "G_READYDEV_DB ($G_READYDEV_DB) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CREATE" ; G_READYDEV_DB="$lAnswer"
+fi
+}
+#================================================
+GViews_CREATE() {
+echo
+G_DATABASE_PATH="$G_READYDEV_DB"
+. gz_confirm_in
+. gz_sqlite_in "
+create table VIEWS (
+VIEW_KEY text primary key not null,
+VIEW_COUNT integer
+)
+"
+G_STATE="S_SAVE"
+}
+#================================================
+GViews_SAVE() {
+gz_config_edit_in "G_VIEWS_ID" "$G_VIEWS_ID"
+gz_config_edit_in "G_READYDEV_DB" "$G_READYDEV_DB"
+gz_config_edit_in "G_VIEW_KEY" "$G_VIEW_KEY"
+gz_config_edit_in "G_VIEW_COUNT" "$G_VIEW_COUNT"
+gz_config_edit_in "G_VIEW_PATH" "$G_VIEW_PATH"
+G_STATE="S_END"
+}
+#================================================
+GViews_LOAD() {
+G_VIEWS_ID=$(gz_config_read_in "G_VIEWS_ID")
+G_READYDEV_DB=$(gz_config_read_in "G_READYDEV_DB")
+G_VIEW_KEY=$(gz_config_read_in "G_VIEW_KEY")
+G_VIEW_COUNT=$(gz_config_read_in "G_VIEW_COUNT")
+G_VIEW_PATH=$(gz_config_read_in "G_VIEW_PATH")
+G_STATE="S_METHOD"
+}
+#================================================
+GViews_Main
+#================================================
+cd $GPWD
+#================================================

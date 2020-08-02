@@ -1,0 +1,23 @@
+#!/bin/bash
+#================================================
+G_DATABASE_PATH="$GPATH/.config"
+#================================================
+lCheck=$(. gz_sqlite_in "
+select count(*) from CONFIG_DATA
+where CONFIG_KEY=\"$1\"
+")
+#================================================
+if [ "$lCheck" = "0" ] ; then
+. gz_sqlite_in "
+insert into CONFIG_DATA (CONFIG_KEY, CONFIG_VALUE)
+values (\"$1\", \"$2\") 
+"
+#================================================
+else
+. gz_sqlite_in "
+update CONFIG_DATA
+set CONFIG_VALUE=\"$2\"
+where CONFIG_KEY=\"$1\"
+"
+fi
+#================================================

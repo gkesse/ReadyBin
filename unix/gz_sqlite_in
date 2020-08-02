@@ -1,0 +1,10 @@
+#!/bin/bash
+#=====================================
+G_DATABASE_ROOT=$(dirname "$G_DATABASE_PATH")
+#=====================================
+if ! [ -d "$G_DATABASE_ROOT" ] ; then mkdir -p "$G_DATABASE_ROOT" ; fi
+#=====================================
+sqlite3 "$G_DATABASE_PATH" << _EOF_
+$1
+_EOF_
+#=====================================

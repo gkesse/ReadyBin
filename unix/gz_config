@@ -1,4 +1,201 @@
 #!/bin/bash
 #================================================
-
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+G_DATABASE_PATH="$GPATH/.config"
+#================================================
+GConfig_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_ADMIN") GConfig_ADMIN ;;
+    "S_INIT") GConfig_INIT ;;
+    "S_METHOD") GConfig_METHOD ;;
+    "S_CHOICE") GConfig_CHOICE ;;
+    #
+    "S_CREATE") GConfig_CREATE ;;
+    "S_SCHEMA") GConfig_SCHEMA;;
+    "S_DROP") GConfig_DROP ;;
+    "S_SHOW") GConfig_SHOW ;;
+    #
+    "S_ADD_CONFIG_KEY") GConfig_ADD_CONFIG_KEY ;;
+    "S_ADD_CONFIG_VALUE") GConfig_ADD_CONFIG_VALUE ;;
+    "S_ADD") GConfig_ADD ;;
+    #
+    "S_DELETE_CONFIG_KEY") GConfig_DELETE_CONFIG_KEY ;;
+    "S_DELETE") GConfig_DELETE ;;
+    #
+    "S_SAVE") GConfig_SAVE ;;
+    "S_LOAD") GConfig_LOAD ;;
+    *) break ;;
+esac    
+done
+}
+#================================================
+GConfig_ADMIN() {
+gz_admin
+G_STATE="S_SAVE"
+}
+#================================================
+GConfig_INIT() {
+printf "\n"
+printf "### CONFIG ###\n"
+printf "\t%2s : %s\n" "-q" "quitter l'application"
+printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
+printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
+printf "\n"
+G_STATE="S_LOAD"
+}
+#================================================
+GConfig_METHOD() {
+printf "CONFIG :\n"
+printf "\t%2s : %s\n" "10" "creer la table"
+printf "\t%2s : %s\n" "11" "affichier le schema"
+printf "\t%2s : %s\n" "12" "supprimer la table"
+printf "\t%2s : %s\n" "13" "ajouter une donnee"
+printf "\t%2s : %s\n" "14" "afficher les donnees"
+printf "\t%2s : %s\n" "15" "supprimer une donnee"
+printf "\n"
+G_STATE="S_CHOICE"
+}
+#================================================
+GConfig_CHOICE() {
+read -p "CONFIG ($G_CONFIG_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CONFIG_ID" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+#
+elif [ "$lAnswer" = "10" ] ; then G_STATE="S_CREATE" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SCHEMA" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "12" ] ; then G_STATE="S_DROP" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "13" ] ; then G_STATE="S_ADD_CONFIG_KEY" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "14" ] ; then G_STATE="S_SHOW" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "15" ] ; then G_STATE="S_DELETE_CONFIG_KEY" ; G_CONFIG_ID="$lAnswer"
+fi
+}
+#================================================
+GConfig_DELETE_CONFIG_KEY() {
+read -p "G_CONFIG_KEY ($G_CONFIG_KEY) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CONFIG_KEY" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_DELETE" ; G_CONFIG_KEY="$lAnswer"
+fi
+}
+#================================================
+GConfig_DELETE() {
+. gz_sqlite_in "
+delete from CONFIG_DATA
+where CONFIG_KEY=\"$G_CONFIG_KEY\"
+"
+G_STATE="S_SAVE"
+}
+#================================================
+GConfig_SHOW() {
+echo
+. gz_sqlite_in "
+.header on
+select * from CONFIG_DATA 
+" | awk -F "|" -v G_COL_SIZE="20;50" 'BEGIN{
+split(G_COL_SIZE, lColSize, ";")
+}{
+printf("| ")
+for(i = 1; i <= NF; i++) {
+if(i != 1) printf(" | ")
+printf("%*s", -lColSize[i], $i)
+}
+printf(" |\n")
+if(NR == 1) {
+printf("|")
+for(i = 1; i <= NF; i++) {
+if(i != 1) printf("|")
+for(j = 1; j <= lColSize[i] + 2; j++) {printf("%s", "-")}
+}
+printf("|\n")
+}
+}'
+G_STATE="S_SAVE"
+echo
+}
+#================================================
+GConfig_ADD_CONFIG_KEY() {
+read -p "G_CONFIG_KEY ($G_CONFIG_KEY) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CONFIG_KEY" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_CONFIG_VALUE" ; G_CONFIG_KEY="$lAnswer"
+fi
+}
+#================================================
+GConfig_ADD_CONFIG_VALUE() {
+read -p "G_CONFIG_VALUE ($G_CONFIG_VALUE) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CONFIG_VALUE" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_ADD" ; G_CONFIG_VALUE=""
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD" ; G_CONFIG_VALUE="$lAnswer"
+fi
+}
+#================================================
+GConfig_ADD() {
+echo
+gz_config_edit_in "$G_CONFIG_KEY" "$G_CONFIG_VALUE"
+G_STATE="S_SAVE"
+echo
+}
+#================================================
+GConfig_DROP() {
+echo
+. gz_confirm_in
+. gz_sqlite_in "
+drop table CONFIG_DATA
+"
+G_STATE="S_SAVE"
+echo
+}
+#================================================
+GConfig_SCHEMA() {
+echo
+. gz_sqlite_in "
+.schema CONFIG_DATA
+"
+G_STATE="S_SAVE"
+echo
+}
+#================================================
+GConfig_CREATE() {
+echo
+. gz_confirm_in
+. gz_sqlite_in "
+create table CONFIG_DATA (
+CONFIG_KEY text primary key not null,
+CONFIG_VALUE text
+)
+"
+G_STATE="S_SAVE"
+echo
+}
+#================================================
+GConfig_SAVE() {
+gz_config_edit_in "G_CONFIG_ID" "$G_CONFIG_ID"
+gz_config_edit_in "G_CONFIG_KEY" "$G_CONFIG_KEY"
+gz_config_edit_in "G_CONFIG_VALUE" "$G_CONFIG_VALUE"
+G_STATE="S_END"
+}
+#================================================
+GConfig_LOAD() {
+G_CONFIG_ID=$(gz_config_read_in "G_CONFIG_ID")
+G_CONFIG_KEY=$(gz_config_read_in "G_CONFIG_KEY")
+G_CONFIG_VALUE=$(gz_config_read_in "G_CONFIG_VALUE")
+G_STATE="S_METHOD"
+}
+#================================================
+GConfig_Main
+#================================================
+cd $GPWD
 #================================================

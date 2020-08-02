@@ -1,0 +1,12 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+sudo certbot certonly --standalone --agree-tos --no-eff-email -d readydev.ovh -d www.readydev.ovh
+#================================================
+cd $GPWD
+#================================================

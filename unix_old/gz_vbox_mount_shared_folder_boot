@@ -1,0 +1,20 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+. $GPATH/.config
+#================================================
+lCheckIn="GPATH" ; if [ "${!lCheckIn}" = "" ] || ! [ -d "${!lCheckIn}" ] ; then echo "ERREUR : ${lCheckIn} ?" ; exit ; fi 
+#================================================
+lFstab=/etc/fstab
+lSharedDoc=/mnt/shared_doc
+#================================================
+if ! grep -q "$lSharedDoc" "$lFstab"; then
+    echo "# $lSharedDoc" >> $lFstab
+    echo "shared_doc  /mnt/shared_doc  vboxsf  uid=user,gid=group,rw,dmode=700,fmode=600,nofail  0  0" >> $lFstab
+fi
+#================================================
+cat $lFstab
+#================================================
+cd $GPWD
+#================================================
