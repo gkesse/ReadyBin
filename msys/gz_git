@@ -4,7 +4,7 @@ GPWD=$PWD
 #================================================
 G_STATE="S_INIT"
 #================================================
-G_DATABASE_ROOT="$GPATH/.config"
+G_GIT_ROOT="https://github.com/gkesse"
 #================================================
 GGit_Main() {
 while [ 1 ] ; do
@@ -21,6 +21,11 @@ case "$G_STATE" in
     "S_PULL_DEPOT_ROOT") GGit_PULL_DEPOT_ROOT ;;
     "S_PULL_DEPOT_NAME") GGit_PULL_DEPOT_NAME ;;
     "S_PULL") GGit_PULL ;;
+    #
+    "S_CLONE_DEPOT_ROOT") GGit_CLONE_DEPOT_ROOT ;;
+    "S_CLONE_DEPOT_NAME") GGit_CLONE_DEPOT_NAME ;;
+    "S_CLONE_DEPOT_CLONE") GGit_CLONE_DEPOT_CLONE ;;
+    "S_CLONE") GGit_CLONE ;;
     #
     "S_CONFIG_LIST") GGit_CONFIG_LIST ;;
     #
@@ -55,6 +60,7 @@ GGit_METHOD() {
 printf "GIT :\n"
 printf "\t%2s : %s\n" "1" "pousser un depot"
 printf "\t%2s : %s\n" "2" "tirer un depot"
+printf "\t%2s : %s\n" "3" "cloner un depot"
 printf "\n"
 printf "\t%2s : %s\n" "10" "lister les configurations"
 printf "\t%2s : %s\n" "11" "editer les configurations"
@@ -71,6 +77,7 @@ elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_PUSH_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
 elif [ "$lAnswer" = "2" ] ; then G_STATE="S_PULL_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
+elif [ "$lAnswer" = "3" ] ; then G_STATE="S_CLONE_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_CONFIG_LIST" ; G_GIT_ID="$lAnswer"
 elif [ "$lAnswer" = "11" ] ; then G_STATE="S_CONFIG_EDIT_USER_NAME" ; G_GIT_ID="$lAnswer"
@@ -120,6 +127,47 @@ echo
 GGit_CONFIG_LIST() {
 echo
 git config --list
+G_STATE="S_SAVE"
+echo
+}
+#================================================
+GGit_CLONE_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GGit_CLONE_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE_DEPOT_CLONE" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_CLONE_DEPOT_CLONE() {
+G_DEPOT_CLONE=$G_DEPOT_NAME
+read -p "G_DEPOT_CLONE ($G_DEPOT_CLONE) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_CLONE" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE" ; G_DEPOT_CLONE="$lAnswer"
+fi
+}
+#================================================
+GGit_CLONE() {
+echo
+. gz_confirm_in
+cd $G_DEPOT_ROOT
+G_DEPOT_URL="${G_GIT_ROOT}/${G_DEPOT_NAME}.git"
+git clone $G_DEPOT_URL $G_DEPOT_CLONE
 G_STATE="S_SAVE"
 echo
 }
