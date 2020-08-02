@@ -22,6 +22,13 @@ case "$G_STATE" in
     "S_PULL_DEPOT_NAME") GGit_PULL_DEPOT_NAME ;;
     "S_PULL") GGit_PULL ;;
     #
+    "S_CONFIG_LIST") GGit_CONFIG_LIST ;;
+    #
+    "S_CONFIG_EDIT_USER_NAME") GGit_CONFIG_EDIT_USER_NAME ;;
+    "S_CONFIG_EDIT_USER_EMAIL") GGit_CONFIG_EDIT_USER_EMAIL ;;
+    "S_CONFIG_EDIT_CORE_EDITOR") GGit_CONFIG_EDIT_CORE_EDITOR ;;
+    "S_CONFIG_EDIT") GGit_CONFIG_EDIT ;;
+    #
     "S_SAVE") GGit_SAVE ;;
     "S_LOAD") GGit_LOAD ;;
     *) break ;;
@@ -49,6 +56,9 @@ printf "GIT :\n"
 printf "\t%2s : %s\n" "1" "pousser un depot"
 printf "\t%2s : %s\n" "2" "tirer un depot"
 printf "\n"
+printf "\t%2s : %s\n" "10" "lister les configurations"
+printf "\t%2s : %s\n" "11" "editer les configurations"
+printf "\n"
 G_STATE="S_CHOICE"
 }
 #================================================
@@ -61,7 +71,57 @@ elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_PUSH_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
 elif [ "$lAnswer" = "2" ] ; then G_STATE="S_PULL_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
+#
+elif [ "$lAnswer" = "10" ] ; then G_STATE="S_CONFIG_LIST" ; G_GIT_ID="$lAnswer"
+elif [ "$lAnswer" = "11" ] ; then G_STATE="S_CONFIG_EDIT_USER_NAME" ; G_GIT_ID="$lAnswer"
 fi
+}
+#================================================
+GGit_CONFIG_EDIT_USER_NAME() {
+read -p "G_USER_NAME ($G_USER_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_USER_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT_USER_EMAIL" ; G_USER_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_CONFIG_EDIT_USER_EMAIL() {
+read -p "G_USER_EMAIL ($G_USER_EMAIL) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_USER_EMAIL" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT_CORE_EDITOR" ; G_USER_EMAIL="$lAnswer"
+fi
+}
+#================================================
+GGit_CONFIG_EDIT_CORE_EDITOR() {
+read -p "G_CORE_EDITOR ($G_CORE_EDITOR) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CORE_EDITOR" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT" ; G_CORE_EDITOR="$lAnswer"
+fi
+}
+#================================================
+GGit_CONFIG_EDIT() {
+echo
+git config --global user.name "$G_USER_NAME"
+git config --global user.email "$G_USER_EMAIL"
+git config --global core.editor "$G_CORE_EDITOR"
+git config --list
+G_STATE="S_SAVE"
+echo
+}
+#================================================
+GGit_CONFIG_LIST() {
+echo
+git config --list
+G_STATE="S_SAVE"
+echo
 }
 #================================================
 GGit_PULL_DEPOT_ROOT() {
@@ -130,6 +190,9 @@ GGit_SAVE() {
 gz_config_edit_in "G_GIT_ID" "$G_GIT_ID"
 gz_config_edit_in "G_DEPOT_ROOT" "$G_DEPOT_ROOT"
 gz_config_edit_in "G_DEPOT_NAME" "$G_DEPOT_NAME"
+gz_config_edit_in "G_USER_NAME" "$G_USER_NAME"
+gz_config_edit_in "G_USER_EMAIL" "$G_USER_EMAIL"
+gz_config_edit_in "G_CORE_EDITOR" "$G_CORE_EDITOR"
 G_STATE="S_END"
 }
 #================================================
@@ -137,6 +200,9 @@ GGit_LOAD() {
 G_GIT_ID=$(gz_config_read_in "G_GIT_ID")
 G_DEPOT_ROOT=$(gz_config_read_in "G_DEPOT_ROOT")
 G_DEPOT_NAME=$(gz_config_read_in "G_DEPOT_NAME")
+G_USER_NAME=$(gz_config_read_in "G_USER_NAME")
+G_USER_EMAIL=$(gz_config_read_in "G_USER_EMAIL")
+G_CORE_EDITOR=$(gz_config_read_in "G_CORE_EDITOR")
 G_STATE="S_METHOD"
 }
 #================================================
