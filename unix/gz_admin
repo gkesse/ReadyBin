@@ -12,8 +12,10 @@ case "$G_STATE" in
     "S_CHOICE") GAdmin_CHOICE ;;
     #
     "S_BIN") GAdmin_BIN ;;
+    #
     "S_PACMAN") GAdmin_PACMAN ;;
     "S_SQLITE") GAdmin_SQLITE ;;
+    "S_GIT") GAdmin_GIT ;;
     #
     "S_CONFIG") GAdmin_CONFIG ;;
     "S_VIEWS") GAdmin_VIEWS ;;
@@ -39,6 +41,7 @@ printf "\t%2s : %s\n" "1" "BIN"
 printf "\n"
 printf "\t%2s : %s\n" "10" "PACMAN"
 printf "\t%2s : %s\n" "11" "SQLITE"
+printf "\t%2s : %s\n" "12" "GIT"
 printf "\n"
 printf "\t%2s : %s\n" "20" "CONFIG"
 printf "\t%2s : %s\n" "21" "VIEWS"
@@ -50,10 +53,12 @@ GAdmin_CHOICE() {
 read -p "ADMINISTRATION ($G_ADMIN_ID) ? " lAnswer
 if [ "$lAnswer" = "" ] ; then lAnswer="$G_ADMIN_ID" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+#
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_BIN" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_PACMAN" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SQLITE" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "12" ] ; then G_STATE="S_GIT" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "20" ] ; then G_STATE="S_CONFIG" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
@@ -65,13 +70,18 @@ gz_bin
 G_STATE="S_SAVE"
 }
 #================================================
+GAdmin_PACMAN() {
+gz_pacman
+G_STATE="S_SAVE"
+}
+#================================================
 GAdmin_SQLITE() {
 gz_sqlite
 G_STATE="S_SAVE"
 }
 #================================================
-GAdmin_PACMAN() {
-gz_pacman
+GAdmin_GIT() {
+gz_git
 G_STATE="S_SAVE"
 }
 #================================================

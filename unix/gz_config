@@ -50,12 +50,12 @@ G_STATE="S_LOAD"
 #================================================
 GConfig_METHOD() {
 printf "CONFIG :\n"
-printf "\t%2s : %s\n" "10" "creer la table"
-printf "\t%2s : %s\n" "11" "affichier le schema"
-printf "\t%2s : %s\n" "12" "supprimer la table"
-printf "\t%2s : %s\n" "13" "ajouter une donnee"
-printf "\t%2s : %s\n" "14" "afficher les donnees"
-printf "\t%2s : %s\n" "15" "supprimer une donnee"
+printf "\t%2s : %s\n" "1" "creer la table"
+printf "\t%2s : %s\n" "2" "affichier le schema"
+printf "\t%2s : %s\n" "3" "supprimer la table"
+printf "\t%2s : %s\n" "4" "ajouter une donnee"
+printf "\t%2s : %s\n" "5" "afficher les donnees"
+printf "\t%2s : %s\n" "6" "supprimer une donnee"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -67,12 +67,12 @@ if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
-elif [ "$lAnswer" = "10" ] ; then G_STATE="S_CREATE" ; G_CONFIG_ID="$lAnswer"
-elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SCHEMA" ; G_CONFIG_ID="$lAnswer"
-elif [ "$lAnswer" = "12" ] ; then G_STATE="S_DROP" ; G_CONFIG_ID="$lAnswer"
-elif [ "$lAnswer" = "13" ] ; then G_STATE="S_ADD_CONFIG_KEY" ; G_CONFIG_ID="$lAnswer"
-elif [ "$lAnswer" = "14" ] ; then G_STATE="S_SHOW" ; G_CONFIG_ID="$lAnswer"
-elif [ "$lAnswer" = "15" ] ; then G_STATE="S_DELETE_CONFIG_KEY" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_CREATE" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_SCHEMA" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "3" ] ; then G_STATE="S_DROP" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "4" ] ; then G_STATE="S_ADD_CONFIG_KEY" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "5" ] ; then G_STATE="S_SHOW" ; G_CONFIG_ID="$lAnswer"
+elif [ "$lAnswer" = "6" ] ; then G_STATE="S_DELETE_CONFIG_KEY" ; G_CONFIG_ID="$lAnswer"
 fi
 }
 #================================================

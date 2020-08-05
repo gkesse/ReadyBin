@@ -53,6 +53,7 @@ GAdmin_CHOICE() {
 read -p "ADMINISTRATION ($G_ADMIN_ID) ? " lAnswer
 if [ "$lAnswer" = "" ] ; then lAnswer="$G_ADMIN_ID" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+#
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_BIN" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_PACMAN" ; G_ADMIN_ID="$lAnswer"
