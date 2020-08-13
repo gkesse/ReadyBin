@@ -49,6 +49,7 @@ set "G_STATE=S_SAVE"
 goto :GAdmin_Main
 ::===============================================
 :GAdmin_SAVE
+call gz_process_in 5 "G_ADMIN_ID" "%G_ADMIN_ID%"
 set "G_STATE=S_END"
 goto :GAdmin_Main
 ::===============================================
