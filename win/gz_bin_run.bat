@@ -64,7 +64,7 @@ goto :GBin_Main
 ::===============================================
 :GBin_SAVE
 call gz_process_in sqlite_config_save "G_BIN_ID" "%G_BIN_ID%"
-set "G_STATE=S_QUIT"
+set "G_STATE=S_QUIT" & cd %GPWD%
 goto :GBin_Main
 ::===============================================
 :GBin_LOAD

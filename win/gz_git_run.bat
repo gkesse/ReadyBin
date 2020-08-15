@@ -32,11 +32,15 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GGit_ADMIN
 ) else ( if "%G_STATE%" == "S_READY_STATUS_READY_PATH" ( goto :GGit_READY_STATUS_READY_PATH
 ) else ( if "%G_STATE%" == "S_READY_STATUS_READY_NAME" ( goto :GGit_READY_STATUS_READY_NAME
 ) else ( if "%G_STATE%" == "S_READY_STATUS" ( goto :GGit_READY_STATUS
+) else ( if "%G_STATE%" == "S_READY_REMOVE_READY_PATH" ( goto :GGit_READY_REMOVE_READY_PATH
+) else ( if "%G_STATE%" == "S_READY_REMOVE_READY_NAME" ( goto :GGit_READY_REMOVE_READY_NAME
+) else ( if "%G_STATE%" == "S_READY_REMOVE_READY_FILE" ( goto :GGit_READY_REMOVE_READY_FILE
+) else ( if "%G_STATE%" == "S_READY_REMOVE" ( goto :GGit_READY_REMOVE
 ) else ( if "%G_STATE%" == "S_SAVE" ( goto :GGit_SAVE
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GGit_LOAD
 ) else ( if "%G_STATE%" == "S_QUIT" ( goto :GGit_QUIT
 ) else ( goto :eof
-))))))))))))))))))))))))))
+))))))))))))))))))))))))))))))
 goto :GGit_Main
 ::===============================================
 :GGit_ADMIN
@@ -63,6 +67,7 @@ printf "\t%%-2s : %%s\n" "10" "cloner un depot ReadyDev"
 printf "\t%%-2s : %%s\n" "11" "pousser un depot ReadyDev"
 printf "\t%%-2s : %%s\n" "12" "tirer un depot ReadyDev"
 printf "\t%%-2s : %%s\n" "13" "afficher le status d'un depot ReadyDev"
+printf "\t%%-2s : %%s\n" "14" "supprimer des fichiers ReadyDev"
 printf "\n"
 set "G_STATE=S_CHOICE"
 goto :GGit_Main
@@ -80,7 +85,8 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "11" ( set "G_STATE=S_READY_PUSH_READY_PATH" & set "G_GIT_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "12" ( set "G_STATE=S_READY_PULL_READY_PATH" & set "G_GIT_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "13" ( set "G_STATE=S_READY_STATUS_READY_PATH" & set "G_GIT_ID=%lAnswer%" 
-)))))))))
+) else ( if "%lAnswer%" == "14" ( set "G_STATE=S_READY_REMOVE_READY_PATH" & set "G_GIT_ID=%lAnswer%" 
+))))))))))
 goto :GGit_Main
 ::===============================================
 :GGit_CONFIG_LIST
@@ -215,7 +221,7 @@ echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
 git add --all
-git commit
+git commit -m "%G_GIT_COMMENT%"
 git push -u origin master
 echo.
 set "G_STATE=S_SAVE"
@@ -283,6 +289,48 @@ echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
+:GGit_READY_REMOVE_READY_PATH
+set "lAnswer=" 
+set /p lAnswer=G_READY_PATH (%G_READY_PATH%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_READY_PATH%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_REMOVE_READY_NAME" & set "G_READY_PATH=%lAnswer%" 
+))))
+goto :GGit_Main
+::===============================================
+:GGit_READY_REMOVE_READY_NAME
+set "lAnswer=" 
+set /p lAnswer=G_READY_NAME (%G_READY_NAME%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_READY_NAME%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_REMOVE_READY_FILE" & set "G_READY_NAME=%lAnswer%" 
+))))
+goto :GGit_Main
+::===============================================
+:GGit_READY_REMOVE_READY_FILE
+set "lAnswer=" 
+set /p lAnswer=G_READY_FILE (%G_READY_FILE%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_READY_FILE%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_REMOVE" & set "G_READY_FILE=%lAnswer%" 
+))))
+goto :GGit_Main
+::===============================================
+:GGit_READY_REMOVE
+echo.
+set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
+cd %lReadyPath%
+git rm --cached %G_READY_FILE%
+echo.
+set "G_STATE=S_SAVE"
+goto :GGit_Main
+::===============================================
 :GGit_SAVE
 call gz_process_in sqlite_config_save "G_GIT_ID" "%G_GIT_ID%"
 call gz_process_in sqlite_config_save "G_READY_PATH" "%G_READY_PATH%"
@@ -291,6 +339,7 @@ call gz_process_in sqlite_config_save "G_USER_NAME" "%G_USER_NAME%"
 call gz_process_in sqlite_config_save "G_USER_EMAIL" "%G_USER_EMAIL%"
 call gz_process_in sqlite_config_save "G_CORE_EDITOR" "%G_CORE_EDITOR%"
 call gz_process_in sqlite_config_save "G_GIT_COMMENT" "%G_GIT_COMMENT%"
+call gz_process_in sqlite_config_save "G_READY_FILE" "%G_READY_FILE%"
 set "G_STATE=S_QUIT" & cd %GPWD%
 goto :GGit_Main
 ::===============================================
@@ -302,6 +351,7 @@ call gz_process_in sqlite_config_load "G_USER_NAME" G_USER_NAME
 call gz_process_in sqlite_config_load "G_USER_EMAIL" G_USER_EMAIL
 call gz_process_in sqlite_config_load "G_CORE_EDITOR" G_CORE_EDITOR
 call gz_process_in sqlite_config_load "G_GIT_COMMENT" G_GIT_COMMENT
+call gz_process_in sqlite_config_load "G_READY_FILE" G_READY_FILE
 set "G_STATE=S_METHOD"
 goto :GGit_Main
 ::===============================================
