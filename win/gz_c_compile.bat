@@ -20,10 +20,10 @@ printf "\n"
 ::===============================================
 set "lTmpConfigFile=%GPATH%\tmp\tmp_config_file.txt"
 ::===============================================
-set /p "lAnswer=Confirmation de continuer (Oui|[N]on) ? : " || set "lAnswer=n"
+set /p lAnswer=Confirmation de continuer (Oui|[N]on) ? :  || set "lAnswer=n"
 set "lAnswerKey=%lAnswer:~0,1%"
 echo %lAnswerKey%| tr '[:upper:]' '[:lower:]'>%lTmpConfigFile%
-set /p lAnswerIn=<%lTmpConfigFile%
+set /p "lAnswerIn=<%lTmpConfigFile%"
 if not "%lAnswerIn%" == "o" ( echo NON : operation annulee & goto :eof ) 
 echo OUI : operation effectuee
 echo.
