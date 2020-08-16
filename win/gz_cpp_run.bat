@@ -81,8 +81,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_CPP_NAME%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CPP_COMPILE"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_CPP_COMPILE_CPP_COMPILO" & set "G_CPP_NAME=%lAnswer%" 
-))))
+)))))
 goto :GCpp_Main
 ::===============================================
 :GCpp_CPP_COMPILE_CPP_COMPILO
@@ -92,8 +93,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_CPP_COMPILO%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CPP_COMPILE"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_CPP_COMPILE_CPP_TARGET" & set "G_CPP_COMPILO=%lAnswer%" 
-))))
+)))))
 goto :GCpp_Main
 ::===============================================
 :GCpp_CPP_COMPILE_CPP_TARGET
@@ -103,8 +105,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_CPP_TARGET%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CPP_COMPILE"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_CPP_COMPILE" & set "G_CPP_TARGET=%lAnswer%" 
-))))
+)))))
 goto :GCpp_Main
 ::===============================================
 :GCpp_CPP_COMPILE
