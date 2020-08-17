@@ -326,7 +326,7 @@ goto :GGit_Main
 echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
-git rm --cached %G_READY_FILE%
+git rm -r --cached %G_READY_FILE%
 echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
