@@ -86,7 +86,7 @@ goto :GSQLite_Main
 ::===============================================
 :GSQLite_CONFIG_DATA_CREATE
 call gz_process_in confirm G_CONFIRM_IN
-if "%G_CONFIRM_IN%" == "0" ( goto :eof )
+if "%G_CONFIRM_IN%" == "0" ( set "G_STATE=S_QUIT" && goto :GSQLite_Main )
 call gz_process_in sqlite_query_init
 call gz_process_in sqlite_query_set "create table CONFIG_DATA("
 call gz_process_in sqlite_query_set "CONFIG_KEY text unique not null,"
@@ -110,7 +110,7 @@ goto :GSQLite_Main
 ::===============================================
 :GSQLite_CONFIG_DATA_DROP
 call gz_process_in confirm G_CONFIRM_IN
-if "%G_CONFIRM_IN%" == "0" ( goto :eof )
+if "%G_CONFIRM_IN%" == "0" ( set "G_STATE=S_QUIT" && goto :GSQLite_Main )
 call gz_process_in sqlite_query_init
 call gz_process_in sqlite_query_set "drop table CONFIG_DATA"
 call gz_process_in sqlite_query

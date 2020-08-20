@@ -137,7 +137,7 @@ goto :GProcess_Main
 ::===============================================
 :GProcess_QUIT
 set "lAnswer="
-set /p lAnswer=Quitter (Oui/[N]on) ? : 
+set /p lAnswer=QUIT (Oui/[N]on) ? : 
 set "%2=%lAnswer%"
 set "G_STATE=S_END"
 goto :GProcess_Main

@@ -174,7 +174,7 @@ goto :GGit_Main
 ::===============================================
 :GGit_READY_CLONE
 call gz_process_in confirm G_CONFIRM_IN
-if "%G_CONFIRM_IN%" == "0" ( goto :eof )
+if "%G_CONFIRM_IN%" == "0" ( set "G_STATE=S_QUIT" && goto :GGit_Main )
 echo.
 set "lReadyUrl=https://github.com/gkesse/%G_READY_NAME%.git"
 cd %G_READY_PATH%
