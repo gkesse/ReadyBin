@@ -22,10 +22,11 @@ if "%G_STATE%" == "S_INIT" ( goto :GAdmin_INIT
 ) else ( if "%G_STATE%" == "S_PYTHON" ( goto :GAdmin_PYTHON
 ) else ( if "%G_STATE%" == "S_PHP" ( goto :GAdmin_PHP
 ) else ( if "%G_STATE%" == "S_DART" ( goto :GAdmin_DART
+) else ( if "%G_STATE%" == "S_GO" ( goto :GAdmin_GO
 ) else ( if "%G_STATE%" == "S_SAVE" ( goto :GAdmin_SAVE
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GAdmin_LOAD
 ) else ( goto :eof
-)))))))))))))))
+))))))))))))))))
 goto :GAdmin_Main
 ::===============================================
 :GAdmin_INIT
@@ -50,6 +51,7 @@ printf "\t%%-2s : %%s\n" "23" "S_JAVA"
 printf "\t%%-2s : %%s\n" "24" "S_PYTHON"
 printf "\t%%-2s : %%s\n" "25" "S_PHP"
 printf "\t%%-2s : %%s\n" "26" "S_DART"
+printf "\t%%-2s : %%s\n" "27" "S_GO"
 printf "\n"
 set "G_STATE=S_CHOICE"
 goto :GAdmin_Main
@@ -69,7 +71,8 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "24" ( set "G_STATE=S_PYTHON" & set "G_ADMIN_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "25" ( set "G_STATE=S_PHP" & set "G_ADMIN_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "26" ( set "G_STATE=S_DART" & set "G_ADMIN_ID=%lAnswer%" 
-)))))))))))
+) else ( if "%lAnswer%" == "27" ( set "G_STATE=S_GO" & set "G_ADMIN_ID=%lAnswer%" 
+))))))))))))
 goto :GAdmin_Main
 ::===============================================
 :GAdmin_SQLITE
@@ -119,6 +122,11 @@ goto :GAdmin_Main
 ::===============================================
 :GAdmin_DART
 call gz_dart_run
+set "G_STATE=S_SAVE"
+goto :GAdmin_Main
+::===============================================
+:GAdmin_GO
+call gz_go_run
 set "G_STATE=S_SAVE"
 goto :GAdmin_Main
 ::===============================================
