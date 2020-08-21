@@ -113,8 +113,10 @@ goto :GGo_Main
 :GGo_GO_COMPILE
 echo.
 set "lBuldPath=%G_GO_PATH%\%G_GO_NAME%\win"
+set "lSrcPath=%G_GO_PATH%\%G_GO_NAME%\code\GProject"
 set "lMakefile=Makefile"
-if not "%G_GO_COMPILO%" == "" ( set "lMakefile=Makefile.%G_GO_COMPILO%" )
+set "GOPATH=%lSrcPath%;%GOPATH%"
+if not "%G_GO_COMPILO%" == "" ( set "lMakefile=%lMakefile%.%G_GO_COMPILO%" )
 cd %lBuldPath%
 mingw32-make -f %lMakefile% %G_GO_TARGET%
 echo.
