@@ -16,6 +16,7 @@ case "$G_STATE" in
     "S_PACMAN") GAdmin_PACMAN ;;
     "S_SQLITE") GAdmin_SQLITE ;;
     "S_GIT") GAdmin_GIT ;;
+    "S_APACHE") GAdmin_APACHE ;;
     #
     "S_CONFIG") GAdmin_CONFIG ;;
     "S_VIEWS") GAdmin_VIEWS ;;
@@ -42,6 +43,7 @@ printf "\n"
 printf "\t%2s : %s\n" "10" "PACMAN"
 printf "\t%2s : %s\n" "11" "SQLITE"
 printf "\t%2s : %s\n" "12" "GIT"
+printf "\t%2s : %s\n" "13" "APACHE"
 printf "\n"
 printf "\t%2s : %s\n" "20" "CONFIG"
 printf "\t%2s : %s\n" "21" "VIEWS"
@@ -59,6 +61,7 @@ elif [ "$lAnswer" = "1" ] ; then G_STATE="S_BIN" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_PACMAN" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SQLITE" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "12" ] ; then G_STATE="S_GIT" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "13" ] ; then G_STATE="S_APACHE" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "20" ] ; then G_STATE="S_CONFIG" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
@@ -82,6 +85,11 @@ G_STATE="S_SAVE"
 #================================================
 GAdmin_GIT() {
 gz_git
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_APACHE() {
+gz_apache
 G_STATE="S_SAVE"
 }
 #================================================
