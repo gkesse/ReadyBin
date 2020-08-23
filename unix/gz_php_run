@@ -24,12 +24,12 @@ done
 #================================================
 GPhp_ADMIN() {
 gz_admin
-G_STATE="S_SAVE"
+G_STATE="S_END"
 }
 #================================================
 GPhp_INIT() {
 printf "\n"
-printf "VIEWS !!!\n"
+printf "PHP !!!\n"
 printf "\t%2s : %s\n" "-q" "quitter l'application"
 printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
 printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
@@ -39,14 +39,14 @@ G_STATE="S_LOAD"
 }
 #================================================
 GPhp_METHOD() {
-printf "VIEWS :\n"
+printf "PHP :\n"
 printf "\t%2s : %s\n" "1" "creer la table"
 printf "\n"
 G_STATE="S_CHOICE"
 }
 #================================================
 GPhp_CHOICE() {
-read -p "VIEWS ($G_PHP_ID) ? " lAnswer
+read -p "PHP ($G_PHP_ID) ? " lAnswer
 if [ "$lAnswer" = "" ] ; then lAnswer="$G_PHP_ID" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
