@@ -1,0 +1,114 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+G_CONFIG_DB="$GPATH/.config"
+#================================================
+GProcess_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_INIT") GProcess_INIT "$@" ;;
+    # SQLITE
+    "S_SQLITE_QUERY") GProcess_SQLITE_QUERY "$@" ;;
+    "S_SQLITE_SHOW") GProcess_SQLITE_SHOW "$@" ;;
+    # CONFIG
+    "S_CONFIG_SAVE") GProcess_CONFIG_SAVE "$@" ;;
+    "S_CONFIG_LOAD") GProcess_CONFIG_LOAD "$@" ;;
+    # CONFIRM
+    "S_CONFIRM") GProcess_CONFIRM "$@" ;;
+    #
+    *) break ;;
+esac    
+done
+}
+#================================================
+GProcess_INIT() {
+lAction="$1"
+# SQLITE
+if [ "$lAction" = "sqlite_query" ] ; then G_STATE="S_SQLITE_QUERY"
+elif [ "$lAction" = "sqlite_show" ] ; then G_STATE="S_SQLITE_SHOW"
+# CONFIG
+elif [ "$lAction" = "config_save" ] ; then G_STATE="S_CONFIG_SAVE"
+elif [ "$lAction" = "config_load" ] ; then G_STATE="S_CONFIG_LOAD"
+# CONFIRM
+elif [ "$lAction" = "confirm" ] ; then G_STATE="S_CONFIRM"
+#
+else G_STATE="S_END"
+fi
+}
+#================================================
+GProcess_SQLITE_QUERY() {
+sqlite3 "$2" << _EOF_
+$3
+_EOF_
+G_STATE="S_END"
+}
+#================================================
+GProcess_SQLITE_SHOW() {
+GProcess_SQLITE_QUERY 0 "$2" "
+.mode column
+.headers $3
+.width auto
+$4
+"
+G_STATE="S_END"
+}
+#================================================
+GProcess_CONFIG_SAVE() {
+lCheck=$(GProcess_CONFIG_CHECK "$2" "$3")
+if [ "$lCheck" = "0" ] ; then GProcess_CONFIG_INSERT "$2" "$3"
+else GProcess_CONFIG_UPDATE "$2" "$3"
+fi
+G_STATE="S_END"
+}
+#================================================
+GProcess_CONFIG_LOAD() {
+GProcess_SQLITE_QUERY 0 "$G_CONFIG_DB" "
+select CONFIG_VALUE 
+from CONFIG_DATA
+where CONFIG_KEY='$2'
+" 
+G_STATE="S_END"
+}
+#================================================
+GProcess_CONFIRM() {
+read -p "CONFIRM (Oui/[N]on) ? " lAnswer
+if [ "$lAnswer" = "o" ] ; then
+printf "OUI : operation effectuee.\n"
+G_CONFIRM_IN="o"
+else 
+printf "NON : operation annulee.\n"
+G_CONFIRM_IN="n"
+fi
+G_STATE="S_END"
+}
+#================================================
+GProcess_CONFIG_CHECK() {
+GProcess_SQLITE_QUERY 0 "$G_CONFIG_DB" "
+select count(*) 
+from CONFIG_DATA
+where CONFIG_KEY='$1'
+"
+}
+#================================================
+GProcess_CONFIG_INSERT() {
+GProcess_SQLITE_QUERY 0 "$G_CONFIG_DB" "
+insert into CONFIG_DATA (CONFIG_KEY, CONFIG_VALUE)
+values ('$1', '$2')
+"
+}
+#================================================
+GProcess_CONFIG_UPDATE() {
+GProcess_SQLITE_QUERY 0 "$G_CONFIG_DB" "
+update CONFIG_DATA 
+set CONFIG_VALUE='$2'
+where CONFIG_KEY='$1'
+"
+}
+#================================================
+GProcess_Main "$@"
+#================================================
+cd $GPWD
+#================================================

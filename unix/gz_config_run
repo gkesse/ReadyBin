@@ -28,6 +28,7 @@ case "$G_STATE" in
     #
     "S_SAVE") GConfig_SAVE ;;
     "S_LOAD") GConfig_LOAD ;;
+    "S_QUIT") GConfig_QUIT ;;
     *) break ;;
 esac    
 done
@@ -40,10 +41,11 @@ G_STATE="S_SAVE"
 #================================================
 GConfig_INIT() {
 printf "\n"
-printf "### CONFIG ###\n"
+printf "CONFIG !!!\n"
 printf "\t%2s : %s\n" "-q" "quitter l'application"
 printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
 printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
+printf "\t%2s : %s\n" "-v" "valider les configurations"
 printf "\n"
 G_STATE="S_LOAD"
 }
@@ -82,6 +84,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CONFIG_KEY" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_DELETE" ; G_CONFIG_KEY="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_DELETE" ; G_CONFIG_KEY="$lAnswer"
 fi
 }
@@ -127,6 +130,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CONFIG_KEY" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_ADD" ; G_CONFIG_KEY="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_CONFIG_VALUE" ; G_CONFIG_KEY="$lAnswer"
 fi
 }
@@ -137,6 +141,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CONFIG_VALUE" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_ADD" ; G_CONFIG_KEY="$lAnswer"
 elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_ADD" ; G_CONFIG_VALUE=""
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD" ; G_CONFIG_VALUE="$lAnswer"
 fi
@@ -144,7 +149,7 @@ fi
 #================================================
 GConfig_ADD() {
 echo
-gz_config_edit_in "$G_CONFIG_KEY" "$G_CONFIG_VALUE"
+gz_process_in "config_save" "$G_CONFIG_KEY" "$G_CONFIG_VALUE"
 G_STATE="S_SAVE"
 echo
 }
@@ -182,17 +187,29 @@ echo
 }
 #================================================
 GConfig_SAVE() {
-gz_config_edit_in "G_CONFIG_ID" "$G_CONFIG_ID"
-gz_config_edit_in "G_CONFIG_KEY" "$G_CONFIG_KEY"
-gz_config_edit_in "G_CONFIG_VALUE" "$G_CONFIG_VALUE"
-G_STATE="S_END"
+gz_process_in "config_save" "G_CONFIG_ID" "$G_CONFIG_ID"
+gz_process_in "config_save" "G_CONFIG_KEY" "$G_CONFIG_KEY"
+gz_process_in "config_save" "G_CONFIG_VALUE" "$G_CONFIG_VALUE"
+G_STATE="S_QUIT"
 }
 #================================================
 GConfig_LOAD() {
-G_CONFIG_ID=$(gz_config_read_in "G_CONFIG_ID")
-G_CONFIG_KEY=$(gz_config_read_in "G_CONFIG_KEY")
-G_CONFIG_VALUE=$(gz_config_read_in "G_CONFIG_VALUE")
+G_CONFIG_ID=$(gz_process_in "config_load" "G_CONFIG_ID")
+G_CONFIG_KEY=$(gz_process_in "config_load" "G_CONFIG_KEY")
+G_CONFIG_VALUE=$(gz_process_in "config_load" "G_CONFIG_VALUE")
 G_STATE="S_METHOD"
+}
+#================================================
+GConfig_QUIT() {
+echo
+read -p "VIEWS_QUIT (Oui/[N]on) ? " lAnswer
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "o" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "n" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
+fi
 }
 #================================================
 GConfig_Main
