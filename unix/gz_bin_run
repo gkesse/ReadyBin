@@ -69,8 +69,9 @@ fi
 }
 #================================================
 GBin_CREATE() {
-cd $GPATH
-vim $G_SCRIPT_NAME
+lFile="$GPATH/$G_SCRIPT_NAME"
+vim $lFile
+chmod 777 $lFile
 G_STATE="S_SAVE"
 }
 #================================================
