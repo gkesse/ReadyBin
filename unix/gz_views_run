@@ -21,7 +21,7 @@ case "$G_STATE" in
     "S_ADD_READYDEV_DB") GViews_ADD_READYDEV_DB ;;
     "S_ADD_VIEW_KEY") GViews_ADD_VIEW_KEY ;;
     "S_ADD_VIEW_COUNT") GViews_ADD_VIEW_COUNT ;;
-    "S_ADD_VIEW") GViews_ADD_VIEW ;;
+    "S_ADD") GViews_ADD ;;
     #
     "S_SHOW_READYDEV_DB") GViews_SHOW_READYDEV_DB ;;
     "S_SHOW") GViews_SHOW;;
@@ -120,6 +120,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_DELETE"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_DELETE_VIEW_KEY" ; G_READYDEV_DB="$lAnswer"
 fi
 }
@@ -130,6 +131,8 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_KEY" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_DELETE"
+elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_DELETE" ; G_VIEW_KEY=""
 elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_DELETE" ; G_VIEW_KEY=""
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_DELETE" ; G_VIEW_KEY="$lAnswer"
 fi
@@ -154,6 +157,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_LOAD_DATA" ; G_READYDEV_DB="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_LOAD_DATA_VIEW_PATH" ; G_READYDEV_DB="$lAnswer"
 fi
 }
@@ -164,6 +168,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_PATH" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_LOAD_DATA" ; G_READYDEV_DB="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_LOAD_DATA" ; G_VIEW_PATH="$lAnswer"
 fi
 }
@@ -207,6 +212,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_ADD" ; G_READYDEV_DB="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_VIEW_KEY" ; G_READYDEV_DB="$lAnswer"
 fi
 }
@@ -217,6 +223,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_KEY" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_ADD" ; G_READYDEV_DB="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_VIEW_COUNT" ; G_VIEW_KEY="$lAnswer"
 fi
 }
@@ -227,11 +234,12 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_VIEW_COUNT" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD_VIEW" ; G_VIEW_COUNT="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_ADD" ; G_READYDEV_DB="$lAnswer"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_ADD" ; G_VIEW_COUNT="$lAnswer"
 fi
 }
 #================================================
-GViews_ADD_VIEW() {
+GViews_ADD() {
 printf "\n"
 G_VIEW_KEY=$(echo "$G_VIEW_KEY" | tr '[:upper:]' '[:lower:]')
 GViews_VIEW_SAVE "$G_VIEW_KEY" "$G_VIEW_COUNT"
@@ -249,6 +257,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_EXTRACT" ; G_READYDEV_DB="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_EXTRACT" ; G_READYDEV_DB="$lAnswer"
 fi
 }
@@ -267,6 +276,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_READYDEV_DB" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CREATE" ; G_READYDEV_DB="$lAnswer"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CREATE" ; G_READYDEV_DB="$lAnswer"
 fi
 }

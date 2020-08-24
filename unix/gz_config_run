@@ -99,7 +99,7 @@ G_STATE="S_SAVE"
 #================================================
 GConfig_SHOW() {
 echo
-. gz_sqlite_in "
+. gz_process_in "sqlite_query" "
 .header on
 select * from CONFIG_DATA 
 " | awk -F "|" -v G_COL_SIZE="20;50" 'BEGIN{
