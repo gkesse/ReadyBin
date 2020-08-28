@@ -1,9 +1,0 @@
-#!/bin/bash
-#================================================
-G_DATABASE_PATH="$GPATH/.config"
-#================================================
-. gz_sqlite_in "
-select CONFIG_VALUE from CONFIG_DATA
-where CONFIG_KEY=\"$1\"
-"
-#================================================

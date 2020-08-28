@@ -1,8 +1,0 @@
-#!/bin/bash
-#================================================
-read -p "Confirmation (Oui|[N]on) ? " lAnswer
-case $lAnswer in
-    [Oo]* ) echo "OUI : operation effectuee" ; echo ;;
-    * ) echo "NON : operation annulee" ; echo ; exit ;;
-esac
-#================================================
