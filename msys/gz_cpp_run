@@ -123,7 +123,7 @@ lBuldPath="$G_CPP_PATH/$G_CPP_NAME/msys"
 lMakefile="Makefile"
 if [ "$G_CPP_COMPILO" != "" ] ; then lMakefile="${lMakefile}.$G_CPP_COMPILO" ; fi
 cd $lBuldPath
-echo "make -f \"$lMakefile\" \"$G_CPP_TARGET\" GARGS=\"$G_CPP_ARGS\""
+make -f "$lMakefile" "$G_CPP_TARGET" GARGS="$G_CPP_ARGS"
 G_STATE="S_SAVE"
 }
 #================================================
