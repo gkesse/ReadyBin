@@ -67,7 +67,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CPP_PATH" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE" ; G_CPP_PATH="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CPP_COMPILE_CPP_NAME" ; G_CPP_PATH="$lAnswer"
 fi
 }
@@ -78,7 +78,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CPP_NAME" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE" ; G_CPP_NAME="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CPP_COMPILE_CPP_COMPILO" ; G_CPP_NAME="$lAnswer"
 fi
 }
@@ -89,7 +89,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CPP_COMPILO" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE" ; G_CPP_COMPILO="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CPP_COMPILE_CPP_TARGET" ; G_CPP_COMPILO="$lAnswer"
 fi
 }
@@ -100,7 +100,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CPP_TARGET" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE" ; G_CPP_TARGET="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CPP_COMPILE_CPP_ARGS" ; G_CPP_TARGET="$lAnswer"
 fi
 }
@@ -111,7 +111,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_CPP_ARGS" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE" ; G_CPP_ARGS="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CPP_COMPILE"
 elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_CPP_COMPILE" ; G_CPP_ARGS=""
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CPP_COMPILE" ; G_CPP_ARGS="$lAnswer"
 fi
