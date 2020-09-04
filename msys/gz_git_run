@@ -34,8 +34,6 @@ case "$G_STATE" in
     "S_CONFIG_EDIT_CORE_EDITOR") GGit_CONFIG_EDIT_CORE_EDITOR ;;
     "S_CONFIG_EDIT") GGit_CONFIG_EDIT ;;
     #
-    "S_CREDENTIAL_STORE_DEPOT_ROOT") GGit_CREDENTIAL_STORE_DEPOT_ROOT ;;
-    "S_CREDENTIAL_STORE_DEPOT_NAME") GGit_CREDENTIAL_STORE_DEPOT_NAME ;;
     "S_CREDENTIAL_STORE") GGit_CREDENTIAL_STORE ;;
     #
     "S_SAVE") GGit_SAVE ;;
@@ -88,29 +86,7 @@ elif [ "$lAnswer" = "3" ] ; then G_STATE="S_CLONE_DEPOT_ROOT" ; G_GIT_ID="$lAnsw
 #
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_CONFIG_LIST" ; G_GIT_ID="$lAnswer"
 elif [ "$lAnswer" = "11" ] ; then G_STATE="S_CONFIG_EDIT_USER_NAME" ; G_GIT_ID="$lAnswer"
-elif [ "$lAnswer" = "12" ] ; then G_STATE="S_CREDENTIAL_STORE_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
-fi
-}
-#================================================
-GGit_CREDENTIAL_STORE_DEPOT_ROOT() {
-read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CREDENTIAL_STORE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_CREDENTIAL_STORE_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
-fi
-}
-#================================================
-GGit_CREDENTIAL_STORE_DEPOT_NAME() {
-read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-V" ] ; then G_STATE="S_CREDENTIAL_STORE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_CREDENTIAL_STORE" ; G_DEPOT_NAME="$lAnswer"
+elif [ "$lAnswer" = "12" ] ; then G_STATE="S_CREDENTIAL_STORE" ; G_GIT_ID="$lAnswer"
 fi
 }
 #================================================
