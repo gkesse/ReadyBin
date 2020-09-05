@@ -1,0 +1,288 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+G_GIT_ROOT="https://github.com/gkesse"
+#================================================
+GGit_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_ADMIN") GGit_ADMIN ;;
+    "S_INIT") GGit_INIT ;;
+    "S_METHOD") GGit_METHOD ;;
+    "S_CHOICE") GGit_CHOICE ;;
+    #
+    "S_PUSH_DEPOT_ROOT") GGit_PUSH_DEPOT_ROOT ;;
+    "S_PUSH_DEPOT_NAME") GGit_PUSH_DEPOT_NAME ;;
+    "S_PUSH") GGit_PUSH ;;
+    #
+    "S_PULL_DEPOT_ROOT") GGit_PULL_DEPOT_ROOT ;;
+    "S_PULL_DEPOT_NAME") GGit_PULL_DEPOT_NAME ;;
+    "S_PULL") GGit_PULL ;;
+    #
+    "S_CLONE_DEPOT_ROOT") GGit_CLONE_DEPOT_ROOT ;;
+    "S_CLONE_DEPOT_NAME") GGit_CLONE_DEPOT_NAME ;;
+    "S_CLONE_DEPOT_CLONE") GGit_CLONE_DEPOT_CLONE ;;
+    "S_CLONE") GGit_CLONE ;;
+    #
+    "S_CONFIG_LIST") GGit_CONFIG_LIST ;;
+    #
+    "S_CONFIG_EDIT_USER_NAME") GGit_CONFIG_EDIT_USER_NAME ;;
+    "S_CONFIG_EDIT_USER_EMAIL") GGit_CONFIG_EDIT_USER_EMAIL ;;
+    "S_CONFIG_EDIT_CORE_EDITOR") GGit_CONFIG_EDIT_CORE_EDITOR ;;
+    "S_CONFIG_EDIT") GGit_CONFIG_EDIT ;;
+    #
+    "S_CREDENTIAL_STORE") GGit_CREDENTIAL_STORE ;;
+    #
+    "S_SAVE") GGit_SAVE ;;
+    "S_LOAD") GGit_LOAD ;;
+    "S_QUIT") GGit_QUIT ;;
+    *) break ;;
+esac    
+done
+}
+#================================================
+GGit_ADMIN() {
+gz_admin
+G_STATE="S_END"
+}
+#================================================
+GGit_INIT() {
+printf "\n"
+printf "GIT !!!\n"
+printf "\t%2s : %s\n" "-q" "quitter l'application"
+printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
+printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
+printf "\t%2s : %s\n" "-v" "valider les configurations"
+printf "\n"
+G_STATE="S_LOAD"
+}
+#================================================
+GGit_METHOD() {
+printf "GIT :\n"
+printf "\t%2s : %s\n" "1" "pousser un depot"
+printf "\t%2s : %s\n" "2" "tirer un depot"
+printf "\t%2s : %s\n" "3" "cloner un depot"
+printf "\n"
+printf "\t%2s : %s\n" "10" "lister les configurations"
+printf "\t%2s : %s\n" "11" "editer les configurations"
+printf "\t%2s : %s\n" "12" "sauvegarder les identifiants"
+printf "\n"
+G_STATE="S_CHOICE"
+}
+#================================================
+GGit_CHOICE() {
+read -p "GIT ($G_GIT_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_GIT_ID" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+#
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_PUSH_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_PULL_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
+elif [ "$lAnswer" = "3" ] ; then G_STATE="S_CLONE_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
+#
+elif [ "$lAnswer" = "10" ] ; then G_STATE="S_CONFIG_LIST" ; G_GIT_ID="$lAnswer"
+elif [ "$lAnswer" = "11" ] ; then G_STATE="S_CONFIG_EDIT_USER_NAME" ; G_GIT_ID="$lAnswer"
+elif [ "$lAnswer" = "12" ] ; then G_STATE="S_CREDENTIAL_STORE" ; G_GIT_ID="$lAnswer"
+fi
+}
+#================================================
+GGit_CREDENTIAL_STORE() {
+echo
+G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
+cd $G_DEPOT_PATH
+git config  --global credential.helper store
+G_STATE="S_SAVE"
+}
+#================================================
+GGit_CONFIG_EDIT_USER_NAME() {
+read -p "G_USER_NAME ($G_USER_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_USER_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CONFIG_EDIT" ; G_USER_NAME="$lAnswer"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT_USER_EMAIL" ; G_USER_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_CONFIG_EDIT_USER_EMAIL() {
+read -p "G_USER_EMAIL ($G_USER_EMAIL) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_USER_EMAIL" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CONFIG_EDIT"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT_CORE_EDITOR" ; G_USER_EMAIL="$lAnswer"
+fi
+}
+#================================================
+GGit_CONFIG_EDIT_CORE_EDITOR() {
+read -p "G_CORE_EDITOR ($G_CORE_EDITOR) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CORE_EDITOR" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CONFIG_EDIT"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT" ; G_CORE_EDITOR="$lAnswer"
+fi
+}
+#================================================
+GGit_CONFIG_EDIT() {
+echo
+git config --global user.name "$G_USER_NAME"
+git config --global user.email "$G_USER_EMAIL"
+git config --global core.editor "$G_CORE_EDITOR"
+git config --list
+G_STATE="S_SAVE"
+}
+#================================================
+GGit_CONFIG_LIST() {
+echo
+git config --list
+G_STATE="S_SAVE"
+}
+#================================================
+GGit_CLONE_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CLONE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GGit_CLONE_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CLONE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE_DEPOT_CLONE" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_CLONE_DEPOT_CLONE() {
+G_DEPOT_CLONE=$G_DEPOT_NAME
+read -p "G_DEPOT_CLONE ($G_DEPOT_CLONE) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_CLONE" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CLONE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE" ; G_DEPOT_CLONE="$lAnswer"
+fi
+}
+#================================================
+GGit_CLONE() {
+echo
+cd $G_DEPOT_ROOT
+G_DEPOT_URL="${G_GIT_ROOT}/${G_DEPOT_NAME}.git"
+git clone $G_DEPOT_URL $G_DEPOT_CLONE
+G_STATE="S_SAVE"
+}
+#================================================
+GGit_PULL_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PULL"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PULL_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GGit_PULL_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_PULL"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PULL" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_PULL() {
+echo
+G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
+cd $G_DEPOT_PATH
+git pull
+G_STATE="S_SAVE"
+}
+#================================================
+GGit_PUSH_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PUSH"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PUSH_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GGit_PUSH_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PUSH"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PUSH" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_PUSH() {
+echo
+G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
+cd $G_DEPOT_PATH
+git add --all
+git commit -m "Initial Commit"
+git push -u origin master
+G_STATE="S_SAVE"
+}
+#================================================
+GGit_SAVE() {
+gz_process_in "config_save" "G_GIT_ID" "$G_GIT_ID"
+gz_process_in "config_save" "G_DEPOT_ROOT" "$G_DEPOT_ROOT"
+gz_process_in "config_save" "G_DEPOT_NAME" "$G_DEPOT_NAME"
+gz_process_in "config_save" "G_USER_NAME" "$G_USER_NAME"
+gz_process_in "config_save" "G_USER_EMAIL" "$G_USER_EMAIL"
+gz_process_in "config_save" "G_CORE_EDITOR" "$G_CORE_EDITOR"
+G_STATE="S_QUIT"
+}
+#================================================
+GGit_LOAD() {
+G_GIT_ID=$(gz_process_in "config_load" "G_GIT_ID")
+G_DEPOT_ROOT=$(gz_process_in "config_load" "G_DEPOT_ROOT")
+G_DEPOT_NAME=$(gz_process_in "config_load" "G_DEPOT_NAME")
+G_USER_NAME=$(gz_process_in "config_load" "G_USER_NAME")
+G_USER_EMAIL=$(gz_process_in "config_load" "G_USER_EMAIL")
+G_CORE_EDITOR=$(gz_process_in "config_load" "G_CORE_EDITOR")
+G_STATE="S_METHOD"
+}
+#================================================
+GGit_QUIT() {
+echo
+read -p "QUIT (Oui/[N]on) ? " lAnswer
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "o" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "n" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
+fi
+}
+#================================================
+GGit_Main
+#================================================
+cd $GPWD
+#================================================

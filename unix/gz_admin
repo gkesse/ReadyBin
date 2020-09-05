@@ -1,0 +1,138 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+GAdmin_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_INIT") GAdmin_INIT ;;
+    "S_METHOD") GAdmin_METHOD ;;
+    "S_CHOICE") GAdmin_CHOICE ;;
+    #
+    "S_BIN") GAdmin_BIN ;;
+    #
+    "S_PACMAN") GAdmin_PACMAN ;;
+    "S_SQLITE") GAdmin_SQLITE ;;
+    "S_GIT") GAdmin_GIT ;;
+    "S_APACHE") GAdmin_APACHE ;;
+    "S_APT_GET") GAdmin_APT_GET ;;
+    #
+    "S_CONFIG") GAdmin_CONFIG ;;
+    "S_VIEWS") GAdmin_VIEWS ;;
+    #
+    "S_SAVE") GAdmin_SAVE ;;
+    "S_LOAD") GAdmin_LOAD ;;
+    "S_QUIT") GAdmin_QUIT ;;
+    *) break ;;
+esac    
+done
+}
+#================================================
+GAdmin_INIT() {
+printf "\n"
+printf "ADMIN !!!\n"
+printf "\t%-2s : %s\n" "-q" "quitter l'application"
+printf "\n"
+G_STATE="S_LOAD"
+}
+#================================================
+GAdmin_METHOD() {
+printf "ADMIN :\n"
+printf "\t%-2s : %s\n" "1" "BIN"
+printf "\n"
+printf "\t%-2s : %s\n" "10" "PACMAN"
+printf "\t%-2s : %s\n" "11" "SQLITE"
+printf "\t%-2s : %s\n" "12" "GIT"
+printf "\t%-2s : %s\n" "13" "S_APACHE"
+printf "\t%-2s : %s\n" "14" "S_APT_GET"
+printf "\n"
+printf "\t%-2s : %s\n" "20" "S_CONFIG"
+printf "\t%-2s : %s\n" "21" "S_VIEWS"
+printf "\n"
+G_STATE="S_CHOICE"
+}
+#================================================
+GAdmin_CHOICE() {
+read -p "ADMIN ($G_ADMIN_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_ADMIN_ID" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+#
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_BIN" ; G_ADMIN_ID="$lAnswer"
+#
+elif [ "$lAnswer" = "10" ] ; then G_STATE="S_PACMAN" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SQLITE" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "12" ] ; then G_STATE="S_GIT" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "13" ] ; then G_STATE="S_APACHE" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "14" ] ; then G_STATE="S_APT_GET" ; G_ADMIN_ID="$lAnswer"
+#
+elif [ "$lAnswer" = "20" ] ; then G_STATE="S_CONFIG" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
+fi
+}
+#================================================
+GAdmin_BIN() {
+gz_bin_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_PACMAN() {
+gz_pacman_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_SQLITE() {
+gz_sqlite_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_GIT() {
+gz_git_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_APACHE() {
+gz_apache_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_APT_GET() {
+gz_apt_get_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_CONFIG() {
+gz_config_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_VIEWS() {
+gz_views_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_SAVE() {
+gz_process_in "config_save" "G_ADMIN_ID" "$G_ADMIN_ID"
+G_STATE="S_QUIT"
+}
+#================================================
+GAdmin_LOAD() {
+G_ADMIN_ID=$(gz_process_in "config_load" "G_ADMIN_ID")
+G_STATE="S_METHOD"
+}
+#================================================
+GAdmin_QUIT() {
+printf "\n"
+read -p "QUIT (Oui/[N]on) ? " lAnswer
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "o" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "n" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
+fi
+}
+#================================================
+GAdmin_Main
+#================================================
+cd $GPWD
+#================================================
