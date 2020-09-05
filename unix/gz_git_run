@@ -4,7 +4,7 @@ GPWD=$PWD
 #================================================
 G_STATE="S_INIT"
 #================================================
-G_GIT_ROOT="https://github.com/gkesse"
+G_GIT_ROOT="https://sudo github.com/gkesse"
 #================================================
 GGit_Main() {
 while [ 1 ] ; do
@@ -131,16 +131,16 @@ fi
 #================================================
 GGit_CONFIG_EDIT() {
 echo
-git config --global user.name "$G_USER_NAME"
-git config --global user.email "$G_USER_EMAIL"
-git config --global core.editor "$G_CORE_EDITOR"
-git config --list
+sudo git config --global user.name "$G_USER_NAME"
+sudo git config --global user.email "$G_USER_EMAIL"
+sudo git config --global core.editor "$G_CORE_EDITOR"
+sudo git config --list
 G_STATE="S_SAVE"
 }
 #================================================
 GGit_CONFIG_LIST() {
 echo
-git config --list
+sudo git config --list
 G_STATE="S_SAVE"
 }
 #================================================
@@ -181,8 +181,8 @@ fi
 GGit_CLONE() {
 echo
 cd $G_DEPOT_ROOT
-G_DEPOT_URL="${G_GIT_ROOT}/${G_DEPOT_NAME}.git"
-git clone $G_DEPOT_URL $G_DEPOT_CLONE
+G_DEPOT_URL="${G_GIT_ROOT}/${G_DEPOT_NAME}.sudo git"
+sudo git clone $G_DEPOT_URL $G_DEPOT_CLONE
 G_STATE="S_SAVE"
 }
 #================================================
@@ -212,7 +212,7 @@ GGit_PULL() {
 echo
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
-git pull
+sudo git pull
 G_STATE="S_SAVE"
 }
 #================================================
@@ -242,9 +242,9 @@ GGit_PUSH() {
 echo
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
-git add --all
-git commit -m "Initial Commit"
-git push -u origin master
+sudo git add --all
+sudo git commit -m "Initial Commit"
+sudo git push -u origin master
 G_STATE="S_SAVE"
 }
 #================================================
