@@ -23,6 +23,7 @@ case "$G_STATE" in
     "S_VIEWS") GAdmin_VIEWS ;;
     #
     "S_CPP") GAdmin_CPP ;;
+    "S_C") GAdmin_C ;;
     #
     "S_SAVE") GAdmin_SAVE ;;
     "S_LOAD") GAdmin_LOAD ;;
@@ -54,6 +55,7 @@ printf "\t%-2s : %s\n" "20" "S_CONFIG"
 printf "\t%-2s : %s\n" "21" "S_VIEWS"
 printf "\n"
 printf "\t%-2s : %s\n" "30" "S_CPP"
+printf "\t%-2s : %s\n" "31" "S_C"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -75,6 +77,7 @@ elif [ "$lAnswer" = "20" ] ; then G_STATE="S_CONFIG" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "30" ] ; then G_STATE="S_CPP" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "31" ] ; then G_STATE="S_C" ; G_ADMIN_ID="$lAnswer"
 #
 fi
 }
@@ -111,6 +114,11 @@ G_STATE="S_SAVE"
 #================================================
 GAdmin_CONFIG() {
 gz_config_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_C() {
+gz_c_run
 G_STATE="S_SAVE"
 }
 #================================================

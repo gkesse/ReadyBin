@@ -87,7 +87,7 @@ fi
 #================================================
 GAptGet_PACKAGE_INSTALL() {
 echo
-sudo apt-get install "$G_PACKAGE_NAME"
+apt-get install "$G_PACKAGE_NAME"
 G_STATE="S_SAVE"
 }
 #================================================
@@ -110,7 +110,7 @@ G_STATE="S_SAVE"
 #================================================
 GAptGet_PACKAGE_UPDATE() {
 echo
-sudo apt-get update
+apt-get update
 G_STATE="S_SAVE"
 }
 #================================================
@@ -154,7 +154,7 @@ G_STATE="S_METHOD"
 #================================================
 GAptGet_QUIT() {
 echo
-read -p "APT_GET_QUIT (Oui/[N]on) ? " lAnswer
+read -p "QUIT (Oui/[N]on) ? " lAnswer
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"

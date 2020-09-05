@@ -127,7 +127,7 @@ G_STATE="S_METHOD"
 #================================================
 GPacman_QUIT() {
 echo
-read -p "PACMAN_QUIT (Oui/[N]on) ? " lAnswer
+read -p "QUIT (Oui/[N]on) ? " lAnswer
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"

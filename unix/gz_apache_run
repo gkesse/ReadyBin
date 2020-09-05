@@ -74,13 +74,13 @@ fi
 #================================================
 GApache_MODULE_LIST_FILTER() {
 echo
-sudo apache2ctl -M | grep -iE "$G_MODULE_FILTER"
+apache2ctl -M | grep -iE "$G_MODULE_FILTER"
 G_STATE="S_SAVE" 
 }
 #================================================
 GApache_MODULE_LIST() {
 echo
-sudo apache2ctl -M
+apache2ctl -M
 G_STATE="S_SAVE"
 }
 #================================================
@@ -98,7 +98,7 @@ G_STATE="S_METHOD"
 #================================================
 GApache_QUIT() {
 echo
-read -p "APACHE_QUIT (Oui/[N]on) ? " lAnswer
+read -p "QUIT (Oui/[N]on) ? " lAnswer
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"

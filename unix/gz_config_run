@@ -4,7 +4,7 @@ GPWD=$PWD
 #================================================
 G_STATE="S_INIT"
 #================================================
-G_DATABASE_PATH="$GPATH/.config"
+G_CONFIG_O="$GPATH/.CONFIG_O.dat"
 #================================================
 GConfig_Main() {
 while [ 1 ] ; do
@@ -175,8 +175,8 @@ echo
 #================================================
 GConfig_CREATE() {
 echo
-. gz_confirm_in
-. gz_sqlite_in "
+. gz_process_in "confirm"
+. gz_process_in "sqlite_query" "$G_CONFIG_O" "
 create table CONFIG_DATA (
 CONFIG_KEY text primary key not null,
 CONFIG_VALUE text
@@ -202,7 +202,7 @@ G_STATE="S_METHOD"
 #================================================
 GConfig_QUIT() {
 echo
-read -p "VIEWS_QUIT (Oui/[N]on) ? " lAnswer
+read -p "QUIT (Oui/[N]on) ? " lAnswer
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
