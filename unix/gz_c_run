@@ -19,6 +19,13 @@ case "$G_STATE" in
     "S_C_COMPILE_C_ARGS") GC_C_COMPILE_C_ARGS ;;
     "S_C_COMPILE") GC_C_COMPILE ;;
     #
+    "S_TEST_COMPILE_TEST_PATH") GC_TEST_COMPILE_TEST_PATH ;;
+    "S_TEST_COMPILE_TEST_NAME") GC_TEST_COMPILE_TEST_NAME ;;
+    "S_TEST_COMPILE_TEST_COMPILO") GC_TEST_COMPILE_TEST_COMPILO ;;
+    "S_TEST_COMPILE_TEST_TARGET") GC_TEST_COMPILE_TEST_TARGET ;;
+    "S_TEST_COMPILE_TEST_ARGS") GC_TEST_COMPILE_TEST_ARGS ;;
+    "S_TEST_COMPILE") GC_TEST_COMPILE ;;
+    #
     "S_SAVE") GC_SAVE ;;
     "S_LOAD") GC_LOAD ;;
     "S_QUIT") GC_QUIT ;;
@@ -46,6 +53,7 @@ G_STATE="S_LOAD"
 GC_METHOD() {
 printf "C :\n"
 printf "\t%2s : %s\n" "1" "compiler le projet"
+printf "\t%2s : %s\n" "2" "compiler le projet TEST"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -58,6 +66,7 @@ elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_C_COMPILE_C_PATH" ; G_C_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_TEST_COMPILE_TEST_PATH" ; G_C_ID="$lAnswer"
 #
 fi
 }
@@ -128,6 +137,72 @@ make -f "$lMakefile" "$G_C_TARGET" GARGS="$G_C_ARGS"
 G_STATE="S_SAVE"
 }
 #================================================
+GC_TEST_COMPILE_TEST_PATH() {
+read -p "G_TEST_PATH ($G_TEST_PATH) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_PATH" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_NAME" ; G_TEST_PATH="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COMPILE_TEST_NAME() {
+read -p "G_TEST_NAME ($G_TEST_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_COMPILO" ; G_TEST_NAME="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COMPILE_TEST_COMPILO() {
+read -p "G_TEST_COMPILO ($G_TEST_COMPILO) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_COMPILO" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_TARGET" ; G_TEST_COMPILO="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COMPILE_TEST_TARGET() {
+read -p "G_TEST_TARGET ($G_TEST_TARGET) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_TARGET" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_ARGS" ; G_TEST_TARGET="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COMPILE_TEST_ARGS() {
+read -p "G_TEST_ARGS ($G_TEST_ARGS) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_ARGS" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
+elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_TEST_COMPILE" ; G_TEST_ARGS=""
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE" ; G_TEST_ARGS="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COMPILE() {
+echo
+lBuldPath="$G_TEST_PATH/$G_TEST_NAME/msys"
+lMakefile="Makefile"
+if [ "$G_TEST_COMPILO" != "" ] ; then lMakefile="${lMakefile}.$G_TEST_COMPILO" ; fi
+cd $lBuldPath
+make -f "$lMakefile" "$G_TEST_TARGET" GARGS="$G_TEST_ARGS"
+G_STATE="S_SAVE"
+}
+#================================================
 GC_SAVE() {
 gz_process_in "config_save" "G_C_ID" "$G_C_ID"
 gz_process_in "config_save" "G_C_PATH" "$G_C_PATH"
@@ -135,6 +210,11 @@ gz_process_in "config_save" "G_C_NAME" "$G_C_NAME"
 gz_process_in "config_save" "G_C_COMPILO" "$G_C_COMPILO"
 gz_process_in "config_save" "G_C_TARGET" "$G_C_TARGET"
 gz_process_in "config_save" "G_C_ARGS" "$G_C_ARGS"
+gz_process_in "config_save" "G_TEST_PATH" "$G_TEST_PATH"
+gz_process_in "config_save" "G_TEST_NAME" "$G_TEST_NAME"
+gz_process_in "config_save" "G_TEST_COMPILO" "$G_TEST_COMPILO"
+gz_process_in "config_save" "G_TEST_TARGET" "$G_TEST_TARGET"
+gz_process_in "config_save" "G_TEST_ARGS" "$G_TEST_ARGS"
 G_STATE="S_QUIT"
 }
 #================================================
@@ -145,6 +225,11 @@ G_C_NAME=$(gz_process_in "config_load" "G_C_NAME")
 G_C_COMPILO=$(gz_process_in "config_load" "G_C_COMPILO")
 G_C_TARGET=$(gz_process_in "config_load" "G_C_TARGET")
 G_C_ARGS=$(gz_process_in "config_load" "G_C_ARGS")
+G_TEST_PATH=$(gz_process_in "config_load" "G_TEST_PATH")
+G_TEST_NAME=$(gz_process_in "config_load" "G_TEST_NAME")
+G_TEST_COMPILO=$(gz_process_in "config_load" "G_TEST_COMPILO")
+G_TEST_TARGET=$(gz_process_in "config_load" "G_TEST_TARGET")
+G_TEST_ARGS=$(gz_process_in "config_load" "G_TEST_ARGS")
 G_STATE="S_METHOD"
 }
 #================================================
