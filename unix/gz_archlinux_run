@@ -1,0 +1,115 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+GArchLinux_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_ADMIN") GArchLinux_ADMIN ;;
+    "S_INIT") GArchLinux_INIT ;;
+    "S_METHOD") GArchLinux_METHOD ;;
+    "S_CHOICE") GArchLinux_CHOICE ;;
+    #
+    "S_KEYS_CONFIG_LANG_NAME") GArchLinux_KEYS_CONFIG_LANG_NAME ;;
+    "S_KEYS_CONFIG") GArchLinux_KEYS_CONFIG ;;
+    #
+    "S_IP_SHOW") GArchLinux_IP_SHOW ;;
+    #
+    "S_SAVE") GArchLinux_SAVE ;;
+    "S_LOAD") GArchLinux_LOAD ;;
+    "S_QUIT") GArchLinux_QUIT ;;
+    *) break ;;
+esac    
+done
+}
+#================================================
+GArchLinux_ADMIN() {
+gz_admin
+G_STATE="S_END"
+}
+#================================================
+GArchLinux_INIT() {
+printf "\n"
+printf "ARCHLINUX !!!\n"
+printf "\t%2s : %s\n" "-q" "quitter l'application"
+printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
+printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
+printf "\t%2s : %s\n" "-v" "valider les configurations"
+printf "\n"
+G_STATE="S_LOAD"
+}
+#================================================
+GArchLinux_METHOD() {
+printf "ARCHLINUX :\n"
+printf "\t%2s : %s\n" "1" "configurer la langue du clavier"
+printf "\t%2s : %s\n" "2" "afficher l'adresse ip"
+printf "\n"
+G_STATE="S_CHOICE"
+}
+#================================================
+GArchLinux_CHOICE() {
+read -p "ARCHLINUX ($G_ARCHLINUX_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_ARCHLINUX_ID" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+#
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_KEYS_CONFIG_LANG_NAME" ; G_ARCHLINUX_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_IP_SHOW" ; G_ARCHLINUX_ID="$lAnswer"
+#
+fi
+}
+#================================================
+GArchLinux_IP_SHOW() {
+echo
+ip addr s
+G_STATE="S_SAVE"
+}
+#================================================
+GArchLinux_KEYS_CONFIG_LANG_NAME() {
+read -p "G_LANG_NAME ($G_LANG_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_LANG_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_KEYS_CONFIG"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_KEYS_CONFIG" ; G_LANG_NAME="$lAnswer"
+fi
+}
+#================================================
+GArchLinux_KEYS_CONFIG() {
+echo
+sudo loadkeys fr
+G_STATE="S_SAVE"
+}
+#================================================
+GArchLinux_SAVE() {
+gz_process_in "config_save" "G_ARCHLINUX_ID" "$G_ARCHLINUX_ID"
+gz_process_in "config_save" "G_LANG_NAME" "$G_LANG_NAME"
+G_STATE="S_QUIT"
+}
+#================================================
+GArchLinux_LOAD() {
+G_ARCHLINUX_ID=$(gz_process_in "config_load" "G_ARCHLINUX_ID")
+G_LANG_NAME=$(gz_process_in "config_load" "G_LANG_NAME")
+G_STATE="S_METHOD"
+}
+#================================================
+GArchLinux_QUIT() {
+echo
+read -p "QUIT (Oui/[N]on) ? " lAnswer
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "o" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "n" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
+fi
+}
+#================================================
+GArchLinux_Main
+#================================================
+cd $GPWD
+#================================================

@@ -4,6 +4,8 @@ GPWD=$PWD
 #================================================
 G_STATE="S_INIT"
 #================================================
+G_CONFIG_DB="$GPATH/.CONFIG_O.dat"
+#================================================
 GSQLite_Main() {
 while [ 1 ] ; do
 case "$G_STATE" in 
@@ -13,6 +15,7 @@ case "$G_STATE" in
     "S_CHOICE") GSQLite_CHOICE ;;
     #
     "S_VERSION") GSQLite_VERSION ;;
+    "S_CONFIG_DATA_CREATE") GSQLite_CONFIG_DATA_CREATE ;;
     #
     "S_SAVE") GSQLite_SAVE ;;
     "S_LOAD") GSQLite_LOAD ;;
@@ -41,6 +44,7 @@ G_STATE="S_LOAD"
 GSQLite_METHOD() {
 printf "SQLITE :\n"
 printf "\t%2s : %s\n" "1" "afficher la version"
+printf "\t%2s : %s\n" "2" "afficher la table CONFIG_DATA"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -53,7 +57,19 @@ elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_VERSION" ; G_SQLITE_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_CONFIG_DATA_CREATE" ; G_SQLITE_ID="$lAnswer"
 fi
+}
+#================================================
+GSQLite_CONFIG_DATA_CREATE() {
+echo
+gz_process_in "sqlite_query" "$G_CONFIG_DB" "
+create table CONFIG_DATA(
+CONFIG_KEY text unique not null,
+CONFIG_VALUE text
+)
+"
+G_STATE="S_SAVE"
 }
 #================================================
 GSQLite_VERSION() {

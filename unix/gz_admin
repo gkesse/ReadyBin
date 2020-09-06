@@ -25,6 +25,8 @@ case "$G_STATE" in
     "S_CPP") GAdmin_CPP ;;
     "S_C") GAdmin_C ;;
     #
+    "S_ARCH_LINUX") GAdmin_ARCH_LINUX ;;
+    #
     "S_SAVE") GAdmin_SAVE ;;
     "S_LOAD") GAdmin_LOAD ;;
     "S_QUIT") GAdmin_QUIT ;;
@@ -57,6 +59,8 @@ printf "\n"
 printf "\t%-2s : %s\n" "30" "S_CPP"
 printf "\t%-2s : %s\n" "31" "S_C"
 printf "\n"
+printf "\t%-2s : %s\n" "40" "S_ARCH_LINUX"
+printf "\n"
 G_STATE="S_CHOICE"
 }
 #================================================
@@ -78,6 +82,8 @@ elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "30" ] ; then G_STATE="S_CPP" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "31" ] ; then G_STATE="S_C" ; G_ADMIN_ID="$lAnswer"
+#
+elif [ "$lAnswer" = "40" ] ; then G_STATE="S_ARCH_LINUX" ; G_ADMIN_ID="$lAnswer"
 #
 fi
 }
@@ -117,6 +123,11 @@ gz_config_run
 G_STATE="S_SAVE"
 }
 #================================================
+GAdmin_VIEWS() {
+gz_views_run
+G_STATE="S_SAVE"
+}
+#================================================
 GAdmin_C() {
 gz_c_run
 G_STATE="S_SAVE"
@@ -127,8 +138,8 @@ gz_cpp_run
 G_STATE="S_SAVE"
 }
 #================================================
-GAdmin_VIEWS() {
-gz_views_run
+GAdmin_ARCH_LINUX() {
+gz_archlinux_run
 G_STATE="S_SAVE"
 }
 #================================================

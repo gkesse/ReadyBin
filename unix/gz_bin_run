@@ -24,6 +24,11 @@ case "$G_STATE" in
     "S_PKGCONFIG_FLAG_PKG_NAME") GBin_PKGCONFIG_FLAG_PKG_NAME ;;
     "S_PKGCONFIG_FLAG") GBin_PKGCONFIG_FLAG ;;
     #
+    "S_BIN_AUTH") GBin_BIN_AUTH ;;
+    #
+    "S_DIR_AUTH_DIR_PATH") GBin_DIR_AUTH_DIR_PATH ;;
+    "S_DIR_AUTH") GBin_DIR_AUTH ;;
+    #
     "S_SAVE") GBin_SAVE ;;
     "S_LOAD") GBin_LOAD ;;
     "S_QUIT") GBin_QUIT ;;
@@ -51,7 +56,9 @@ G_STATE="S_LOAD"
 GBin_METHOD() {
 printf "BIN :\n"
 printf "\t%2s : %s\n" "1" "creer un script"
-printf "\t%2s : %s\n" "2" "convertir un chemin Windows"
+printf "\t%2s : %s\n" "2" "convertir un chemin WINDOWS"
+printf "\t%2s : %s\n" "3" "activer les autorisations BIN"
+printf "\t%2s : %s\n" "4" "activer les autorisations DIR"
 printf "\n"
 printf "\t%2s : %s\n" "10" "S_PKGCONFIG_LIBS"
 printf "\t%2s : %s\n" "11" "S_PKGCONFIG_FLAG"
@@ -68,11 +75,36 @@ elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_CREATE_SCRIPT_NAME" ; G_BIN_ID="$lAnswer"
 elif [ "$lAnswer" = "2" ] ; then G_STATE="S_CYGPATH_W2U_WIN_PATH" ; G_BIN_ID="$lAnswer"
+elif [ "$lAnswer" = "3" ] ; then G_STATE="S_BIN_AUTH" ; G_BIN_ID="$lAnswer"
+elif [ "$lAnswer" = "4" ] ; then G_STATE="S_DIR_AUTH_DIR_PATH" ; G_BIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_PKGCONFIG_LIBS_PKG_NAME" ; G_BIN_ID="$lAnswer"
 elif [ "$lAnswer" = "11" ] ; then G_STATE="S_PKGCONFIG_FLAG_PKG_NAME" ; G_BIN_ID="$lAnswer"
 #
 fi
+}
+#================================================
+GBin_DIR_AUTH_DIR_PATH() {
+read -p "G_DIR_PATH ($G_DIR_PATH) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DIR_PATH" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_DIR_AUTH"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_DIR_AUTH" ; G_DIR_PATH="$lAnswer"
+fi
+}
+#================================================
+GBin_DIR_AUTH() {
+echo
+sudo chmod -R 777 $G_DIR_PATH
+G_STATE="S_SAVE"
+}
+#================================================
+GBin_BIN_AUTH() {
+echo
+sudo chmod -R 777 $GPATH
+G_STATE="S_SAVE"
 }
 #================================================
 GBin_CYGPATH_W2U_WIN_PATH() {
@@ -81,7 +113,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_WIN_PATH" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CYGPATH_W2U" ; G_WIN_PATH="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CYGPATH_W2U"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CYGPATH_W2U" ; G_WIN_PATH="$lAnswer"
 fi
 }
@@ -98,7 +130,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_SCRIPT_NAME" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CREATE" ; G_SCRIPT_NAME="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CREATE"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_CREATE" ; G_SCRIPT_NAME="$lAnswer"
 fi
 }
@@ -116,7 +148,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_PKG_NAME" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PKGCONFIG_LIBS" ; G_PKG_NAME="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PKGCONFIG_LIBS"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_PKGCONFIG_LIBS" ; G_PKG_NAME="$lAnswer"
 fi
 }
@@ -134,7 +166,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_PKG_NAME" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PKGCONFIG_FLAG" ; G_PKG_NAME="$lAnswer"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PKGCONFIG_FLAG"
 elif [ "$lAnswer" != "" ] ; then G_STATE="S_PKGCONFIG_FLAG" ; G_PKG_NAME="$lAnswer"
 fi
 }
@@ -151,6 +183,7 @@ gz_process_in "config_save" "G_BIN_ID" "$G_BIN_ID"
 gz_process_in "config_save" "G_SCRIPT_NAME" "$G_SCRIPT_NAME"
 gz_process_in "config_save" "G_WIN_PATH" "$G_WIN_PATH"
 gz_process_in "config_save" "G_PKG_NAME" "$G_PKG_NAME"
+gz_process_in "config_save" "G_DIR_PATH" "$G_DIR_PATH"
 G_STATE="S_QUIT"
 }
 #================================================
@@ -159,6 +192,7 @@ G_BIN_ID=$(gz_process_in "config_load" "G_BIN_ID")
 G_SCRIPT_NAME=$(gz_process_in "config_load" "G_SCRIPT_NAME")
 G_WIN_PATH=$(gz_process_in "config_load" "G_WIN_PATH")
 G_PKG_NAME=$(gz_process_in "config_load" "G_PKG_NAME")
+G_DIR_PATH=$(gz_process_in "config_load" "G_DIR_PATH")
 G_STATE="S_METHOD"
 }
 #================================================
