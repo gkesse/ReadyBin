@@ -26,6 +26,11 @@ case "$G_STATE" in
     "S_TEST_COMPILE_TEST_ARGS") GC_TEST_COMPILE_TEST_ARGS ;;
     "S_TEST_COMPILE") GC_TEST_COMPILE ;;
     #
+    "S_TEST_COPY_TEST_PATH") GC_TEST_COPY_TEST_PATH ;;
+    "S_TEST_COPY_COPY_DST") GC_TEST_COPY_COPY_DST ;;
+    "S_TEST_COPY_COPY_SRC") GC_TEST_COPY_COPY_SRC ;;
+    "S_TEST_COPY") GC_TEST_COPY ;;
+    #
     "S_SAVE") GC_SAVE ;;
     "S_LOAD") GC_LOAD ;;
     "S_QUIT") GC_QUIT ;;
@@ -54,6 +59,7 @@ GC_METHOD() {
 printf "C :\n"
 printf "\t%2s : %s\n" "1" "compiler le projet"
 printf "\t%2s : %s\n" "2" "compiler le projet TEST"
+printf "\t%2s : %s\n" "3" "copier un projet TEST"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -67,8 +73,49 @@ elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_C_COMPILE_C_PATH" ; G_C_ID="$lAnswer"
 elif [ "$lAnswer" = "2" ] ; then G_STATE="S_TEST_COMPILE_TEST_PATH" ; G_C_ID="$lAnswer"
+elif [ "$lAnswer" = "3" ] ; then G_STATE="S_TEST_COPY_TEST_PATH" ; G_C_ID="$lAnswer"
 #
 fi
+}
+#================================================
+GC_TEST_COPY_TEST_PATH() {
+read -p "G_TEST_PATH ($G_TEST_PATH) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_PATH" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COPY"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COPY_COPY_DST" ; G_TEST_PATH="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COPY_COPY_DST() {
+read -p "G_COPY_DST ($G_COPY_DST) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_COPY_DST" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COPY"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COPY_COPY_SRC" ; G_COPY_DST="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COPY_COPY_SRC() {
+read -p "G_COPY_SRC ($G_COPY_SRC) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_COPY_SRC" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COPY"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COPY" ; G_COPY_SRC="$lAnswer"
+fi
+}
+#================================================
+GC_TEST_COPY() {
+echo
+cd $G_TEST_PATH
+cp -rf $G_COPY_SRC $G_COPY_DST
+G_STATE="S_SAVE"
 }
 #================================================
 GC_C_COMPILE_C_PATH() {
@@ -129,7 +176,7 @@ fi
 #================================================
 GC_C_COMPILE() {
 echo
-lBuldPath="$G_C_PATH/$G_C_NAME/msys"
+lBuldPath="$G_C_PATH/$G_C_NAME/unix"
 lMakefile="Makefile"
 if [ "$G_C_COMPILO" != "" ] ; then lMakefile="${lMakefile}.$G_C_COMPILO" ; fi
 cd $lBuldPath
@@ -195,7 +242,7 @@ fi
 #================================================
 GC_TEST_COMPILE() {
 echo
-lBuldPath="$G_TEST_PATH/$G_TEST_NAME/msys"
+lBuldPath="$G_TEST_PATH/$G_TEST_NAME/unix"
 lMakefile="Makefile"
 if [ "$G_TEST_COMPILO" != "" ] ; then lMakefile="${lMakefile}.$G_TEST_COMPILO" ; fi
 cd $lBuldPath
@@ -215,6 +262,8 @@ gz_process_in "config_save" "G_TEST_NAME" "$G_TEST_NAME"
 gz_process_in "config_save" "G_TEST_COMPILO" "$G_TEST_COMPILO"
 gz_process_in "config_save" "G_TEST_TARGET" "$G_TEST_TARGET"
 gz_process_in "config_save" "G_TEST_ARGS" "$G_TEST_ARGS"
+gz_process_in "config_save" "G_COPY_SRC" "$G_COPY_SRC"
+gz_process_in "config_save" "G_COPY_DST" "$G_COPY_DST"
 G_STATE="S_QUIT"
 }
 #================================================
@@ -230,6 +279,8 @@ G_TEST_NAME=$(gz_process_in "config_load" "G_TEST_NAME")
 G_TEST_COMPILO=$(gz_process_in "config_load" "G_TEST_COMPILO")
 G_TEST_TARGET=$(gz_process_in "config_load" "G_TEST_TARGET")
 G_TEST_ARGS=$(gz_process_in "config_load" "G_TEST_ARGS")
+G_COPY_SRC=$(gz_process_in "config_load" "G_COPY_SRC")
+G_COPY_DST=$(gz_process_in "config_load" "G_COPY_DST")
 G_STATE="S_METHOD"
 }
 #================================================
