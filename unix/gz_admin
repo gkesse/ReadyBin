@@ -19,6 +19,8 @@ case "$G_STATE" in
     "S_GIT") GAdmin_GIT ;;
     "S_APACHE") GAdmin_APACHE ;;
     "S_APT_GET") GAdmin_APT_GET ;;
+    "S_CERBOT") GAdmin_CERBOT ;;
+    "S_SERVICE") GAdmin_SERVICE ;;
     #
     "S_CONFIG") GAdmin_CONFIG ;;
     "S_VIEWS") GAdmin_VIEWS ;;
@@ -48,13 +50,18 @@ G_STATE="S_LOAD"
 GAdmin_METHOD() {
 printf "ADMIN :\n"
 printf "\t%-2s : %s\n" "1" "S_BIN"
+<<<<<<< HEAD
 printf "\t%-2s : %s\n" "2" "S_SHELL"
+=======
+>>>>>>> 397b729179f80df6fb51c5cad2719cc7811af033
 printf "\n"
-printf "\t%-2s : %s\n" "10" "PACMAN"
-printf "\t%-2s : %s\n" "11" "SQLITE"
-printf "\t%-2s : %s\n" "12" "GIT"
+printf "\t%-2s : %s\n" "10" "S_PACMAN"
+printf "\t%-2s : %s\n" "11" "S_SQLITE"
+printf "\t%-2s : %s\n" "12" "S_GIT"
 printf "\t%-2s : %s\n" "13" "S_APACHE"
 printf "\t%-2s : %s\n" "14" "S_APT_GET"
+printf "\t%-2s : %s\n" "15" "S_CERBOT"
+printf "\t%-2s : %s\n" "16" "S_SERVICE"
 printf "\n"
 printf "\t%-2s : %s\n" "20" "S_CONFIG"
 printf "\t%-2s : %s\n" "21" "S_VIEWS"
@@ -81,6 +88,8 @@ elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SQLITE" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "12" ] ; then G_STATE="S_GIT" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "13" ] ; then G_STATE="S_APACHE" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "14" ] ; then G_STATE="S_APT_GET" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "15" ] ; then G_STATE="S_CERBOT" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "16" ] ; then G_STATE="S_SERVICE" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "20" ] ; then G_STATE="S_CONFIG" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
@@ -126,6 +135,16 @@ G_STATE="S_SAVE"
 #================================================
 GAdmin_APT_GET() {
 gz_apt_get_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_CERBOT() {
+gz_cerbot_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_SERVICE() {
+gz_service_run
 G_STATE="S_SAVE"
 }
 #================================================

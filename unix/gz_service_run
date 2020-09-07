@@ -1,0 +1,171 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+GService_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_ADMIN") GService_ADMIN ;;
+    "S_INIT") GService_INIT ;;
+    "S_METHOD") GService_METHOD ;;
+    "S_CHOICE") GService_CHOICE ;;
+    #
+    "S_MODULE_STATUS_MODULE_NAME") GService_MODULE_STATUS_MODULE_NAME ;;
+    "S_MODULE_STATUS") GService_MODULE_STATUS ;;
+    #
+    "S_MODULE_RESTART_MODULE_NAME") GService_MODULE_RESTART_MODULE_NAME ;;
+    "S_MODULE_RESTART") GService_MODULE_RESTART ;;
+    #
+    "S_MODULE_RELOAD_MODULE_NAME") GService_MODULE_RELOAD_MODULE_NAME ;;
+    "S_MODULE_RELOAD") GService_MODULE_RELOAD ;;
+    #
+    "S_MODULE_STOP_MODULE_NAME") GService_MODULE_STOP_MODULE_NAME ;;
+    "S_MODULE_STOP") GService_MODULE_STOP ;;
+    #
+    "S_SAVE") GService_SAVE ;;
+    "S_LOAD") GService_LOAD ;;
+    "S_QUIT") GService_QUIT ;;
+    *) break ;;
+esac    
+done
+}
+#================================================
+GService_ADMIN() {
+gz_admin
+G_STATE="S_END"
+}
+#================================================
+GService_INIT() {
+printf "\n"
+printf "SERVICE !!!\n"
+printf "\t%2s : %s\n" "-q" "quitter l'application"
+printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
+printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
+printf "\t%2s : %s\n" "-v" "valider les configurations"
+printf "\n"
+G_STATE="S_LOAD"
+}
+#================================================
+GService_METHOD() {
+printf "SERVICE :\n"
+printf "\t%2s : %s\n" "1" "S_MODULE_STATUS"
+printf "\t%2s : %s\n" "2" "S_MODULE_RESTART"
+printf "\t%2s : %s\n" "3" "S_MODULE_RELOAD"
+printf "\t%2s : %s\n" "4" "S_MODULE_STOP"
+printf "\n"
+G_STATE="S_CHOICE"
+}
+#================================================
+GService_CHOICE() {
+read -p "SERVICE ($G_SERVICE_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_SERVICE_ID" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+#
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_MODULE_STATUS_MODULE_NAME" ; G_SERVICE_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_MODULE_RESTART_MODULE_NAME" ; G_SERVICE_ID="$lAnswer"
+elif [ "$lAnswer" = "3" ] ; then G_STATE="S_MODULE_RELOAD_MODULE_NAME" ; G_SERVICE_ID="$lAnswer"
+elif [ "$lAnswer" = "4" ] ; then G_STATE="S_MODULE_STOP_MODULE_NAME" ; G_SERVICE_ID="$lAnswer"
+# 
+fi
+} 
+#================================================
+GService_MODULE_STATUS_MODULE_NAME() {
+read -p "G_MODULE_NAME ($G_MODULE_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_MODULE_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_MODULE_STATUS"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_MODULE_STATUS" ; G_MODULE_NAME="$lAnswer"
+fi
+}
+#================================================
+GService_MODULE_STATUS() {
+echo
+sudo service "$G_MODULE_NAME" status
+G_STATE="S_SAVE"
+}
+#================================================
+GService_MODULE_RESTART_MODULE_NAME() {
+read -p "G_MODULE_NAME ($G_MODULE_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_MODULE_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_MODULE_RESTART"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_MODULE_RESTART" ; G_MODULE_NAME="$lAnswer"
+fi
+}
+#================================================
+GService_MODULE_RESTART() {
+echo
+sudo service "$G_MODULE_NAME" restart
+G_STATE="S_SAVE"
+}
+#================================================
+GService_MODULE_RELOAD_MODULE_NAME() {
+read -p "G_MODULE_NAME ($G_MODULE_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_MODULE_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_MODULE_RELOAD"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_MODULE_RELOAD" ; G_MODULE_NAME="$lAnswer"
+fi
+}
+#================================================
+GService_MODULE_RELOAD() {
+echo
+sudo service "$G_MODULE_NAME" reload
+G_STATE="S_SAVE"
+}
+#================================================
+GService_MODULE_STOP_MODULE_NAME() {
+read -p "G_MODULE_NAME ($G_MODULE_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_MODULE_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_MODULE_STOP"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_MODULE_STOP" ; G_MODULE_NAME="$lAnswer"
+fi
+}
+#================================================
+GService_MODULE_STOP() {
+echo
+sudo service "$G_MODULE_NAME" stop
+G_STATE="S_SAVE"
+}
+#================================================
+GService_SAVE() {
+gz_process_in "config_save" "G_SERVICE_ID" "$G_SERVICE_ID"
+gz_process_in "config_save" "G_MODULE_NAME" "$G_MODULE_NAME"
+G_STATE="S_QUIT"
+}
+#================================================
+GService_LOAD() {
+G_SERVICE_ID=$(gz_process_in "config_load" "G_SERVICE_ID")
+G_MODULE_NAME=$(gz_process_in "config_load" "G_MODULE_NAME")
+G_STATE="S_METHOD"
+}
+#================================================
+GService_QUIT() {
+echo
+read -p "QUIT (Oui/[N]on) ? " lAnswer
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "o" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "n" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
+fi
+}
+#================================================
+GService_Main
+#================================================
+cd $GPWD
+#================================================
