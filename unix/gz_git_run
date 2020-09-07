@@ -97,6 +97,17 @@ elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT_USER_EMAIL" ; G_USER_NAM
 fi
 }
 #================================================
+GGit_CONFIG_EDIT_USER_NAME() {
+read -p "G_USER_NAME ($G_USER_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_USER_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CONFIG_EDIT" ; G_USER_NAME="$lAnswer"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT_USER_EMAIL" ; G_USER_NAME="$lAnswer"
+fi
+}
+#================================================
 GGit_CONFIG_EDIT_USER_EMAIL() {
 read -p "G_USER_EMAIL ($G_USER_EMAIL) ? " lAnswer
 if [ "$lAnswer" = "" ] ; then lAnswer="$G_USER_EMAIL" ; fi
