@@ -86,13 +86,13 @@ fi
 #================================================
 GPacman_INSTALL() {
 echo
-pacman -S "$G_PACKAGE_NAME"
+sudo pacman -S "$G_PACKAGE_NAME"
 G_STATE="S_SAVE"
 }
 #================================================
 GPacman_UPDATE() {
 echo
-pacman -Syu
+sudo pacman -Syu
 G_STATE="S_SAVE"
 }
 #================================================
@@ -109,7 +109,7 @@ fi
 #================================================
 GPacman_SEARCH() {
 echo
-pacman -Ss --needed "$G_PACKAGE_NAME"
+sudo pacman -Ss --needed "$G_PACKAGE_NAME"
 G_STATE="S_SAVE"
 }
 #================================================
