@@ -16,22 +16,15 @@ case "$G_STATE" in
     #
     "S_PYTHON_COMPILE_PYTHON_PATH") GPython_PYTHON_COMPILE_PYTHON_PATH ;;
     "S_PYTHON_COMPILE_PYTHON_NAME") GPython_PYTHON_COMPILE_PYTHON_NAME ;;
-    "S_PYTHON_COMPILE_PYTHON_COMPILO") GPython_PYTHON_COMPILE_PYTHON_COMPILO ;;
-    "S_PYTHON_COMPILE_PYTHON_TARGET") GPython_PYTHON_COMPILE_PYTHON_TARGET ;;
-    "S_PYTHON_COMPILE_PYTHON_ARGS") GPython_PYTHON_COMPILE_PYTHON_ARGS ;;
     "S_PYTHON_COMPILE") GPython_PYTHON_COMPILE ;;
     #
-    "S_TEST_COMPILE_TEST_PATH") GPython_TEST_COMPILE_TEST_PATH ;;
-    "S_TEST_COMPILE_TEST_NAME") GPython_TEST_COMPILE_TEST_NAME ;;
-    "S_TEST_COMPILE_TEST_COMPILO") GPython_TEST_COMPILE_TEST_COMPILO ;;
-    "S_TEST_COMPILE_TEST_TARGET") GPython_TEST_COMPILE_TEST_TARGET ;;
-    "S_TEST_COMPILE_TEST_ARGS") GPython_TEST_COMPILE_TEST_ARGS ;;
-    "S_TEST_COMPILE") GPython_TEST_COMPILE ;;
+    "S_PIP_LIST") GPython_PIP_LIST ;;
     #
-    "S_TEST_COPY_TEST_PATH") GPython_TEST_COPY_TEST_PATH ;;
-    "S_TEST_COPY_COPY_SRC") GPython_TEST_COPY_COPY_SRC ;;
-    "S_TEST_COPY_COPY_DST") GPython_TEST_COPY_COPY_DST ;;
-    "S_TEST_COPY") GPython_TEST_COPY ;;
+    "S_PIP_INSTALL_PACKAGE_NAME") GPython_PIP_INSTALL_PACKAGE_NAME ;;
+    "S_PIP_INSTALL") GPython_PIP_INSTALL ;;
+    #
+    "S_PIP_UNINSTALL_PACKAGE_NAME") GPython_PIP_UNINSTALL_PACKAGE_NAME ;;
+    "S_PIP_UNINSTALL") GPython_PIP_UNINSTALL ;;
     #
     "S_SAVE") GPython_SAVE ;;
     "S_LOAD") GPython_LOAD ;;
@@ -60,8 +53,10 @@ G_STATE="S_LOAD"
 GPython_METHOD() {
 printf "PYTHON :\n"
 printf "\t%2s : %s\n" "1" "compiler le projet"
-printf "\t%2s : %s\n" "2" "compiler le projet TEST"
-printf "\t%2s : %s\n" "3" "copier un projet TEST"
+printf "\n"
+printf "\t%2s : %s\n" "10" "lister les packages PIP"
+printf "\t%2s : %s\n" "11" "installer un package PIP"
+printf "\t%2s : %s\n" "12" "desinstaller un package PIP"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -74,49 +69,51 @@ elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_PYTHON_COMPILE_PYTHON_PATH" ; G_PYTHON_ID="$lAnswer"
-elif [ "$lAnswer" = "2" ] ; then G_STATE="S_TEST_COMPILE_TEST_PATH" ; G_PYTHON_ID="$lAnswer"
-elif [ "$lAnswer" = "3" ] ; then G_STATE="S_TEST_COPY_TEST_PATH" ; G_PYTHON_ID="$lAnswer"
+#
+elif [ "$lAnswer" = "10" ] ; then G_STATE="S_PIP_LIST" ; G_PYTHON_ID="$lAnswer"
+elif [ "$lAnswer" = "11" ] ; then G_STATE="S_PIP_INSTALL_PACKAGE_NAME" ; G_PYTHON_ID="$lAnswer"
+elif [ "$lAnswer" = "12" ] ; then G_STATE="S_PIP_UNINSTALL_PACKAGE_NAME" ; G_PYTHON_ID="$lAnswer"
 #
 fi
 }
 #================================================
-GPython_TEST_COPY_TEST_PATH() {
-read -p "G_TEST_PATH ($G_TEST_PATH) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_PATH" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COPY"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COPY_COPY_SRC" ; G_TEST_PATH="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COPY_COPY_SRC() {
-read -p "G_COPY_SRC ($G_COPY_SRC) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_COPY_SRC" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COPY"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COPY_COPY_DST" ; G_COPY_SRC="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COPY_COPY_DST() {
-read -p "G_COPY_DST ($G_COPY_DST) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_COPY_DST" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COPY"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COPY" ; G_COPY_DST="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COPY() {
+GPython_PIP_LIST() {
 echo
-cd $G_TEST_PATH
-cp -rf $G_COPY_SRC $G_COPY_DST
+sudo pip2 freeze
+G_STATE="S_SAVE"
+}
+#================================================
+GPython_PIP_INSTALL_PACKAGE_NAME() {
+read -p "G_PACKAGE_NAME ($G_PACKAGE_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_PACKAGE_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PIP_INSTALL"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PIP_INSTALL" ; G_PACKAGE_NAME="$lAnswer"
+fi
+}
+#================================================
+GPython_PIP_INSTALL() {
+echo
+sudo pip2 install $G_PACKAGE_NAME
+G_STATE="S_SAVE"
+}
+#================================================
+GPython_PIP_UNINSTALL_PACKAGE_NAME() {
+read -p "G_PACKAGE_NAME ($G_PACKAGE_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_PACKAGE_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PIP_UNINSTALL"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PIP_UNINSTALL" ; G_PACKAGE_NAME="$lAnswer"
+fi
+}
+#================================================
+GPython_PIP_UNINSTALL() {
+echo
+sudo pip2 uninstall $G_PACKAGE_NAME
 G_STATE="S_SAVE"
 }
 #================================================
@@ -138,117 +135,16 @@ if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PYTHON_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_PYTHON_COMPILE_PYTHON_COMPILO" ; G_PYTHON_NAME="$lAnswer"
-fi
-}
-#================================================
-GPython_PYTHON_COMPILE_PYTHON_COMPILO() {
-read -p "G_PYTHON_COMPILO ($G_PYTHON_COMPILO) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_PYTHON_COMPILO" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PYTHON_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_PYTHON_COMPILE_PYTHON_TARGET" ; G_PYTHON_COMPILO="$lAnswer"
-fi
-}
-#================================================
-GPython_PYTHON_COMPILE_PYTHON_TARGET() {
-read -p "G_PYTHON_TARGET ($G_PYTHON_TARGET) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_PYTHON_TARGET" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PYTHON_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_PYTHON_COMPILE_PYTHON_ARGS" ; G_PYTHON_TARGET="$lAnswer"
-fi
-}
-#================================================
-GPython_PYTHON_COMPILE_PYTHON_ARGS() {
-read -p "G_PYTHON_ARGS ($G_PYTHON_ARGS) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_PYTHON_ARGS" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PYTHON_COMPILE"
-elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_PYTHON_COMPILE" ; G_PYTHON_ARGS=""
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_PYTHON_COMPILE" ; G_PYTHON_ARGS="$lAnswer"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PYTHON_COMPILE" ; G_PYTHON_NAME="$lAnswer"
 fi
 }
 #================================================
 GPython_PYTHON_COMPILE() {
 echo
 lBuldPath="$G_PYTHON_PATH/$G_PYTHON_NAME/unix"
-lMakefile="Makefile"
-if [ "$G_PYTHON_COMPILO" != "" ] ; then lMakefile="${lMakefile}.$G_PYTHON_COMPILO" ; fi
+lMakefile="Makefile.python"
 cd $lBuldPath
-make -f "$lMakefile" "$G_PYTHON_TARGET" GARGS="$G_PYTHON_ARGS"
-G_STATE="S_SAVE"
-}
-#================================================
-GPython_TEST_COMPILE_TEST_PATH() {
-read -p "G_TEST_PATH ($G_TEST_PATH) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_PATH" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_NAME" ; G_TEST_PATH="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COMPILE_TEST_NAME() {
-read -p "G_TEST_NAME ($G_TEST_NAME) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_NAME" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_COMPILO" ; G_TEST_NAME="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COMPILE_TEST_COMPILO() {
-read -p "G_TEST_COMPILO ($G_TEST_COMPILO) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_COMPILO" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_TARGET" ; G_TEST_COMPILO="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COMPILE_TEST_TARGET() {
-read -p "G_TEST_TARGET ($G_TEST_TARGET) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_TARGET" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE_TEST_ARGS" ; G_TEST_TARGET="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COMPILE_TEST_ARGS() {
-read -p "G_TEST_ARGS ($G_TEST_ARGS) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_TEST_ARGS" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_TEST_COMPILE"
-elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_TEST_COMPILE" ; G_TEST_ARGS=""
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_TEST_COMPILE" ; G_TEST_ARGS="$lAnswer"
-fi
-}
-#================================================
-GPython_TEST_COMPILE() {
-echo
-lBuldPath="$G_TEST_PATH/$G_TEST_NAME/unix"
-lMakefile="Makefile"
-if [ "$G_TEST_COMPILO" != "" ] ; then lMakefile="${lMakefile}.$G_TEST_COMPILO" ; fi
-cd $lBuldPath
-make -f "$lMakefile" "$G_TEST_TARGET" GARGS="$G_TEST_ARGS"
+make -f "$lMakefile" all
 G_STATE="S_SAVE"
 }
 #================================================
@@ -256,16 +152,7 @@ GPython_SAVE() {
 gz_process_in "config_save" "G_PYTHON_ID" "$G_PYTHON_ID"
 gz_process_in "config_save" "G_PYTHON_PATH" "$G_PYTHON_PATH"
 gz_process_in "config_save" "G_PYTHON_NAME" "$G_PYTHON_NAME"
-gz_process_in "config_save" "G_PYTHON_COMPILO" "$G_PYTHON_COMPILO"
-gz_process_in "config_save" "G_PYTHON_TARGET" "$G_PYTHON_TARGET"
-gz_process_in "config_save" "G_PYTHON_ARGS" "$G_PYTHON_ARGS"
-gz_process_in "config_save" "G_TEST_PATH" "$G_TEST_PATH"
-gz_process_in "config_save" "G_TEST_NAME" "$G_TEST_NAME"
-gz_process_in "config_save" "G_TEST_COMPILO" "$G_TEST_COMPILO"
-gz_process_in "config_save" "G_TEST_TARGET" "$G_TEST_TARGET"
-gz_process_in "config_save" "G_TEST_ARGS" "$G_TEST_ARGS"
-gz_process_in "config_save" "G_COPY_SRC" "$G_COPY_SRC"
-gz_process_in "config_save" "G_COPY_DST" "$G_COPY_DST"
+gz_process_in "config_save" "G_PACKAGE_NAME" "$G_PACKAGE_NAME"
 G_STATE="S_QUIT"
 }
 #================================================
@@ -273,16 +160,7 @@ GPython_LOAD() {
 G_PYTHON_ID=$(gz_process_in "config_load" "G_PYTHON_ID")
 G_PYTHON_PATH=$(gz_process_in "config_load" "G_PYTHON_PATH")
 G_PYTHON_NAME=$(gz_process_in "config_load" "G_PYTHON_NAME")
-G_PYTHON_COMPILO=$(gz_process_in "config_load" "G_PYTHON_COMPILO")
-G_PYTHON_TARGET=$(gz_process_in "config_load" "G_PYTHON_TARGET")
-G_PYTHON_ARGS=$(gz_process_in "config_load" "G_PYTHON_ARGS")
-G_TEST_PATH=$(gz_process_in "config_load" "G_TEST_PATH")
-G_TEST_NAME=$(gz_process_in "config_load" "G_TEST_NAME")
-G_TEST_COMPILO=$(gz_process_in "config_load" "G_TEST_COMPILO")
-G_TEST_TARGET=$(gz_process_in "config_load" "G_TEST_TARGET")
-G_TEST_ARGS=$(gz_process_in "config_load" "G_TEST_ARGS")
-G_COPY_SRC=$(gz_process_in "config_load" "G_COPY_SRC")
-G_COPY_DST=$(gz_process_in "config_load" "G_COPY_DST")
+G_PACKAGE_NAME=$(gz_process_in "config_load" "G_PACKAGE_NAME")
 G_STATE="S_METHOD"
 }
 #================================================
