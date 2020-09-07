@@ -1,0 +1,232 @@
+#!/bin/bash
+#================================================
+GPWD=$PWD
+#================================================
+G_STATE="S_INIT"
+#================================================
+GCerbot_Main() {
+while [ 1 ] ; do
+case "$G_STATE" in 
+    "S_ADMIN") GCerbot_ADMIN ;;
+    "S_INIT") GCerbot_INIT ;;
+    "S_METHOD") GCerbot_METHOD ;;
+    "S_CHOICE") GCerbot_CHOICE ;;
+    #
+    "S_CERT_LIST") GCerbot_CERT_LIST ;;
+    #
+    "S_SAVE") GCerbot_SAVE ;;
+    "S_LOAD") GCerbot_LOAD ;;
+    "S_QUIT") GCerbot_QUIT ;;
+    *) break ;;
+esac    
+done
+}
+#================================================
+GCerbot_ADMIN() {
+gz_admin
+G_STATE="S_END"
+}
+#================================================
+GCerbot_INIT() {
+printf "\n"
+printf "CERBOT !!!\n"
+printf "\t%2s : %s\n" "-q" "quitter l'application"
+printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
+printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
+printf "\t%2s : %s\n" "-v" "valider les configurations"
+printf "\n"
+G_STATE="S_LOAD"
+}
+#================================================
+GCerbot_METHOD() {
+printf "CERBOT :\n"
+printf "\t%2s : %s\n" "1" "lister les certificats"
+printf "\n"
+G_STATE="S_CHOICE"
+}
+#================================================
+GCerbot_CHOICE() {
+read -p "CERBOT ($G_CERBOT_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CERBOT_ID" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+#
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_CERT_LIST" ; G_CERBOT_ID="$lAnswer"
+#
+fi
+}
+#================================================
+GCerbot_CERT_LIST() {
+echo
+certbot-auto certificates
+G_STATE="S_SAVE"
+}
+#================================================
+GCerbot_CONFIG_EDIT_USER_EMAIL() {
+read -p "G_USER_EMAIL ($G_USER_EMAIL) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_USER_EMAIL" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CONFIG_EDIT"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT_CORE_EDITOR" ; G_USER_EMAIL="$lAnswer"
+fi
+}
+#================================================
+GCerbot_CONFIG_EDIT_CORE_EDITOR() {
+read -p "G_CORE_EDITOR ($G_CORE_EDITOR) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CORE_EDITOR" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CONFIG_EDIT"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CONFIG_EDIT" ; G_CORE_EDITOR="$lAnswer"
+fi
+}
+#================================================
+GCerbot_CONFIG_EDIT() {
+echo
+sudo git config --global user.name "$G_USER_NAME"
+sudo git config --global user.email "$G_USER_EMAIL"
+sudo git config --global core.editor "$G_CORE_EDITOR"
+sudo git config --list
+G_STATE="S_SAVE"
+}
+#================================================
+GCerbot_CONFIG_LIST() {
+echo
+sudo git config --list
+G_STATE="S_SAVE"
+}
+#================================================
+GCerbot_CLONE_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CLONE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GCerbot_CLONE_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CLONE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE_DEPOT_CLONE" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GCerbot_CLONE_DEPOT_CLONE() {
+G_DEPOT_CLONE=$G_DEPOT_NAME
+read -p "G_DEPOT_CLONE ($G_DEPOT_CLONE) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_CLONE" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CLONE"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CLONE" ; G_DEPOT_CLONE="$lAnswer"
+fi
+}
+#================================================
+GCerbot_CLONE() {
+echo
+cd $G_DEPOT_ROOT
+G_DEPOT_URL="${G_CERBOT_ROOT}/${G_DEPOT_NAME}.git"
+sudo git clone $G_DEPOT_URL $G_DEPOT_CLONE
+G_STATE="S_SAVE"
+}
+#================================================
+GCerbot_PULL_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PULL"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PULL_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GCerbot_PULL_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_PULL"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PULL" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GCerbot_PULL() {
+echo
+G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
+cd $G_DEPOT_PATH
+sudo git pull
+G_STATE="S_SAVE"
+}
+#================================================
+GCerbot_PUSH_DEPOT_ROOT() {
+read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_PUSH"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PUSH_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
+fi
+}
+#================================================
+GCerbot_PUSH_DEPOT_NAME() {
+read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_PUSH"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PUSH" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GCerbot_PUSH() {
+echo
+G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
+cd $G_DEPOT_PATH
+sudo git add --all
+sudo git commit -m "Initial Commit"
+sudo git push -u origin master
+G_STATE="S_SAVE"
+}
+#================================================
+GCerbot_SAVE() {
+gz_process_in "config_save" "G_CERBOT_ID" "$G_CERBOT_ID"
+G_STATE="S_QUIT"
+}
+#================================================
+GCerbot_LOAD() {
+G_CERBOT_ID=$(gz_process_in "config_load" "G_CERBOT_ID")
+G_STATE="S_METHOD"
+}
+#================================================
+GCerbot_QUIT() {
+echo
+read -p "CERBOT_QUIT (Oui/[N]on) ? " lAnswer
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "o" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "n" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
+fi
+}
+#================================================
+GCerbot_Main
+#================================================
+cd $GPWD
+#================================================

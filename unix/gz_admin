@@ -18,6 +18,7 @@ case "$G_STATE" in
     "S_GIT") GAdmin_GIT ;;
     "S_APACHE") GAdmin_APACHE ;;
     "S_APT_GET") GAdmin_APT_GET ;;
+    "S_CERBOT") GAdmin_CERBOT ;;
     #
     "S_CONFIG") GAdmin_CONFIG ;;
     "S_VIEWS") GAdmin_VIEWS ;;
@@ -52,6 +53,7 @@ printf "\t%-2s : %s\n" "11" "SQLITE"
 printf "\t%-2s : %s\n" "12" "GIT"
 printf "\t%-2s : %s\n" "13" "S_APACHE"
 printf "\t%-2s : %s\n" "14" "S_APT_GET"
+printf "\t%-2s : %s\n" "15" "S_CERBOT"
 printf "\n"
 printf "\t%-2s : %s\n" "20" "S_CONFIG"
 printf "\t%-2s : %s\n" "21" "S_VIEWS"
@@ -76,6 +78,7 @@ elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SQLITE" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "12" ] ; then G_STATE="S_GIT" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "13" ] ; then G_STATE="S_APACHE" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "14" ] ; then G_STATE="S_APT_GET" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "15" ] ; then G_STATE="S_CERBOT" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "20" ] ; then G_STATE="S_CONFIG" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
@@ -115,6 +118,11 @@ G_STATE="S_SAVE"
 #================================================
 GAdmin_APT_GET() {
 gz_apt_get_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_CERBOT() {
+gz_cerbot_run
 G_STATE="S_SAVE"
 }
 #================================================
