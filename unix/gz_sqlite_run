@@ -44,7 +44,7 @@ G_STATE="S_LOAD"
 GSQLite_METHOD() {
 printf "SQLITE :\n"
 printf "\t%2s : %s\n" "1" "afficher la version"
-printf "\t%2s : %s\n" "2" "afficher la table CONFIG_DATA"
+printf "\t%2s : %s\n" "2" "creer la table CONFIG_DATA"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -90,7 +90,7 @@ G_STATE="S_METHOD"
 #================================================
 GSQLite_QUIT() {
 echo
-read -p "SQLITE_QUIT (Oui/[N]on) ? " lAnswer
+read -p "QUIT (Oui/[N]on) ? " lAnswer
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
