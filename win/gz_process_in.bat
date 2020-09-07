@@ -4,7 +4,7 @@ set "GPWD=%cd%"
 ::===============================================
 set "G_STATE=S_INIT"
 ::===============================================
-set "G_CONFIG_DB=%GPATH%\.config.dat"
+set "G_CONFIG_DB=%GPATH%\.CONFIG_O.dat"
 ::===============================================
 set "G_TMP_PATH=%GPATH%\tmp"
 set "G_TMP_FILE_01=%G_TMP_PATH%\tmp_file_01.txt"
