@@ -50,10 +50,7 @@ G_STATE="S_LOAD"
 GAdmin_METHOD() {
 printf "ADMIN :\n"
 printf "\t%-2s : %s\n" "1" "S_BIN"
-<<<<<<< HEAD
 printf "\t%-2s : %s\n" "2" "S_SHELL"
-=======
->>>>>>> 397b729179f80df6fb51c5cad2719cc7811af033
 printf "\n"
 printf "\t%-2s : %s\n" "10" "S_PACMAN"
 printf "\t%-2s : %s\n" "11" "S_SQLITE"

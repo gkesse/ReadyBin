@@ -22,11 +22,6 @@ case "$G_STATE" in
     "S_PULL_DEPOT_NAME") GGit_PULL_DEPOT_NAME ;;
     "S_PULL") GGit_PULL ;;
     #
-    "S_FILE_REMOVE_DEPOT_ROOT") GGit_FILE_REMOVE_DEPOT_ROOT ;;
-    "S_FILE_REMOVE_DEPOT_NAME") GGit_FILE_REMOVE_DEPOT_NAME ;;
-    "S_FILE_REMOVE_DEPOT_FILES") GGit_FILE_REMOVE_DEPOT_FILES ;;
-    "S_FILE_REMOVE") GGit_FILE_REMOVE ;;
-    #
     "S_CLONE_DEPOT_ROOT") GGit_CLONE_DEPOT_ROOT ;;
     "S_CLONE_DEPOT_NAME") GGit_CLONE_DEPOT_NAME ;;
     "S_CLONE_DEPOT_CLONE") GGit_CLONE_DEPOT_CLONE ;;
@@ -75,7 +70,6 @@ printf "GIT :\n"
 printf "\t%2s : %s\n" "1" "pousser un depot"
 printf "\t%2s : %s\n" "2" "tirer un depot"
 printf "\t%2s : %s\n" "3" "cloner un depot"
-printf "\t%2s : %s\n" "4" "supprimer des fichiers"
 printf "\n"
 printf "\t%2s : %s\n" "10" "lister les configurations"
 printf "\t%2s : %s\n" "11" "editer les configurations"
@@ -95,7 +89,6 @@ elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_PUSH_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
 elif [ "$lAnswer" = "2" ] ; then G_STATE="S_PULL_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
 elif [ "$lAnswer" = "3" ] ; then G_STATE="S_CLONE_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
-elif [ "$lAnswer" = "4" ] ; then G_STATE="S_FILE_REMOVE_DEPOT_ROOT" ; G_GIT_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_CONFIG_LIST" ; G_GIT_ID="$lAnswer"
 elif [ "$lAnswer" = "11" ] ; then G_STATE="S_CONFIG_EDIT_USER_NAME" ; G_GIT_ID="$lAnswer"
@@ -314,47 +307,6 @@ sudo git push -u origin master
 G_STATE="S_SAVE"
 }
 #================================================
-GGit_FILE_REMOVE_DEPOT_ROOT() {
-read -p "G_DEPOT_ROOT ($G_DEPOT_ROOT) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_ROOT" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_FILE_REMOVE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_FILE_REMOVE_DEPOT_NAME" ; G_DEPOT_ROOT="$lAnswer"
-fi
-}
-#================================================
-GGit_FILE_REMOVE_DEPOT_NAME() {
-read -p "G_DEPOT_NAME ($G_DEPOT_NAME) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_NAME" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_FILE_REMOVE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_FILE_REMOVE_DEPOT_FILES" ; G_DEPOT_NAME="$lAnswer"
-fi
-}
-#================================================
-GGit_FILE_REMOVE_DEPOT_FILES() {
-read -p "G_DEPOT_FILES ($G_DEPOT_FILES) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_DEPOT_FILES" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_FILE_REMOVE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_FILE_REMOVE" ; G_DEPOT_FILES="$lAnswer"
-fi
-}
-#================================================
-GGit_FILE_REMOVE() {
-echo
-G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
-cd $G_DEPOT_PATH
-sudo git rm -rf $G_DEPOT_FILES
-G_STATE="S_SAVE"
-}
-#================================================
 GGit_SAVE() {
 gz_process_in "config_save" "G_GIT_ID" "$G_GIT_ID"
 gz_process_in "config_save" "G_DEPOT_ROOT" "$G_DEPOT_ROOT"
@@ -362,11 +314,7 @@ gz_process_in "config_save" "G_DEPOT_NAME" "$G_DEPOT_NAME"
 gz_process_in "config_save" "G_USER_NAME" "$G_USER_NAME"
 gz_process_in "config_save" "G_USER_EMAIL" "$G_USER_EMAIL"
 gz_process_in "config_save" "G_CORE_EDITOR" "$G_CORE_EDITOR"
-<<<<<<< HEAD
-gz_process_in "config_save" "G_DEPOT_FILES" "$G_DEPOT_FILES"
-=======
 gz_process_in "config_save" "G_FILE_LIST" "$G_FILE_LIST"
->>>>>>> 397b729179f80df6fb51c5cad2719cc7811af033
 G_STATE="S_QUIT"
 }
 #================================================
@@ -377,11 +325,7 @@ G_DEPOT_NAME=$(gz_process_in "config_load" "G_DEPOT_NAME")
 G_USER_NAME=$(gz_process_in "config_load" "G_USER_NAME")
 G_USER_EMAIL=$(gz_process_in "config_load" "G_USER_EMAIL")
 G_CORE_EDITOR=$(gz_process_in "config_load" "G_CORE_EDITOR")
-<<<<<<< HEAD
-G_DEPOT_FILES=$(gz_process_in "config_load" "G_DEPOT_FILES")
-=======
 G_FILE_LIST=$(gz_process_in "config_load" "G_FILE_LIST")
->>>>>>> 397b729179f80df6fb51c5cad2719cc7811af033
 G_STATE="S_METHOD"
 }
 #================================================
