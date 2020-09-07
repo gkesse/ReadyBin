@@ -4,35 +4,35 @@ GPWD=$PWD
 #================================================
 G_STATE="S_INIT"
 #================================================
-GApache_Main() {
+GArchLinux_Main() {
 while [ 1 ] ; do
 case "$G_STATE" in 
-    "S_ADMIN") GApache_ADMIN ;;
-    "S_INIT") GApache_INIT ;;
-    "S_METHOD") GApache_METHOD ;;
-    "S_CHOICE") GApache_CHOICE ;;
+    "S_ADMIN") GArchLinux_ADMIN ;;
+    "S_INIT") GArchLinux_INIT ;;
+    "S_METHOD") GArchLinux_METHOD ;;
+    "S_CHOICE") GArchLinux_CHOICE ;;
     #
-    "S_MODULE_LIST") GApache_MODULE_LIST ;;
+    "S_KEYS_CONFIG_LANG_NAME") GArchLinux_KEYS_CONFIG_LANG_NAME ;;
+    "S_KEYS_CONFIG") GArchLinux_KEYS_CONFIG ;;
     #
-    "S_MODULE_LIST_FILTER_MODULE_FILTER") GApache_MODULE_LIST_FILTER_MODULE_FILTER ;;
-    "S_MODULE_LIST_FILTER") GApache_MODULE_LIST_FILTER ;;
+    "S_IP_SHOW") GArchLinux_IP_SHOW ;;
     #
-    "S_SAVE") GApache_SAVE ;;
-    "S_LOAD") GApache_LOAD ;;
-    "S_QUIT") GApache_QUIT ;;
+    "S_SAVE") GArchLinux_SAVE ;;
+    "S_LOAD") GArchLinux_LOAD ;;
+    "S_QUIT") GArchLinux_QUIT ;;
     *) break ;;
 esac    
 done
 }
 #================================================
-GApache_ADMIN() {
+GArchLinux_ADMIN() {
 gz_admin
 G_STATE="S_END"
 }
 #================================================
-GApache_INIT() {
+GArchLinux_INIT() {
 printf "\n"
-printf "APACHE !!!\n"
+printf "ARCHLINUX !!!\n"
 printf "\t%2s : %s\n" "-q" "quitter l'application"
 printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
 printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
@@ -41,62 +41,63 @@ printf "\n"
 G_STATE="S_LOAD"
 }
 #================================================
-GApache_METHOD() {
-printf "APACHE :\n"
-printf "\t%2s : %s\n" "1" "lister les modules"
-printf "\t%2s : %s\n" "2" "lister les modules par filtre"
+GArchLinux_METHOD() {
+printf "ARCHLINUX :\n"
+printf "\t%2s : %s\n" "1" "configurer la langue du clavier"
+printf "\t%2s : %s\n" "2" "afficher l'adresse ip"
 printf "\n"
 G_STATE="S_CHOICE"
 }
 #================================================
-GApache_CHOICE() {
-read -p "APACHE ($G_APACHE_ID) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_APACHE_ID" ; fi
+GArchLinux_CHOICE() {
+read -p "ARCHLINUX ($G_ARCHLINUX_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_ARCHLINUX_ID" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
-elif [ "$lAnswer" = "1" ] ; then G_STATE="S_MODULE_LIST" ; G_APACHE_ID="$lAnswer"
-elif [ "$lAnswer" = "2" ] ; then G_STATE="S_MODULE_LIST_FILTER_MODULE_FILTER" ; G_APACHE_ID="$lAnswer"
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_KEYS_CONFIG_LANG_NAME" ; G_ARCHLINUX_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_IP_SHOW" ; G_ARCHLINUX_ID="$lAnswer"
+#
 fi
 }
 #================================================
-GApache_MODULE_LIST_FILTER_MODULE_FILTER() {
-read -p "G_MODULE_FILTER ($G_MODULE_FILTER) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_MODULE_FILTER" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_MODULE_LIST_FILTER" ; G_MODULE_FILTER="$lAnswer"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_MODULE_LIST_FILTER" ; G_MODULE_FILTER="$lAnswer"
-fi
-}
-#================================================
-GApache_MODULE_LIST_FILTER() {
+GArchLinux_IP_SHOW() {
 echo
-apache2ctl -M | grep -iE "$G_MODULE_FILTER"
-G_STATE="S_SAVE" 
-}
-#================================================
-GApache_MODULE_LIST() {
-echo
-apache2ctl -M
+ip addr s
 G_STATE="S_SAVE"
 }
 #================================================
-GApache_SAVE() {
-gz_process_in "config_save" "G_APACHE_ID" "$G_APACHE_ID"
-gz_process_in "config_save" "G_MODULE_FILTER" "$G_MODULE_FILTER"
+GArchLinux_KEYS_CONFIG_LANG_NAME() {
+read -p "G_LANG_NAME ($G_LANG_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_LANG_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_KEYS_CONFIG"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_KEYS_CONFIG" ; G_LANG_NAME="$lAnswer"
+fi
+}
+#================================================
+GArchLinux_KEYS_CONFIG() {
+echo
+sudo loadkeys fr
+G_STATE="S_SAVE"
+}
+#================================================
+GArchLinux_SAVE() {
+gz_process_in "config_save" "G_ARCHLINUX_ID" "$G_ARCHLINUX_ID"
+gz_process_in "config_save" "G_LANG_NAME" "$G_LANG_NAME"
 G_STATE="S_QUIT"
 }
 #================================================
-GApache_LOAD() {
-G_APACHE_ID=$(gz_process_in "config_load" "G_APACHE_ID")
-G_MODULE_FILTER=$(gz_process_in "config_load" "G_MODULE_FILTER")
+GArchLinux_LOAD() {
+G_ARCHLINUX_ID=$(gz_process_in "config_load" "G_ARCHLINUX_ID")
+G_LANG_NAME=$(gz_process_in "config_load" "G_LANG_NAME")
 G_STATE="S_METHOD"
 }
 #================================================
-GApache_QUIT() {
+GArchLinux_QUIT() {
 echo
 read -p "QUIT (Oui/[N]on) ? " lAnswer
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
@@ -108,7 +109,7 @@ elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
 fi
 }
 #================================================
-GApache_Main
+GArchLinux_Main
 #================================================
 cd $GPWD
 #================================================
