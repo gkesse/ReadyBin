@@ -38,6 +38,7 @@ case "$G_STATE" in
     #
     "S_FILE_REMOVE_DEPOT_ROOT") GGit_FILE_REMOVE_DEPOT_ROOT ;;
     "S_FILE_REMOVE_DEPOT_NAME") GGit_FILE_REMOVE_DEPOT_NAME ;;
+    "S_FILE_REMOVE_FILE_LIST") GGit_FILE_REMOVE_FILE_LIST ;;
     "S_FILE_REMOVE") GGit_FILE_REMOVE ;;
     #
     "S_SAVE") GGit_SAVE ;;
@@ -114,7 +115,7 @@ if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_FILE_REMOVE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_FILE_REMOVEE_FILE_LIST" ; G_DEPOT_NAME="$lAnswer"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_FILE_REMOVE_FILE_LIST" ; G_DEPOT_NAME="$lAnswer"
 fi
 }
 #================================================
