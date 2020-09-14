@@ -301,6 +301,7 @@ GGit_PUSH() {
 echo
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
+sudo git pull
 sudo git add --all
 sudo git commit -m "Initial Commit"
 sudo git push -u origin master
