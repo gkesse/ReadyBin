@@ -134,7 +134,7 @@ GGit_FILE_REMOVE() {
 echo
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
-git rm -f $G_FILE_LIST
+git rm -rf $G_FILE_LIST
 G_STATE="S_SAVE"
 }
 #================================================
