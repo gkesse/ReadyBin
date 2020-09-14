@@ -16,6 +16,10 @@ case "$G_STATE" in
     "S_C_COMPILE_C_NAME") GC_C_COMPILE_C_NAME ;;
     "S_C_COMPILE") GC_C_COMPILE ;;
     #
+    "S_C_CLEAN_C_PATH") GC_C_CLEAN_C_PATH ;;
+    "S_C_CLEAN_C_NAME") GC_C_CLEAN_C_NAME ;;
+    "S_C_CLEAN") GC_C_CLEAN ;;
+    #
     "S_SAVE") GC_SAVE ;;
     "S_LOAD") GC_LOAD ;;
     "S_QUIT") GC_QUIT ;;
@@ -43,6 +47,7 @@ G_STATE="S_LOAD"
 GC_METHOD() {
 printf "C :\n"
 printf "\t%2s : %s\n" "1" "compiler le projet"
+printf "\t%2s : %s\n" "2" "nettoyer le projet"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -55,6 +60,7 @@ elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_C_COMPILE_C_PATH" ; G_C_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_C_CLEAN_C_PATH" ; G_C_ID="$lAnswer"
 #
 fi
 }
@@ -87,6 +93,37 @@ lBuldPath="$G_C_PATH/$G_C_NAME/unix"
 lMakefile="Makefile.unix"
 cd $lBuldPath
 make -f "$lMakefile" all
+G_STATE="S_SAVE"
+}
+#================================================
+GC_C_CLEAN_C_PATH() {
+read -p "G_C_PATH ($G_C_PATH) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_C_PATH" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_CLEAN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_CLEAN_C_NAME" ; G_C_PATH="$lAnswer"
+fi
+}
+#================================================
+GC_C_CLEAN_C_NAME() {
+read -p "G_C_NAME ($G_C_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_C_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_CLEAN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_CLEAN" ; G_C_NAME="$lAnswer"
+fi
+}
+#================================================
+GC_C_CLEAN() {
+echo
+lBuldPath="$G_C_PATH/$G_C_NAME/unix"
+lMakefile="Makefile.unix"
+cd $lBuldPath
+make -f "$lMakefile" clean
 G_STATE="S_SAVE"
 }
 #================================================
