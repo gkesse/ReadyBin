@@ -12,6 +12,7 @@ case "$G_STATE" in
     "S_CHOICE") GAdmin_CHOICE ;;
     #
     "S_BIN") GAdmin_BIN ;;
+    "S_SHELL") GAdmin_SHELL ;;
     #
     "S_PACMAN") GAdmin_PACMAN ;;
     "S_SQLITE") GAdmin_SQLITE ;;
@@ -26,6 +27,7 @@ case "$G_STATE" in
     #
     "S_CPP") GAdmin_CPP ;;
     "S_C") GAdmin_C ;;
+    "S_PYTHON") GAdmin_PYTHON ;;
     #
     "S_ARCH_LINUX") GAdmin_ARCH_LINUX ;;
     #
@@ -48,6 +50,7 @@ G_STATE="S_LOAD"
 GAdmin_METHOD() {
 printf "ADMIN :\n"
 printf "\t%-2s : %s\n" "1" "S_BIN"
+printf "\t%-2s : %s\n" "2" "S_SHELL"
 printf "\n"
 printf "\t%-2s : %s\n" "10" "S_PACMAN"
 printf "\t%-2s : %s\n" "11" "S_SQLITE"
@@ -62,6 +65,7 @@ printf "\t%-2s : %s\n" "21" "S_VIEWS"
 printf "\n"
 printf "\t%-2s : %s\n" "30" "S_CPP"
 printf "\t%-2s : %s\n" "31" "S_C"
+printf "\t%-2s : %s\n" "32" "S_PYTHON"
 printf "\n"
 printf "\t%-2s : %s\n" "40" "S_ARCH_LINUX"
 printf "\n"
@@ -74,6 +78,7 @@ if [ "$lAnswer" = "" ] ; then lAnswer="$G_ADMIN_ID" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_BIN" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_SHELL" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "10" ] ; then G_STATE="S_PACMAN" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "11" ] ; then G_STATE="S_SQLITE" ; G_ADMIN_ID="$lAnswer"
@@ -88,6 +93,7 @@ elif [ "$lAnswer" = "21" ] ; then G_STATE="S_VIEWS" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "30" ] ; then G_STATE="S_CPP" ; G_ADMIN_ID="$lAnswer"
 elif [ "$lAnswer" = "31" ] ; then G_STATE="S_C" ; G_ADMIN_ID="$lAnswer"
+elif [ "$lAnswer" = "32" ] ; then G_STATE="S_PYTHON" ; G_ADMIN_ID="$lAnswer"
 #
 elif [ "$lAnswer" = "40" ] ; then G_STATE="S_ARCH_LINUX" ; G_ADMIN_ID="$lAnswer"
 #
@@ -96,6 +102,11 @@ fi
 #================================================
 GAdmin_BIN() {
 gz_bin_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_SHELL() {
+gz_shell_run
 G_STATE="S_SAVE"
 }
 #================================================
@@ -151,6 +162,11 @@ G_STATE="S_SAVE"
 #================================================
 GAdmin_CPP() {
 gz_cpp_run
+G_STATE="S_SAVE"
+}
+#================================================
+GAdmin_PYTHON() {
+gz_python_run
 G_STATE="S_SAVE"
 }
 #================================================
