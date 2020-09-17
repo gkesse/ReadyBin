@@ -15,10 +15,10 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GC_ADMIN
 ) else ( if "%G_STATE%" == "S_CHOICE" ( goto :GC_CHOICE
 ) else ( if "%G_STATE%" == "S_C_COMPILE_C_PATH" ( goto :GC_C_COMPILE_C_PATH
 ) else ( if "%G_STATE%" == "S_C_COMPILE_C_NAME" ( goto :GC_C_COMPILE_C_NAME
-) else ( if "%G_STATE%" == "S_C_COMPILE_C_COMPILO" ( goto :GC_C_COMPILE_C_COMPILO
-) else ( if "%G_STATE%" == "S_C_COMPILE_C_TARGET" ( goto :GC_C_COMPILE_C_TARGET
-) else ( if "%G_STATE%" == "S_C_COMPILE_C_ARGS" ( goto :GC_C_COMPILE_C_ARGS
 ) else ( if "%G_STATE%" == "S_C_COMPILE" ( goto :GC_C_COMPILE
+) else ( if "%G_STATE%" == "S_C_CLEAN_C_PATH" ( goto :GC_C_CLEAN_C_PATH
+) else ( if "%G_STATE%" == "S_C_CLEAN_C_NAME" ( goto :GC_C_CLEAN_C_NAME
+) else ( if "%G_STATE%" == "S_C_CLEAN" ( goto :GC_C_CLEAN
 ) else ( if "%G_STATE%" == "S_SAVE" ( goto :GC_SAVE
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GC_LOAD
 ) else ( if "%G_STATE%" == "S_QUIT" ( goto :GC_QUIT
@@ -44,7 +44,10 @@ goto :GC_Main
 ::===============================================
 :GC_METHOD
 printf "C :\n"
-printf "\t%%-2s : %%s\n" "1" "compiler un projet python"
+printf "\t%%-2s : %%s\n" "1" "compiler le projet"
+printf "\t%%-2s : %%s\n" "2" "nettoyer le projet"
+printf "\t%%-2s : %%s\n" "3" "afficher le log"
+printf "\t%%-2s : %%s\n" "4" "nettoyer le log"
 printf "\n"
 set "G_STATE=S_CHOICE"
 goto :GC_Main
@@ -57,7 +60,8 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
 ) else ( if "%lAnswer%" == "1" ( set "G_STATE=S_C_COMPILE_C_PATH" & set "G_C_ID=%lAnswer%" 
-))))
+) else ( if "%lAnswer%" == "2" ( set "G_STATE=S_C_CLEAN_C_PATH" & set "G_C_ID=%lAnswer%" 
+)))))
 goto :GC_Main
 ::===============================================
 :GC_C_COMPILE_C_PATH
@@ -80,55 +84,49 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
 ) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_COMPILE"
-) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE_C_COMPILO" & set "G_C_NAME=%lAnswer%" 
-)))))
-goto :GC_Main
-::===============================================
-:GC_C_COMPILE_C_COMPILO
-set "lAnswer=" 
-set /p lAnswer=G_C_COMPILO (%G_C_COMPILO%) ? : 
-if "%lAnswer%" == "" ( set "lAnswer=%G_C_COMPILO%" )
-if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
-) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
-) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
-) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_COMPILE"
-) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE_C_TARGET" & set "G_C_COMPILO=%lAnswer%" 
-)))))
-goto :GC_Main
-::===============================================
-:GC_C_COMPILE_C_TARGET
-set "lAnswer=" 
-set /p lAnswer=G_C_TARGET (%G_C_TARGET%) ? : 
-if "%lAnswer%" == "" ( set "lAnswer=%G_C_TARGET%" )
-if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
-) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
-) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
-) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_COMPILE_C_ARGS"
-) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE_C_ARGS" & set "G_C_TARGET=%lAnswer%" 
-)))))
-goto :GC_Main
-::===============================================
-:GC_C_COMPILE_C_ARGS
-set "lAnswer=" 
-set /p lAnswer=G_C_ARGS (%G_C_ARGS%) ? : 
-if "%lAnswer%" == "" ( set "lAnswer=%G_C_ARGS%" )
-if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
-) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
-) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
-) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_COMPILE"
-) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE" & set "G_C_ARGS=%lAnswer%" 
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE" & set "G_C_NAME=%lAnswer%" 
 )))))
 goto :GC_Main
 ::===============================================
 :GC_C_COMPILE
 echo.
 set "lBuldPath=%G_C_PATH%\%G_C_NAME%\win"
-set "lMakefile=Makefile"
-if not "%G_C_COMPILO%" == "" ( set "lMakefile=Makefile.%G_C_COMPILO%" )
+set "lMakefile=Makefile.mingw"
 cd %lBuldPath%
-set CLASSPATH=build
-mingw32-make -f %lMakefile% %G_C_TARGET% GARGS="%G_C_ARGS%"
+mingw32-make -f %lMakefile% all
+set "G_STATE=S_SAVE"
+goto :GC_Main
+::===============================================
+:GC_C_CLEAN_C_PATH
+set "lAnswer=" 
+set /p lAnswer=G_C_PATH (%G_C_PATH%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_C_PATH%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_CLEAN"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_CLEAN_C_NAME" & set "G_C_PATH=%lAnswer%" 
+)))))
+goto :GC_Main
+::===============================================
+:GC_C_CLEAN_C_NAME
+set "lAnswer=" 
+set /p lAnswer=G_C_NAME (%G_C_NAME%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_C_NAME%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_CLEAN"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_CLEAN" & set "G_C_NAME=%lAnswer%" 
+)))))
+goto :GC_Main
+::===============================================
+:GC_C_CLEAN
 echo.
+set "lBuldPath=%G_C_PATH%\%G_C_NAME%\win"
+set "lMakefile=Makefile.mingw"
+cd %lBuldPath%
+mingw32-make -f %lMakefile% clean
 set "G_STATE=S_SAVE"
 goto :GC_Main
 ::===============================================
@@ -153,6 +151,7 @@ set "G_STATE=S_METHOD"
 goto :GC_Main
 ::===============================================
 :GC_QUIT
+echo.
 call gz_process_in quit G_QUIT_IN
 set "lAnswerIn=%G_QUIT_IN:~0,1%"
 if "%G_QUIT_IN%" == "-q" ( set "G_STATE=S_END" 

@@ -54,6 +54,7 @@ printf "GIT !!!\n"
 printf "\t%%-2s : %%s\n" "-q" "quitter l'application"
 printf "\t%%-2s : %%s\n" "-i" "reinitialiser l'application"
 printf "\t%%-2s : %%s\n" "-a" "redemarrer l'application"
+printf "\t%%-2s : %%s\n" "-v" "valider les configurations"
 printf "\n"
 set "G_STATE=S_LOAD"
 goto :GGit_Main
@@ -103,8 +104,10 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_USER_NAME%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CONFIG_EDIT"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CONFIG_EDIT"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_CONFIG_EDIT_USER_EMAIL" & set "G_USER_NAME=%lAnswer%" 
-))))
+))))))
 goto :GGit_Main
 ::===============================================
 :GGit_CONFIG_EDIT_USER_EMAIL
@@ -125,8 +128,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_CORE_EDITOR%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CONFIG_EDIT"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_CONFIG_EDIT" & set "G_CORE_EDITOR=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_CONFIG_EDIT
@@ -190,8 +194,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_READY_PATH%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_READY_PUSH"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_PUSH_READY_NAME" & set "G_READY_PATH=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_READY_PUSH_READY_NAME
@@ -201,8 +206,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_READY_NAME%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_READY_PUSH"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_PUSH_GIT_COMMENT" & set "G_READY_NAME=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_READY_PUSH_GIT_COMMENT
@@ -212,14 +218,16 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_GIT_COMMENT%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_READY_PUSH"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_PUSH" & set "G_GIT_COMMENT=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_READY_PUSH
 echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
+git pull
 git add --all
 git commit -m "%G_GIT_COMMENT%"
 git push -u origin master
