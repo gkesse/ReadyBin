@@ -19,11 +19,13 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GC_ADMIN
 ) else ( if "%G_STATE%" == "S_C_CLEAN_C_PATH" ( goto :GC_C_CLEAN_C_PATH
 ) else ( if "%G_STATE%" == "S_C_CLEAN_C_NAME" ( goto :GC_C_CLEAN_C_NAME
 ) else ( if "%G_STATE%" == "S_C_CLEAN" ( goto :GC_C_CLEAN
+) else ( if "%G_STATE%" == "S_LOG_SHOW" ( goto :GC_LOG_SHOW
+) else ( if "%G_STATE%" == "S_LOG_CLEAN" ( goto :GC_LOG_CLEAN
 ) else ( if "%G_STATE%" == "S_SAVE" ( goto :GC_SAVE
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GC_LOAD
 ) else ( if "%G_STATE%" == "S_QUIT" ( goto :GC_QUIT
 ) else ( goto :eof
-)))))))))))))
+)))))))))))))))
 goto :GC_Main
 ::===============================================
 :GC_ADMIN
@@ -61,7 +63,9 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
 ) else ( if "%lAnswer%" == "1" ( set "G_STATE=S_C_COMPILE_C_PATH" & set "G_C_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "2" ( set "G_STATE=S_C_CLEAN_C_PATH" & set "G_C_ID=%lAnswer%" 
-)))))
+) else ( if "%lAnswer%" == "3" ( set "G_STATE=S_LOG_SHOW" & set "G_C_ID=%lAnswer%" 
+) else ( if "%lAnswer%" == "4" ( set "G_STATE=S_LOG_CLEAN" & set "G_C_ID=%lAnswer%" 
+)))))))
 goto :GC_Main
 ::===============================================
 :GC_C_COMPILE_C_PATH
@@ -127,6 +131,24 @@ set "lBuldPath=%G_C_PATH%\%G_C_NAME%\win"
 set "lMakefile=Makefile.mingw"
 cd %lBuldPath%
 mingw32-make -f %lMakefile% clean
+set "G_STATE=S_SAVE"
+goto :GC_Main
+::===============================================
+:GC_LOG_SHOW
+echo.
+set "lHome=%HOMEDRIVE%%HOMEPATH%"
+set "lLogFile=.readydev\readyc\data\debug\debug.txt"
+set "lLogFile=%lHome%\%lLogFile%"
+tail -f %lLogFile%
+set "G_STATE=S_SAVE"
+goto :GC_Main
+::===============================================
+:GC_LOG_CLEAN
+echo.
+set "lHome=%HOMEDRIVE%%HOMEPATH%"
+set "lLogFile=.readydev\readyc\data\debug\debug.txt"
+set "lLogFile=%lHome%\%lLogFile%"
+echo. > %lLogFile%
 set "G_STATE=S_SAVE"
 goto :GC_Main
 ::===============================================

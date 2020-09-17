@@ -93,7 +93,6 @@ goto :GGit_Main
 :GGit_CONFIG_LIST
 echo.
 git config --list --global
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -138,7 +137,6 @@ if "%G_CORE_EDITOR%" == "notepad++" ( set "G_CORE_EDITOR=%G_NOTEPADPP_EXE%" )
 git config --global user.name "%G_USER_NAME%"
 git config --global user.email "%G_USER_EMAIL%"
 git config --global core.editor "%G_CORE_EDITOR%"
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -183,7 +181,6 @@ echo.
 set "lReadyUrl=https://github.com/gkesse/%G_READY_NAME%.git"
 cd %G_READY_PATH%
 git clone %lReadyUrl% %G_READY_CLONE%
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -231,7 +228,6 @@ git pull
 git add --all
 git commit -m "%G_GIT_COMMENT%"
 git push -u origin master
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -262,7 +258,6 @@ echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
 git pull
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -293,7 +288,6 @@ echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
 git status
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -335,7 +329,6 @@ echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
 git rm -r --cached %G_READY_FILE%
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -364,6 +357,7 @@ set "G_STATE=S_METHOD"
 goto :GGit_Main
 ::===============================================
 :GGit_QUIT
+echo.
 call gz_process_in quit G_QUIT_IN
 set "lAnswerIn=%G_QUIT_IN:~0,1%"
 if "%G_QUIT_IN%" == "-q" ( set "G_STATE=S_END" 
