@@ -17,11 +17,12 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GNox_ADMIN
 ) else ( if "%G_STATE%" == "S_ADB_CONNECT_SERVER_PORT" ( goto :GNox_ADB_CONNECT_SERVER_PORT
 ) else ( if "%G_STATE%" == "S_ADB_CONNECT" ( goto :GNox_ADB_CONNECT
 ) else ( if "%G_STATE%" == "S_ADB_STOP" ( goto :GNox_ADB_STOP
+) else ( if "%G_STATE%" == "S_NOX_START" ( goto :GNox_NOX_START
 ) else ( if "%G_STATE%" == "S_SAVE" ( goto :GNox_SAVE
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GNox_LOAD
 ) else ( if "%G_STATE%" == "S_QUIT" ( goto :GNox_QUIT
 ) else ( goto :eof
-)))))))))))
+))))))))))))
 goto :GNox_Main
 ::===============================================
 :GNox_ADMIN
@@ -45,6 +46,8 @@ printf "NOX :\n"
 printf "\t%%-2s : %%s\n" "1" "demarrer la connexion"
 printf "\t%%-2s : %%s\n" "2" "arreter la connexion"
 printf "\n"
+printf "\t%%-2s : %%s\n" "10" "demarrer NOX"
+printf "\n"
 set "G_STATE=S_CHOICE"
 goto :GNox_Main
 ::===============================================
@@ -57,7 +60,14 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
 ) else ( if "%lAnswer%" == "1" ( set "G_STATE=S_ADB_CONNECT_SERVER_PORT" & set "G_NOX_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "2" ( set "G_STATE=S_ADB_STOP" & set "G_NOX_ID=%lAnswer%" 
-)))))
+) else ( if "%lAnswer%" == "10" ( set "G_STATE=S_NOX_START" & set "G_NOX_ID=%lAnswer%" 
+))))))
+goto :GNox_Main
+::===============================================
+:GNox_NOX_START
+echo.
+echo lancement du programme Nox...
+Nox
 goto :GNox_Main
 ::===============================================
 :GNox_ADB_CONNECT_SERVER_IP
