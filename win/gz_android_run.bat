@@ -17,11 +17,23 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GAndroid_ADMIN
 ) else ( if "%G_STATE%" == "S_GRADLEW_TASKS_ANDROID_PATH" ( goto :GAndroid_GRADLEW_TASKS_ANDROID_PATH
 ) else ( if "%G_STATE%" == "S_GRADLEW_TASKS_ANDROID_NAME" ( goto :GAndroid_GRADLEW_TASKS_ANDROID_NAME
 ) else ( if "%G_STATE%" == "S_GRADLEW_TASKS" ( goto :GAndroid_GRADLEW_TASKS
+) else ( if "%G_STATE%" == "S_GRADLEW_COMPILE_ANDROID_PATH" ( goto :GAndroid_GRADLEW_COMPILE_ANDROID_PATH
+) else ( if "%G_STATE%" == "S_GRADLEW_COMPILE_ANDROID_NAME" ( goto :GAndroid_GRADLEW_COMPILE_ANDROID_NAME
+) else ( if "%G_STATE%" == "S_GRADLEW_COMPILE" ( goto :GAndroid_GRADLEW_COMPILE
+) else ( if "%G_STATE%" == "S_EMULATOR_LIST" ( goto :GAndroid_EMULATOR_LIST
+) else ( if "%G_STATE%" == "S_EMULATOR_START_AVD_NAME" ( goto :GAndroid_EMULATOR_START_AVD_NAME
+) else ( if "%G_STATE%" == "S_EMULATOR_START" ( goto :GAndroid_EMULATOR_START
+) else ( if "%G_STATE%" == "S_NOX_INSTALL_ANDROID_PATH" ( goto :GAndroid_NOX_INSTALL_ANDROID_PATH
+) else ( if "%G_STATE%" == "S_NOX_INSTALL_ANDROID_NAME" ( goto :GAndroid_NOX_INSTALL_ANDROID_NAME
+) else ( if "%G_STATE%" == "S_NOX_INSTALL" ( goto :GAndroid_NOX_INSTALL
+) else ( if "%G_STATE%" == "S_ADB_INSTALL_ANDROID_PATH" ( goto :GAndroid_ADB_INSTALL_ANDROID_PATH
+) else ( if "%G_STATE%" == "S_ADB_INSTALL_ANDROID_NAME" ( goto :GAndroid_ADB_INSTALL_ANDROID_NAME
+) else ( if "%G_STATE%" == "S_ADB_INSTALL" ( goto :GAndroid_ADB_INSTALL
 ) else ( if "%G_STATE%" == "S_SAVE" ( goto :GAndroid_SAVE
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GAndroid_LOAD
 ) else ( if "%G_STATE%" == "S_QUIT" ( goto :GAndroid_QUIT
 ) else ( goto :eof
-)))))))))))
+)))))))))))))))))))))))
 goto :GAndroid_Main
 ::===============================================
 :GAndroid_ADMIN
@@ -45,6 +57,14 @@ printf "ANDROID :\n"
 printf "\t%%-2s : %%s\n" "1" "lancer ANDROID_STUDIO"
 printf "\n"
 printf "\t%%-2s : %%s\n" "10" "lister les taches GRADLEW"
+printf "\t%%-2s : %%s\n" "11" "compile le projet GRADLEW"
+printf "\n"
+printf "\t%%-2s : %%s\n" "20" "lister les avd EMULATOR"
+printf "\t%%-2s : %%s\n" "21" "demarrer un avd EMULATOR"
+printf "\n"
+printf "\t%%-2s : %%s\n" "30" "installer le projet NOX"
+printf "\n"
+printf "\t%%-2s : %%s\n" "40" "installer le projet ADB"
 printf "\n"
 set "G_STATE=S_CHOICE"
 goto :GAndroid_Main
@@ -58,7 +78,19 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
 ) else ( if "%lAnswer%" == "1" ( set "G_STATE=S_ANDROID_STUDIO_START" & set "G_ANDROID_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "10" ( set "G_STATE=S_GRADLEW_TASKS_ANDROID_PATH" & set "G_ANDROID_ID=%lAnswer%" 
-)))))
+) else ( if "%lAnswer%" == "11" ( set "G_STATE=S_GRADLEW_COMPILE_ANDROID_PATH" & set "G_ANDROID_ID=%lAnswer%" 
+) else ( if "%lAnswer%" == "20" ( set "G_STATE=S_EMULATOR_LIST" & set "G_ANDROID_ID=%lAnswer%" 
+) else ( if "%lAnswer%" == "21" ( set "G_STATE=S_EMULATOR_START_AVD_NAME" & set "G_ANDROID_ID=%lAnswer%" 
+) else ( if "%lAnswer%" == "30" ( set "G_STATE=S_NOX_INSTALL_ANDROID_PATH" & set "G_ANDROID_ID=%lAnswer%" 
+) else ( if "%lAnswer%" == "40" ( set "G_STATE=S_ADB_INSTALL_ANDROID_PATH" & set "G_ANDROID_ID=%lAnswer%" 
+))))))))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_ANDROID_START
+echo.
+echo lancement du programme Android Studio...
+studio64
+set "G_STATE=S_SAVE"
 goto :GAndroid_Main
 ::===============================================
 :GAndroid_GRADLEW_TASKS_ANDROID_PATH
@@ -89,14 +121,127 @@ goto :GAndroid_Main
 echo.
 set "lPath=%G_ANDROID_PATH%\%G_ANDROID_NAME%\code\GProject\src"
 cd %lPath%
-echo %cd%
+call gradlew tasks
 set "G_STATE=S_SAVE"
 goto :GAndroid_Main
 ::===============================================
-:GAndroid_ANDROID_START
+:GAndroid_GRADLEW_COMPILE_ANDROID_PATH
+set "lAnswer=" 
+set /p lAnswer=G_ANDROID_PATH (%G_ANDROID_PATH%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_ANDROID_PATH%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_GRADLEW_COMPILE"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_GRADLEW_COMPILE_ANDROID_NAME" & set "G_ANDROID_PATH=%lAnswer%" 
+)))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_GRADLEW_COMPILE_ANDROID_NAME
+set "lAnswer=" 
+set /p lAnswer=G_ANDROID_NAME (%G_ANDROID_NAME%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_ANDROID_NAME%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_GRADLEW_COMPILE"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_GRADLEW_COMPILE" & set "G_ANDROID_NAME=%lAnswer%" 
+)))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_GRADLEW_COMPILE
 echo.
-echo lancement du programme Android Studio...
-studio64
+set "lPath=%G_ANDROID_PATH%\%G_ANDROID_NAME%\code\GProject\src"
+cd %lPath%
+call gradlew installDebug
+set "G_STATE=S_SAVE"
+goto :GAndroid_Main
+::===============================================
+:GAndroid_EMULATOR_LIST
+echo.
+emulator -list-avds
+set "G_STATE=S_SAVE"
+goto :GAndroid_Main
+::===============================================
+:GAndroid_EMULATOR_START_AVD_NAME
+set "lAnswer=" 
+set /p lAnswer=G_AVD_NAME (%G_AVD_NAME%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_AVD_NAME%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_EMULATOR_START"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_EMULATOR_START" & set "G_AVD_NAME=%lAnswer%" 
+)))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_EMULATOR_START
+echo.
+emulator -avd %G_AVD_NAME%
+set "G_STATE=S_SAVE"
+goto :GAndroid_Main
+::===============================================
+:GAndroid_NOX_INSTALL_ANDROID_PATH
+set "lAnswer=" 
+set /p lAnswer=G_ANDROID_PATH (%G_ANDROID_PATH%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_ANDROID_PATH%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_NOX_INSTALL"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_NOX_INSTALL_ANDROID_NAME" & set "G_ANDROID_PATH=%lAnswer%" 
+)))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_NOX_INSTALL_ANDROID_NAME
+set "lAnswer=" 
+set /p lAnswer=G_ANDROID_NAME (%G_ANDROID_NAME%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_ANDROID_NAME%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_NOX_INSTALL"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_NOX_INSTALL" & set "G_ANDROID_NAME=%lAnswer%" 
+)))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_NOX_INSTALL
+echo.
+set "lPath=%G_ANDROID_PATH%\%G_ANDROID_NAME%\code\GProject\src"
+set "lApk=%lPath%\app\build\outputs\apk\debug\app-debug.apk"
+Nox "-apk:%lApk%"
+set "G_STATE=S_SAVE"
+goto :GAndroid_Main
+::===============================================
+:GAndroid_ADB_INSTALL_ANDROID_PATH
+set "lAnswer=" 
+set /p lAnswer=G_ANDROID_PATH (%G_ANDROID_PATH%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_ANDROID_PATH%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_ADB_INSTALL"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_ADB_INSTALL_ANDROID_NAME" & set "G_ANDROID_PATH=%lAnswer%" 
+)))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_ADB_INSTALL_ANDROID_NAME
+set "lAnswer=" 
+set /p lAnswer=G_ANDROID_NAME (%G_ANDROID_NAME%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_ANDROID_NAME%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_ADB_INSTALL"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_ADB_INSTALL" & set "G_ANDROID_NAME=%lAnswer%" 
+)))))
+goto :GAndroid_Main
+::===============================================
+:GAndroid_ADB_INSTALL
+echo.
+set "lPath=%G_ANDROID_PATH%\%G_ANDROID_NAME%\code\GProject\src"
+set "lApk=%lPath%\app\build\outputs\apk\debug\app-debug.apk"
+adb install %lApk%
 set "G_STATE=S_SAVE"
 goto :GAndroid_Main
 ::===============================================
@@ -104,6 +249,7 @@ goto :GAndroid_Main
 call gz_process_in sqlite_config_save "G_ANDROID_ID" "%G_ANDROID_ID%"
 call gz_process_in sqlite_config_save "G_ANDROID_PATH" "%G_ANDROID_PATH%"
 call gz_process_in sqlite_config_save "G_ANDROID_NAME" "%G_ANDROID_NAME%"
+call gz_process_in sqlite_config_save "G_AVD_NAME" "%G_AVD_NAME%"
 set "G_STATE=S_QUIT" & cd %GPWD%
 goto :GAndroid_Main
 ::===============================================
@@ -111,6 +257,7 @@ goto :GAndroid_Main
 call gz_process_in sqlite_config_load "G_ANDROID_ID" G_ANDROID_ID
 call gz_process_in sqlite_config_load "G_ANDROID_PATH" G_ANDROID_PATH
 call gz_process_in sqlite_config_load "G_ANDROID_NAME" G_ANDROID_NAME
+call gz_process_in sqlite_config_load "G_AVD_NAME" G_AVD_NAME
 set "G_STATE=S_METHOD"
 goto :GAndroid_Main
 ::===============================================
