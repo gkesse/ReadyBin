@@ -58,7 +58,7 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_NOX_ID%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
-) else ( if "%lAnswer%" == "1" ( set "G_STATE=S_ADB_CONNECT_SERVER_PORT" & set "G_NOX_ID=%lAnswer%" 
+) else ( if "%lAnswer%" == "1" ( set "G_STATE=S_ADB_CONNECT_SERVER_IP" & set "G_NOX_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "2" ( set "G_STATE=S_ADB_STOP" & set "G_NOX_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "10" ( set "G_STATE=S_NOX_START" & set "G_NOX_ID=%lAnswer%" 
 ))))))
