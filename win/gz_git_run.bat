@@ -54,6 +54,7 @@ printf "GIT !!!\n"
 printf "\t%%-2s : %%s\n" "-q" "quitter l'application"
 printf "\t%%-2s : %%s\n" "-i" "reinitialiser l'application"
 printf "\t%%-2s : %%s\n" "-a" "redemarrer l'application"
+printf "\t%%-2s : %%s\n" "-v" "valider les configurations"
 printf "\n"
 set "G_STATE=S_LOAD"
 goto :GGit_Main
@@ -92,7 +93,6 @@ goto :GGit_Main
 :GGit_CONFIG_LIST
 echo.
 git config --list --global
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -103,8 +103,10 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_USER_NAME%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CONFIG_EDIT"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CONFIG_EDIT"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_CONFIG_EDIT_USER_EMAIL" & set "G_USER_NAME=%lAnswer%" 
-))))
+))))))
 goto :GGit_Main
 ::===============================================
 :GGit_CONFIG_EDIT_USER_EMAIL
@@ -125,8 +127,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_CORE_EDITOR%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_CONFIG_EDIT"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_CONFIG_EDIT" & set "G_CORE_EDITOR=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_CONFIG_EDIT
@@ -134,7 +137,6 @@ if "%G_CORE_EDITOR%" == "notepad++" ( set "G_CORE_EDITOR=%G_NOTEPADPP_EXE%" )
 git config --global user.name "%G_USER_NAME%"
 git config --global user.email "%G_USER_EMAIL%"
 git config --global core.editor "%G_CORE_EDITOR%"
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -179,7 +181,6 @@ echo.
 set "lReadyUrl=https://github.com/gkesse/%G_READY_NAME%.git"
 cd %G_READY_PATH%
 git clone %lReadyUrl% %G_READY_CLONE%
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -190,8 +191,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_READY_PATH%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_READY_PUSH"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_PUSH_READY_NAME" & set "G_READY_PATH=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_READY_PUSH_READY_NAME
@@ -201,8 +203,9 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_READY_NAME%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_READY_PUSH"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_PUSH_GIT_COMMENT" & set "G_READY_NAME=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_READY_PUSH_GIT_COMMENT
@@ -212,18 +215,19 @@ if "%lAnswer%" == "" ( set "lAnswer=%G_GIT_COMMENT%" )
 if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_READY_PUSH"
 ) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_READY_PUSH" & set "G_GIT_COMMENT=%lAnswer%" 
-))))
+)))))
 goto :GGit_Main
 ::===============================================
 :GGit_READY_PUSH
 echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
+git pull
 git add --all
 git commit -m "%G_GIT_COMMENT%"
 git push -u origin master
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -254,7 +258,6 @@ echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
 git pull
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -285,7 +288,6 @@ echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
 git status
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -327,7 +329,6 @@ echo.
 set "lReadyPath=%G_READY_PATH%\%G_READY_NAME%"
 cd %lReadyPath%
 git rm -r --cached %G_READY_FILE%
-echo.
 set "G_STATE=S_SAVE"
 goto :GGit_Main
 ::===============================================
@@ -356,6 +357,7 @@ set "G_STATE=S_METHOD"
 goto :GGit_Main
 ::===============================================
 :GGit_QUIT
+echo.
 call gz_process_in quit G_QUIT_IN
 set "lAnswerIn=%G_QUIT_IN:~0,1%"
 if "%G_QUIT_IN%" == "-q" ( set "G_STATE=S_END" 

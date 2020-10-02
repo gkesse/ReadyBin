@@ -4,35 +4,35 @@ GPWD=$PWD
 #================================================
 G_STATE="S_INIT"
 #================================================
-G_CONFIG_DB="$GPATH/.CONFIG_O.dat"
+. $GPATH/env
 #================================================
-GSQLite_Main() {
+GShell_Main() {
 while [ 1 ] ; do
 case "$G_STATE" in 
-    "S_ADMIN") GSQLite_ADMIN ;;
-    "S_INIT") GSQLite_INIT ;;
-    "S_METHOD") GSQLite_METHOD ;;
-    "S_CHOICE") GSQLite_CHOICE ;;
+    "S_ADMIN") GShell_ADMIN ;;
+    "S_INIT") GShell_INIT ;;
+    "S_METHOD") GShell_METHOD ;;
+    "S_CHOICE") GShell_CHOICE ;;
     #
-    "S_VERSION") GSQLite_VERSION ;;
-    "S_CONFIG_DATA_CREATE") GSQLite_CONFIG_DATA_CREATE ;;
+    "S_CMD_RUN_CMD_TEXT") GShell_CMD_RUN_CMD_TEXT ;;
+    "S_CMD_RUN") GShell_CMD_RUN ;; 
     #
-    "S_SAVE") GSQLite_SAVE ;;
-    "S_LOAD") GSQLite_LOAD ;;
-    "S_QUIT") GSQLite_QUIT ;;
+    "S_SAVE") GShell_SAVE ;;
+    "S_LOAD") GShell_LOAD ;;
+    "S_QUIT") GShell_QUIT ;;
     *) break ;;
 esac    
 done
 }
 #================================================
-GSQLite_ADMIN() {
+GShell_ADMIN() {
 gz_admin
 G_STATE="S_END"
 }
 #================================================
-GSQLite_INIT() {
+GShell_INIT() {
 printf "\n"
-printf "SQLITE !!!\n"
+printf "SHELL !!!\n"
 printf "\t%2s : %s\n" "-q" "quitter l'application"
 printf "\t%2s : %s\n" "-i" "reinitialiser l'application"
 printf "\t%2s : %s\n" "-a" "redemarrer l'administration"
@@ -41,54 +41,57 @@ printf "\n"
 G_STATE="S_LOAD"
 }
 #================================================
-GSQLite_METHOD() {
-printf "SQLITE :\n"
-printf "\t%2s : %s\n" "1" "afficher la version"
-printf "\t%2s : %s\n" "2" "creer la table CONFIG_DATA"
+GShell_METHOD() {
+printf "SHELL :\n"
+printf "\t%2s : %s\n" "1" "executer une commande SHELL"
 printf "\n"
 G_STATE="S_CHOICE"
 }
 #================================================
-GSQLite_CHOICE() {
-read -p "SQLITE ($G_SQLITE_ID) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_SQLITE_ID" ; fi
+GShell_CHOICE() {
+read -p "SHELL ($G_SHELL_ID) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_SHELL_ID" ; fi
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
-elif [ "$lAnswer" = "1" ] ; then G_STATE="S_VERSION" ; G_SQLITE_ID="$lAnswer"
-elif [ "$lAnswer" = "2" ] ; then G_STATE="S_CONFIG_DATA_CREATE" ; G_SQLITE_ID="$lAnswer"
+elif [ "$lAnswer" = "1" ] ; then G_STATE="S_CMD_RUN_CMD_TEXT" ; G_SHELL_ID="$lAnswer"
+#
 fi
 }
 #================================================
-GSQLite_CONFIG_DATA_CREATE() {
+GShell_CMD_RUN_CMD_TEXT() {
+read -p "G_CMD_TEXT ($G_CMD_TEXT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_CMD_TEXT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_CMD_RUN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_CMD_RUN" ; G_CMD_TEXT="$lAnswer"
+fi
+}
+#================================================
+GShell_CMD_RUN() {
 echo
-gz_process_in "sqlite_query" "$G_CONFIG_DB" "
-create table CONFIG_DATA(
-CONFIG_KEY text unique not null,
-CONFIG_VALUE text
-)
-"
+echo "$G_CMD_TEXT"
+echo
+$G_CMD_TEXT
 G_STATE="S_SAVE"
 }
 #================================================
-GSQLite_VERSION() {
-echo
-sqlite3 --version
-G_STATE="S_SAVE"
-}
-#================================================
-GSQLite_SAVE() {
-gz_process_in "config_save" "G_SQLITE_ID" "$G_SQLITE_ID"
+GShell_SAVE() {
+gz_process_in "config_save" "G_SHELL_ID" "$G_SHELL_ID"
+gz_process_in "config_save" "G_CMD_TEXT" "$G_CMD_TEXT"
 G_STATE="S_QUIT"
 }
 #================================================
-GSQLite_LOAD() {
-G_SQLITE_ID=$(gz_process_in "config_load" "G_SQLITE_ID")
+GShell_LOAD() {
+G_SHELL_ID=$(gz_process_in "config_load" "G_SHELL_ID")
+G_CMD_TEXT=$(gz_process_in "config_load" "G_CMD_TEXT")
 G_STATE="S_METHOD"
 }
 #================================================
-GSQLite_QUIT() {
+GShell_QUIT() {
 echo
 read -p "QUIT (Oui/[N]on) ? " lAnswer
 if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
@@ -100,7 +103,8 @@ elif [ "$lAnswer" = "" ] ; then G_STATE="S_INIT"
 fi
 }
 #================================================
-GSQLite_Main
+GShell_Main
 #================================================
 cd $GPWD
 #================================================
+

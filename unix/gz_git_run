@@ -4,7 +4,7 @@ GPWD=$PWD
 #================================================
 G_STATE="S_INIT"
 #================================================
-G_GIT_ROOT="https://sudo github.com/gkesse"
+G_GIT_ROOT="https://github.com/gkesse"
 #================================================
 GGit_Main() {
 while [ 1 ] ; do
@@ -134,7 +134,7 @@ GGit_FILE_REMOVE() {
 echo
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
-git rm -f $G_FILE_LIST
+git rm -rf $G_FILE_LIST
 G_STATE="S_SAVE"
 }
 #================================================
@@ -240,7 +240,7 @@ fi
 GGit_CLONE() {
 echo
 cd $G_DEPOT_ROOT
-G_DEPOT_URL="${G_GIT_ROOT}/${G_DEPOT_NAME}.sudo git"
+G_DEPOT_URL="${G_GIT_ROOT}/${G_DEPOT_NAME}.git"
 sudo git clone $G_DEPOT_URL $G_DEPOT_CLONE
 G_STATE="S_SAVE"
 }

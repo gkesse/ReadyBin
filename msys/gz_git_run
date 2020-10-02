@@ -244,6 +244,7 @@ GGit_PUSH() {
 echo
 G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
+git pull
 git add --all
 git commit -m "Initial Commit"
 git push -u origin master

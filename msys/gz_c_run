@@ -14,10 +14,11 @@ case "$G_STATE" in
     #
     "S_C_COMPILE_C_PATH") GC_C_COMPILE_C_PATH ;;
     "S_C_COMPILE_C_NAME") GC_C_COMPILE_C_NAME ;;
-    "S_C_COMPILE_C_COMPILO") GC_C_COMPILE_C_COMPILO ;;
-    "S_C_COMPILE_C_TARGET") GC_C_COMPILE_C_TARGET ;;
-    "S_C_COMPILE_C_ARGS") GC_C_COMPILE_C_ARGS ;;
     "S_C_COMPILE") GC_C_COMPILE ;;
+    #
+    "S_C_CLEAN_C_PATH") GC_C_CLEAN_C_PATH ;;
+    "S_C_CLEAN_C_NAME") GC_C_CLEAN_C_NAME ;;
+    "S_C_CLEAN") GC_C_CLEAN ;;
     #
     "S_SAVE") GC_SAVE ;;
     "S_LOAD") GC_LOAD ;;
@@ -46,6 +47,7 @@ G_STATE="S_LOAD"
 GC_METHOD() {
 printf "C :\n"
 printf "\t%2s : %s\n" "1" "compiler le projet"
+printf "\t%2s : %s\n" "2" "nettoyer le projet"
 printf "\n"
 G_STATE="S_CHOICE"
 }
@@ -58,6 +60,7 @@ elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT"
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 #
 elif [ "$lAnswer" = "1" ] ; then G_STATE="S_C_COMPILE_C_PATH" ; G_C_ID="$lAnswer"
+elif [ "$lAnswer" = "2" ] ; then G_STATE="S_C_CLEAN_C_PATH" ; G_C_ID="$lAnswer"
 #
 fi
 }
@@ -80,51 +83,47 @@ if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_COMPILE_C_COMPILO" ; G_C_NAME="$lAnswer"
-fi
-}
-#================================================
-GC_C_COMPILE_C_COMPILO() {
-read -p "G_C_COMPILO ($G_C_COMPILO) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_C_COMPILO" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_COMPILE_C_TARGET" ; G_C_COMPILO="$lAnswer"
-fi
-}
-#================================================
-GC_C_COMPILE_C_TARGET() {
-read -p "G_C_TARGET ($G_C_TARGET) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_C_TARGET" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_COMPILE"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_COMPILE_C_ARGS" ; G_C_TARGET="$lAnswer"
-fi
-}
-#================================================
-GC_C_COMPILE_C_ARGS() {
-read -p "G_C_ARGS ($G_C_ARGS) ? " lAnswer
-if [ "$lAnswer" = "" ] ; then lAnswer="$G_C_ARGS" ; fi
-if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
-elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
-elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
-elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_COMPILE"
-elif [ "$lAnswer" = "-z" ] ; then G_STATE="S_C_COMPILE" ; G_C_ARGS=""
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_COMPILE" ; G_C_ARGS="$lAnswer"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_COMPILE" ; G_C_NAME="$lAnswer"
 fi
 }
 #================================================
 GC_C_COMPILE() {
 echo
 lBuldPath="$G_C_PATH/$G_C_NAME/msys"
-lMakefile="Makefile"
-if [ "$G_C_COMPILO" != "" ] ; then lMakefile="${lMakefile}.$G_C_COMPILO" ; fi
+lMakefile="Makefile.msys"
 cd $lBuldPath
-make -f "$lMakefile" "$G_C_TARGET" GARGS="$G_C_ARGS"
+make -f "$lMakefile" all
+G_STATE="S_SAVE"
+}
+#================================================
+GC_C_CLEAN_C_PATH() {
+read -p "G_C_PATH ($G_C_PATH) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_C_PATH" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_CLEAN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_CLEAN_C_NAME" ; G_C_PATH="$lAnswer"
+fi
+}
+#================================================
+GC_C_CLEAN_C_NAME() {
+read -p "G_C_NAME ($G_C_NAME) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_C_NAME" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_C_CLEAN"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_C_CLEAN" ; G_C_NAME="$lAnswer"
+fi
+}
+#================================================
+GC_C_CLEAN() {
+echo
+lBuldPath="$G_C_PATH/$G_C_NAME/msys"
+lMakefile="Makefile.msys"
+cd $lBuldPath
+make -f "$lMakefile" clean
 G_STATE="S_SAVE"
 }
 #================================================
@@ -132,9 +131,6 @@ GC_SAVE() {
 gz_process_in "config_save" "G_C_ID" "$G_C_ID"
 gz_process_in "config_save" "G_C_PATH" "$G_C_PATH"
 gz_process_in "config_save" "G_C_NAME" "$G_C_NAME"
-gz_process_in "config_save" "G_C_COMPILO" "$G_C_COMPILO"
-gz_process_in "config_save" "G_C_TARGET" "$G_C_TARGET"
-gz_process_in "config_save" "G_C_ARGS" "$G_C_ARGS"
 G_STATE="S_QUIT"
 }
 #================================================
@@ -142,9 +138,6 @@ GC_LOAD() {
 G_C_ID=$(gz_process_in "config_load" "G_C_ID")
 G_C_PATH=$(gz_process_in "config_load" "G_C_PATH")
 G_C_NAME=$(gz_process_in "config_load" "G_C_NAME")
-G_C_COMPILO=$(gz_process_in "config_load" "G_C_COMPILO")
-G_C_TARGET=$(gz_process_in "config_load" "G_C_TARGET")
-G_C_ARGS=$(gz_process_in "config_load" "G_C_ARGS")
 G_STATE="S_METHOD"
 }
 #================================================
