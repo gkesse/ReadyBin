@@ -16,6 +16,7 @@ case "$G_STATE" in
     #
     "S_PUSH_DEPOT_ROOT") GGit_PUSH_DEPOT_ROOT ;;
     "S_PUSH_DEPOT_NAME") GGit_PUSH_DEPOT_NAME ;;
+    "S_PUSH_GIT_COMMENT") GGit_PUSH_GIT_COMMENT ;;
     "S_PUSH") GGit_PUSH ;;
     #
     "S_PULL_DEPOT_ROOT") GGit_PULL_DEPOT_ROOT ;;
@@ -294,7 +295,18 @@ if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
 elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
 elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
 elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PUSH"
-elif [ "$lAnswer" != "" ] ; then G_STATE="S_PUSH" ; G_DEPOT_NAME="$lAnswer"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PUSH_GIT_COMMENT" ; G_DEPOT_NAME="$lAnswer"
+fi
+}
+#================================================
+GGit_PUSH_GIT_COMMENT() {
+read -p "G_GIT_COMMENT ($G_GIT_COMMENT) ? " lAnswer
+if [ "$lAnswer" = "" ] ; then lAnswer="$G_GIT_COMMENT" ; fi
+if [ "$lAnswer" = "-q" ] ; then G_STATE="S_END"
+elif [ "$lAnswer" = "-i" ] ; then G_STATE="S_INIT" 
+elif [ "$lAnswer" = "-a" ] ; then G_STATE="S_ADMIN"
+elif [ "$lAnswer" = "-v" ] ; then G_STATE="S_PUSH"
+elif [ "$lAnswer" != "" ] ; then G_STATE="S_PUSH" ; G_GIT_COMMENT="$lAnswer"
 fi
 }
 #================================================
@@ -304,7 +316,7 @@ G_DEPOT_PATH="$G_DEPOT_ROOT/$G_DEPOT_NAME"
 cd $G_DEPOT_PATH
 sudo git pull
 sudo git add --all
-sudo git commit -m "Initial Commit"
+sudo git commit -m "$G_GIT_COMMENT"
 sudo git push -u origin master
 sudo chmod -R 777 $G_DEPOT_PATH
 G_STATE="S_SAVE"
@@ -314,6 +326,7 @@ GGit_SAVE() {
 gz_process_in "config_save" "G_GIT_ID" "$G_GIT_ID"
 gz_process_in "config_save" "G_DEPOT_ROOT" "$G_DEPOT_ROOT"
 gz_process_in "config_save" "G_DEPOT_NAME" "$G_DEPOT_NAME"
+gz_process_in "config_save" "G_GIT_COMMENT" "$G_GIT_COMMENT"
 gz_process_in "config_save" "G_USER_NAME" "$G_USER_NAME"
 gz_process_in "config_save" "G_USER_EMAIL" "$G_USER_EMAIL"
 gz_process_in "config_save" "G_CORE_EDITOR" "$G_CORE_EDITOR"
@@ -325,6 +338,7 @@ GGit_LOAD() {
 G_GIT_ID=$(gz_process_in "config_load" "G_GIT_ID")
 G_DEPOT_ROOT=$(gz_process_in "config_load" "G_DEPOT_ROOT")
 G_DEPOT_NAME=$(gz_process_in "config_load" "G_DEPOT_NAME")
+G_GIT_COMMENT=$(gz_process_in "config_load" "G_GIT_COMMENT")
 G_USER_NAME=$(gz_process_in "config_load" "G_USER_NAME")
 G_USER_EMAIL=$(gz_process_in "config_load" "G_USER_EMAIL")
 G_CORE_EDITOR=$(gz_process_in "config_load" "G_CORE_EDITOR")
