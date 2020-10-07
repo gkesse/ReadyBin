@@ -14,6 +14,7 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GAndroid_ADMIN
 ) else ( if "%G_STATE%" == "S_METHOD" ( goto :GAndroid_METHOD
 ) else ( if "%G_STATE%" == "S_CHOICE" ( goto :GAndroid_CHOICE
 ) else ( if "%G_STATE%" == "S_ANDROID_STUDIO_START" ( goto :GAndroid_ANDROID_STUDIO_START
+) else ( if "%G_STATE%" == "S_ANDROID_PROJECT_CREATE" ( goto :GAndroid_ANDROID_PROJECT_CREATE
 ) else ( if "%G_STATE%" == "S_GRADLEW_TASKS_ANDROID_PATH" ( goto :GAndroid_GRADLEW_TASKS_ANDROID_PATH
 ) else ( if "%G_STATE%" == "S_GRADLEW_TASKS_ANDROID_NAME" ( goto :GAndroid_GRADLEW_TASKS_ANDROID_NAME
 ) else ( if "%G_STATE%" == "S_GRADLEW_TASKS" ( goto :GAndroid_GRADLEW_TASKS
@@ -38,7 +39,7 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GAndroid_ADMIN
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GAndroid_LOAD
 ) else ( if "%G_STATE%" == "S_QUIT" ( goto :GAndroid_QUIT
 ) else ( goto :eof
-))))))))))))))))))))))))))))
+)))))))))))))))))))))))))))))
 goto :GAndroid_Main
 ::===============================================
 :GAndroid_ADMIN
@@ -60,6 +61,7 @@ goto :GAndroid_Main
 :GAndroid_METHOD
 printf "ANDROID :\n"
 printf "\t%%-2s : %%s\n" "1" "lancer ANDROID_STUDIO"
+printf "\t%%-2s : %%s\n" "2" "creer le projet ANDROID"
 printf "\n"
 printf "\t%%-2s : %%s\n" "10" "lister les taches GRADLEW"
 printf "\t%%-2s : %%s\n" "11" "compile le projet GRADLEW"
@@ -85,6 +87,7 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
 ) else ( if "%lAnswer%" == "1" ( set "G_STATE=S_ANDROID_STUDIO_START" & set "G_ANDROID_ID=%lAnswer%" 
+) else ( if "%lAnswer%" == "2" ( set "G_STATE=S_ANDROID_PROJECT_CREATE" & set "G_ANDROID_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "10" ( set "G_STATE=S_GRADLEW_TASKS_ANDROID_PATH" & set "G_ANDROID_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "11" ( set "G_STATE=S_GRADLEW_COMPILE_ANDROID_PATH" & set "G_ANDROID_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "20" ( set "G_STATE=S_EMULATOR_LIST" & set "G_ANDROID_ID=%lAnswer%" 
@@ -94,13 +97,20 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "32" ( set "G_STATE=S_NOX_STOP" & set "G_NOX_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "33" ( set "G_STATE=S_NOX_START" & set "G_NOX_ID=%lAnswer%" 
 ) else ( if "%lAnswer%" == "40" ( set "G_STATE=S_ADB_INSTALL_ANDROID_PATH" & set "G_ANDROID_ID=%lAnswer%" 
-)))))))))))))
+))))))))))))))
 goto :GAndroid_Main
 ::===============================================
 :GAndroid_ANDROID_START
 echo.
 echo lancement du programme Android Studio...
 call studio64
+set "G_STATE=S_SAVE"
+goto :GAndroid_Main
+::===============================================
+:GAndroid_ANDROID_PROJECT_CREATE
+echo creation du projet Android...
+cd C:\Users\Admin\Downloads\Programs\ReadyAndroid_Test\mon_test\code
+call android --help 
 set "G_STATE=S_SAVE"
 goto :GAndroid_Main
 ::===============================================

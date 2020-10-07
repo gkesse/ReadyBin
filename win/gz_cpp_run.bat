@@ -4,6 +4,8 @@ set "GPWD=%cd%"
 ::===============================================
 set "G_STATE=S_INIT"
 ::===============================================
+call %GPATH%\.env.bat mingw_32
+::===============================================
 call :GCpp_Main
 cd %GPWD%
 goto :eof
@@ -178,18 +180,18 @@ set "G_STATE=S_SAVE"
 goto :GCpp_Main
 ::===============================================
 :GCpp_SAVE
-call gz_process_in sqlite_CPPonfig_save "G_CPP_ID" "%G_CPP_ID%"
-call gz_process_in sqlite_CPPonfig_save "G_CPP_PATH" "%G_CPP_PATH%"
-call gz_process_in sqlite_CPPonfig_save "G_CPP_NAME" "%G_CPP_NAME%"
-call gz_process_in sqlite_CPPonfig_save "G_TEST_PATH" "%G_TEST_PATH%"
+call gz_process_in sqlite_config_save "G_CPP_ID" "%G_CPP_ID%"
+call gz_process_in sqlite_config_save "G_CPP_PATH" "%G_CPP_PATH%"
+call gz_process_in sqlite_config_save "G_CPP_NAME" "%G_CPP_NAME%"
+call gz_process_in sqlite_config_save "G_TEST_PATH" "%G_TEST_PATH%"
 set "G_STATE=S_QUIT" & cd %GPWD%
 goto :GCpp_Main
 ::===============================================
 :GCpp_LOAD
-call gz_process_in sqlite_CPPonfig_load "G_CPP_ID" G_CPP_ID
-call gz_process_in sqlite_CPPonfig_load "G_CPP_PATH" G_CPP_PATH
-call gz_process_in sqlite_CPPonfig_load "G_CPP_NAME" G_CPP_NAME
-call gz_process_in sqlite_CPPonfig_load "G_TEST_PATH" G_TEST_PATH
+call gz_process_in sqlite_config_load "G_CPP_ID" G_CPP_ID
+call gz_process_in sqlite_config_load "G_CPP_PATH" G_CPP_PATH
+call gz_process_in sqlite_config_load "G_CPP_NAME" G_CPP_NAME
+call gz_process_in sqlite_config_load "G_TEST_PATH" G_TEST_PATH
 set "G_STATE=S_METHOD"
 goto :GCpp_Main
 ::===============================================
