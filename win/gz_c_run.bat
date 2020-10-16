@@ -17,6 +17,7 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GC_ADMIN
 ) else ( if "%G_STATE%" == "S_CHOICE" ( goto :GC_CHOICE
 ) else ( if "%G_STATE%" == "S_C_COMPILE_C_PATH" ( goto :GC_C_COMPILE_C_PATH
 ) else ( if "%G_STATE%" == "S_C_COMPILE_C_NAME" ( goto :GC_C_COMPILE_C_NAME
+) else ( if "%G_STATE%" == "S_C_COMPILE_ARGS" ( goto :GC_C_COMPILE_C_ARGS
 ) else ( if "%G_STATE%" == "S_C_COMPILE" ( goto :GC_C_COMPILE
 ) else ( if "%G_STATE%" == "S_C_CLEAN_C_PATH" ( goto :GC_C_CLEAN_C_PATH
 ) else ( if "%G_STATE%" == "S_C_CLEAN_C_NAME" ( goto :GC_C_CLEAN_C_NAME
@@ -27,7 +28,7 @@ if "%G_STATE%" == "S_ADMIN" ( goto :GC_ADMIN
 ) else ( if "%G_STATE%" == "S_LOAD" ( goto :GC_LOAD
 ) else ( if "%G_STATE%" == "S_QUIT" ( goto :GC_QUIT
 ) else ( goto :eof
-)))))))))))))))
+))))))))))))))))
 goto :GC_Main
 ::===============================================
 :GC_ADMIN
@@ -90,7 +91,19 @@ if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
 ) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
 ) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
 ) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_COMPILE"
-) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE" & set "G_C_NAME=%lAnswer%" 
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE_ARGS" & set "G_C_NAME=%lAnswer%" 
+)))))
+goto :GC_Main
+::===============================================
+:GC_C_COMPILE_C_ARGS
+set "lAnswer=" 
+set /p lAnswer=G_C_ARGS (%G_C_ARGS%) ? : 
+if "%lAnswer%" == "" ( set "lAnswer=%G_C_ARGS%" )
+if "%lAnswer%" == "-q" ( set "G_STATE=S_END"
+) else ( if "%lAnswer%" == "-i" ( set "G_STATE=S_INIT" 
+) else ( if "%lAnswer%" == "-a" ( set "G_STATE=S_ADMIN"
+) else ( if "%lAnswer%" == "-v" ( set "G_STATE=S_C_COMPILE"
+) else ( if not "%lAnswer%" == "" ( set "G_STATE=S_C_COMPILE" & set "G_C_ARGS=%lAnswer%" 
 )))))
 goto :GC_Main
 ::===============================================
@@ -99,7 +112,7 @@ echo.
 set "lBuldPath=%G_C_PATH%\%G_C_NAME%\win"
 set "lMakefile=Makefile.mingw"
 cd %lBuldPath%
-mingw32-make -f %lMakefile% all
+mingw32-make -f %lMakefile% all args="%G_C_ARGS%"
 set "G_STATE=S_SAVE"
 goto :GC_Main
 ::===============================================
@@ -158,8 +171,6 @@ goto :GC_Main
 call gz_process_in sqlite_config_save "G_C_ID" "%G_C_ID%"
 call gz_process_in sqlite_config_save "G_C_PATH" "%G_C_PATH%"
 call gz_process_in sqlite_config_save "G_C_NAME" "%G_C_NAME%"
-call gz_process_in sqlite_config_save "G_C_COMPILO" "%G_C_COMPILO%"
-call gz_process_in sqlite_config_save "G_C_TARGET" "%G_C_TARGET%"
 call gz_process_in sqlite_config_save "G_C_ARGS" "%G_C_ARGS%"
 set "G_STATE=S_QUIT" & cd %GPWD%
 goto :GC_Main
@@ -168,8 +179,6 @@ goto :GC_Main
 call gz_process_in sqlite_config_load "G_C_ID" G_C_ID
 call gz_process_in sqlite_config_load "G_C_PATH" G_C_PATH
 call gz_process_in sqlite_config_load "G_C_NAME" G_C_NAME
-call gz_process_in sqlite_config_load "G_C_COMPILO" G_C_COMPILO
-call gz_process_in sqlite_config_load "G_C_TARGET" G_C_TARGET
 call gz_process_in sqlite_config_load "G_C_ARGS" G_C_ARGS
 set "G_STATE=S_METHOD"
 goto :GC_Main
